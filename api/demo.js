@@ -1,11 +1,7 @@
-const Anthropic = require('@anthropic-ai/sdk');
-
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   const { name, dob, nationality, visaType, visaExpiry, caseType, description } = req.body;
 
@@ -18,13 +14,27 @@ Client details:
 - Current Visa Type: ${visaType}
 - Visa Expiry Date: ${visaExpiry}
 - Case Type: ${caseType}
-- Client's description: ${description}`;
+- Client description: ${description}`;
 
-  const message = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1024,
-    messages: [{ role: 'user', content: prompt }],
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }]
+    })
   });
 
-  res.status(200).json({ summary: message.content[0].text });
+  const data = await response.json();
+
+  if (!response.ok) {
+    return res.status(500).json({ error: data.error?.message || 'API error' });
+  }
+
+  res.status(200).json({ summary: data.content[0].text });
 };
