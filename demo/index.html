@@ -212,10 +212,12 @@
               <div>
                 <label for="email" class="field-label">Email Address <span class="field-required">*</span></label>
                 <input type="email" id="email" name="email" required placeholder="client@email.com" class="form-input w-full rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm" />
+                <p id="email-error" class="hidden mt-1.5 text-xs px-3 py-1.5 rounded-lg border border-gold/40 text-gold/90 bg-gold/5">Please enter a valid email address</p>
               </div>
               <div>
                 <label for="phone" class="field-label">Phone Number <span class="field-required">*</span></label>
                 <input type="tel" id="phone" name="phone" required placeholder="+44 7700 900000" class="form-input w-full rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm" />
+                <p id="phone-error" class="hidden mt-1.5 text-xs px-3 py-1.5 rounded-lg border border-gold/40 text-gold/90 bg-gold/5">Please enter a valid phone number (min. 7 digits)</p>
               </div>
             </div>
 
@@ -363,6 +365,12 @@
                 Try Another Case →
               </button>
             </div>
+
+            <!-- Case saved badge -->
+            <div id="case-saved-badge" class="hidden mt-4 flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
+              <span class="text-green-400 text-sm">✓</span>
+              <p id="case-saved-text" class="text-green-400 text-xs font-medium"></p>
+            </div>
           </div>
 
           <!-- API error state -->
@@ -385,7 +393,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
       <p class="text-gray-500 text-xs leading-relaxed">
-        <strong class="text-gray-400">Demo notice:</strong> This is a live demonstration using real AI. No data is stored. AI-generated summaries are for illustration only and do not constitute legal advice. In production, LexFlow integrates securely into your existing case management system.
+        🔒 Your information is securely saved to our case management system. This AI summary will be reviewed by a qualified solicitor. AI-generated content is for initial assessment only and does not constitute legal advice.
       </p>
     </div>
 
@@ -487,6 +495,15 @@
     const validationError = document.getElementById("form-validation-error");
     const apiError = document.getElementById("api-error");
     const apiErrorMsg = document.getElementById("api-error-msg");
+    const emailError = document.getElementById("email-error");
+    const phoneError = document.getElementById("phone-error");
+    const caseSavedBadge = document.getElementById("case-saved-badge");
+    const caseSavedText = document.getElementById("case-saved-text");
+
+    // ── Phone input — block invalid characters on keypress ───────────────────
+    document.getElementById("phone").addEventListener("keypress", (e) => {
+      if (!/[\d\s+]/.test(e.key)) e.preventDefault();
+    });
 
     // ── Markdown renderer ─────────────────────────────────────────────────────
     function renderMarkdown(text) {
@@ -528,9 +545,19 @@
       loadingState.classList.remove("hidden");
       resultState.classList.add("hidden");
       apiError.classList.add("hidden");
+      caseSavedBadge.classList.add("hidden");
       summaryContent.textContent = "";
       generateBtn.disabled = false;
       window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // ── Validation helpers ────────────────────────────────────────────────────
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function digitCount(phone) {
+      return (phone.match(/\d/g) || []).length;
     }
 
     // ── API calls ─────────────────────────────────────────────────────────────
@@ -555,30 +582,41 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...data, summary }),
         });
-      } catch (_) {
-        // Non-blocking — notification failure doesn't affect the demo
-      }
+      } catch (_) {}
+    }
+
+    async function saveCase(data, summary) {
+      try {
+        const res = await fetch("/api/save-case", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, summary }),
+        });
+        const json = await res.json();
+        if (json.caseId) {
+          caseSavedText.textContent = `Case saved to system — Reference: ${json.caseId}`;
+          caseSavedBadge.classList.remove("hidden");
+        }
+      } catch (_) {}
     }
 
     // ── Form submit ──────────────────────────────────────────────────────────
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       validationError.classList.add("hidden");
+      emailError.classList.add("hidden");
+      phoneError.classList.add("hidden");
 
       const data = getFormData();
+
+      // Required field check
       const requiredKeys = ["name", "email", "phone", "nationality", "visaType", "caseType", "description"];
       const missing = requiredKeys.filter((k) => !data[k]);
       if (missing.length || !data.dob) {
         validationError.classList.remove("hidden");
         const fieldMap = {
-          name: "client-name",
-          dob: "dob",
-          email: "email",
-          phone: "phone",
-          nationality: "nationality",
-          visaType: "visa-type",
-          caseType: "case-type",
-          description: "situation",
+          name: "client-name", dob: "dob", email: "email", phone: "phone",
+          nationality: "nationality", visaType: "visa-type", caseType: "case-type", description: "situation",
         };
         [...missing, ...(data.dob ? [] : ["dob"])].forEach((k) => {
           const el = document.getElementById(fieldMap[k]);
@@ -588,6 +626,28 @@
             el.addEventListener("change", () => el.classList.remove("error"), { once: true });
           }
         });
+        return;
+      }
+
+      // Email format check
+      if (!isValidEmail(data.email)) {
+        emailError.classList.remove("hidden");
+        document.getElementById("email").classList.add("error");
+        document.getElementById("email").addEventListener("input", () => {
+          emailError.classList.add("hidden");
+          document.getElementById("email").classList.remove("error");
+        }, { once: true });
+        return;
+      }
+
+      // Phone digit check
+      if (digitCount(data.phone) < 7) {
+        phoneError.classList.remove("hidden");
+        document.getElementById("phone").classList.add("error");
+        document.getElementById("phone").addEventListener("input", () => {
+          phoneError.classList.add("hidden");
+          document.getElementById("phone").classList.remove("error");
+        }, { once: true });
         return;
       }
 
@@ -605,6 +665,7 @@
         timeTaken.textContent = `This summary was generated in ${elapsed} seconds using LexFlow AI`;
 
         sendNotification(data, summary);
+        saveCase(data, summary);
 
       } catch (err) {
         loadingState.classList.add("hidden");
