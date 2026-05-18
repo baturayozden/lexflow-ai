@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|Create",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd ~/projects/Lexflow\\ AI && git add . && git commit -m 'auto-save update' && git push"
+          }
+        ]
+      }
+    ]
+  }
+}
