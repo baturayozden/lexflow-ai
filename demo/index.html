@@ -355,6 +355,20 @@
     const apiError = document.getElementById("api-error");
     const apiErrorMsg = document.getElementById("api-error-msg");
 
+    // ── Markdown renderer ─────────────────────────────────────────────────────
+    function renderMarkdown(text) {
+      return text
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/^---$/gm, "<hr class='border-white/10 my-3'>")
+        .replace(/^## (.+)$/gm, "<h3 class='text-gold font-semibold text-sm mt-5 mb-1'>$1</h3>")
+        .replace(/\*\*(.+?)\*\*/g, "<strong class='text-white font-semibold'>$1</strong>")
+        .replace(/^- (.+)$/gm, "<li class='ml-4 list-disc'>$1</li>")
+        .replace(/(<li[\s\S]*?<\/li>)/g, (match) => `<ul class='space-y-1 my-2'>${match}</ul>`)
+        .replace(/\n{2,}/g, "</p><p class='mt-3'>")
+        .replace(/\n/g, "<br>")
+        .replace(/^/, "<p>").replace(/$/, "</p>");
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
     function getFormData() {
       return {
@@ -440,7 +454,7 @@
 
         loadingState.classList.add("hidden");
         resultState.classList.remove("hidden");
-        summaryContent.textContent = summary;
+        summaryContent.innerHTML = renderMarkdown(summary);
         timeTaken.textContent = `This summary was generated in ${elapsed} seconds using LexFlow AI`;
 
       } catch (err) {
