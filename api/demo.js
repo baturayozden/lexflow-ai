@@ -14,7 +14,9 @@ Client details:
 - Current Visa Type: ${visaType}
 - Visa Expiry Date: ${visaExpiry}
 - Case Type: ${caseType}
-- Client description: ${description}`;
+- Client description: ${description}
+
+Today's date is ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}. Use this as the date in the case summary header.`;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',

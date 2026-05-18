@@ -99,6 +99,35 @@
     }
     .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #c9a84c; animation: pulse-dot 1.8s ease-in-out infinite; }
     @keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.8); } }
+
+    /* Nationality autocomplete */
+    .autocomplete-wrapper { position: relative; }
+    .autocomplete-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: #0a1628;
+      border: 1px solid rgba(201,168,76,0.4);
+      border-radius: 12px;
+      overflow: hidden;
+      z-index: 50;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      max-height: 216px;
+      overflow-y: auto;
+    }
+    .autocomplete-dropdown:empty { display: none; }
+    .autocomplete-item {
+      padding: 9px 14px;
+      font-size: 0.8125rem;
+      color: #e8e8e8;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .autocomplete-item:hover,
+    .autocomplete-item.active { background: rgba(201,168,76,0.12); color: #c9a84c; }
+    .autocomplete-dropdown::-webkit-scrollbar { width: 4px; }
+    .autocomplete-dropdown::-webkit-scrollbar-track { background: transparent; }
+    .autocomplete-dropdown::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 4px; }
   </style>
 </head>
 <body class="antialiased min-h-screen">
@@ -178,11 +207,34 @@
               </div>
             </div>
 
+            <!-- Row: Email + Phone -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="email" class="field-label">Email Address <span class="field-required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="client@email.com" class="form-input w-full rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm" />
+              </div>
+              <div>
+                <label for="phone" class="field-label">Phone Number <span class="field-required">*</span></label>
+                <input type="tel" id="phone" name="phone" required placeholder="+44 7700 900000" class="form-input w-full rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm" />
+              </div>
+            </div>
+
             <!-- Row: Nationality + Current Visa -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label for="nationality" class="field-label">Nationality <span class="field-required">*</span></label>
-                <input type="text" id="nationality" name="nationality" required placeholder="e.g. Pakistani" class="form-input w-full rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm" />
+                <div class="autocomplete-wrapper">
+                  <input
+                    type="text"
+                    id="nationality"
+                    name="nationality"
+                    required
+                    autocomplete="off"
+                    placeholder="Start typing your nationality..."
+                    class="form-input w-full rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm"
+                  />
+                  <div id="nationality-dropdown" class="autocomplete-dropdown" role="listbox" aria-label="Nationalities"></div>
+                </div>
               </div>
               <div>
                 <label for="visa-type" class="field-label">Current Visa Type <span class="field-required">*</span></label>
@@ -340,6 +392,87 @@
   </main>
 
   <script>
+    // ── Nationality list ──────────────────────────────────────────────────────
+    const NATIONALITIES = [
+      "Afghan","Albanian","Algerian","American","Andorran","Angolan","Argentine","Armenian",
+      "Australian","Austrian","Azerbaijani","Bahraini","Bangladeshi","Belarusian","Belgian",
+      "Bolivian","Bosnian","Brazilian","British","Bulgarian","Cambodian","Cameroonian",
+      "Canadian","Chilean","Chinese","Colombian","Croatian","Cuban","Czech","Danish","Dutch",
+      "Egyptian","Emirati","Estonian","Ethiopian","Filipino","Finnish","French","Georgian",
+      "German","Ghanaian","Greek","Guatemalan","Hungarian","Indian","Indonesian","Iranian",
+      "Iraqi","Irish","Israeli","Italian","Jamaican","Japanese","Jordanian","Kazakhstani",
+      "Kenyan","Korean","Kuwaiti","Latvian","Lebanese","Libyan","Lithuanian","Malaysian",
+      "Mexican","Moldovan","Mongolian","Moroccan","Mozambican","Namibian","Nepalese",
+      "New Zealander","Nigerian","Norwegian","Pakistani","Palestinian","Peruvian","Polish",
+      "Portuguese","Qatari","Romanian","Russian","Saudi","Serbian","Singaporean","Slovak",
+      "Slovenian","Somali","South African","Spanish","Sri Lankan","Sudanese","Swedish",
+      "Swiss","Syrian","Taiwanese","Tajik","Thai","Tunisian","Turkish","Turkmen","Ugandan",
+      "Ukrainian","Uruguayan","Uzbek","Venezuelan","Vietnamese","Yemeni","Zimbabwean"
+    ];
+
+    // ── Nationality autocomplete ──────────────────────────────────────────────
+    const nationalityInput = document.getElementById("nationality");
+    const nationalityDropdown = document.getElementById("nationality-dropdown");
+    let activeIndex = -1;
+
+    function renderDropdown(matches) {
+      nationalityDropdown.innerHTML = "";
+      activeIndex = -1;
+      matches.slice(0, 6).forEach((nat, i) => {
+        const item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.setAttribute("role", "option");
+        item.textContent = nat;
+        item.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          selectNationality(nat);
+        });
+        nationalityDropdown.appendChild(item);
+      });
+    }
+
+    function selectNationality(value) {
+      nationalityInput.value = value;
+      nationalityDropdown.innerHTML = "";
+      nationalityInput.classList.remove("error");
+    }
+
+    function closeDropdown() {
+      nationalityDropdown.innerHTML = "";
+      activeIndex = -1;
+    }
+
+    nationalityInput.addEventListener("input", () => {
+      const q = nationalityInput.value.trim().toLowerCase();
+      if (!q) { closeDropdown(); return; }
+      const matches = NATIONALITIES.filter(n => n.toLowerCase().startsWith(q));
+      if (matches.length === 0) { closeDropdown(); return; }
+      renderDropdown(matches);
+    });
+
+    nationalityInput.addEventListener("keydown", (e) => {
+      const items = nationalityDropdown.querySelectorAll(".autocomplete-item");
+      if (!items.length) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        activeIndex = Math.min(activeIndex + 1, items.length - 1);
+        items.forEach((el, i) => el.classList.toggle("active", i === activeIndex));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        activeIndex = Math.max(activeIndex - 1, 0);
+        items.forEach((el, i) => el.classList.toggle("active", i === activeIndex));
+      } else if (e.key === "Enter" && activeIndex >= 0) {
+        e.preventDefault();
+        selectNationality(items[activeIndex].textContent);
+      } else if (e.key === "Escape") {
+        closeDropdown();
+      }
+    });
+
+    nationalityInput.addEventListener("blur", () => {
+      setTimeout(closeDropdown, 150);
+    });
+
     // ── DOM refs ─────────────────────────────────────────────────────────────
     const step1 = document.getElementById("step-1");
     const step2 = document.getElementById("step-2");
@@ -374,6 +507,8 @@
       return {
         name: document.getElementById("client-name").value.trim(),
         dob: document.getElementById("dob").value,
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
         nationality: document.getElementById("nationality").value.trim(),
         visaType: document.getElementById("visa-type").value,
         visaExpiry: document.getElementById("visa-expiry").value || "N/A",
@@ -398,21 +533,31 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // ── API call ─────────────────────────────────────────────────────────────
+    // ── API calls ─────────────────────────────────────────────────────────────
     async function generateSummary(data) {
       const response = await fetch("/api/demo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
         throw new Error(err?.error || `Server error ${response.status}: ${response.statusText}`);
       }
-
       const json = await response.json();
       return json.summary || "";
+    }
+
+    async function sendNotification(data, summary) {
+      try {
+        await fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, summary }),
+        });
+      } catch (_) {
+        // Non-blocking — notification failure doesn't affect the demo
+      }
     }
 
     // ── Form submit ──────────────────────────────────────────────────────────
@@ -421,13 +566,15 @@
       validationError.classList.add("hidden");
 
       const data = getFormData();
-      const requiredKeys = ["name", "nationality", "visaType", "caseType", "description"];
+      const requiredKeys = ["name", "email", "phone", "nationality", "visaType", "caseType", "description"];
       const missing = requiredKeys.filter((k) => !data[k]);
       if (missing.length || !data.dob) {
         validationError.classList.remove("hidden");
         const fieldMap = {
           name: "client-name",
           dob: "dob",
+          email: "email",
+          phone: "phone",
           nationality: "nationality",
           visaType: "visa-type",
           caseType: "case-type",
@@ -456,6 +603,8 @@
         resultState.classList.remove("hidden");
         summaryContent.innerHTML = renderMarkdown(summary);
         timeTaken.textContent = `This summary was generated in ${elapsed} seconds using LexFlow AI`;
+
+        sendNotification(data, summary);
 
       } catch (err) {
         loadingState.classList.add("hidden");
