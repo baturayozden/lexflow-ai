@@ -212,12 +212,12 @@
               <div>
                 <label for="email" class="field-label">Email Address <span class="field-required">*</span></label>
                 <input type="email" id="email" name="email" required placeholder="client@email.com" class="form-input w-full rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm" />
-                <p id="email-error" class="hidden mt-1.5 text-xs px-3 py-1.5 rounded-lg border border-gold/40 text-gold/90 bg-gold/5">Please enter a valid email address</p>
+                <p id="email-error" class="hidden mt-1.5 text-xs" style="color:#ef4444; padding:6px 12px; border:1px solid rgba(239,68,68,0.4); border-radius:8px; background:rgba(239,68,68,0.05);">Please enter a valid email address</p>
               </div>
               <div>
                 <label for="phone" class="field-label">Phone Number <span class="field-required">*</span></label>
                 <input type="tel" id="phone" name="phone" required placeholder="+44 7700 900000" class="form-input w-full rounded-xl px-4 py-3 text-white placeholder-gray-600 text-sm" />
-                <p id="phone-error" class="hidden mt-1.5 text-xs px-3 py-1.5 rounded-lg border border-gold/40 text-gold/90 bg-gold/5">Please enter a valid phone number (min. 7 digits)</p>
+                <p id="phone-error" class="hidden mt-1.5 text-xs" style="color:#ef4444; padding:6px 12px; border:1px solid rgba(239,68,68,0.4); border-radius:8px; background:rgba(239,68,68,0.05);">Please enter a valid phone number (min. 7 digits)</p>
               </div>
             </div>
 
@@ -366,11 +366,6 @@
               </button>
             </div>
 
-            <!-- Case saved badge -->
-            <div id="case-saved-badge" class="hidden mt-4 flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
-              <span class="text-green-400 text-sm">✓</span>
-              <p id="case-saved-text" class="text-green-400 text-xs font-medium"></p>
-            </div>
           </div>
 
           <!-- API error state -->
@@ -497,12 +492,33 @@
     const apiErrorMsg = document.getElementById("api-error-msg");
     const emailError = document.getElementById("email-error");
     const phoneError = document.getElementById("phone-error");
-    const caseSavedBadge = document.getElementById("case-saved-badge");
-    const caseSavedText = document.getElementById("case-saved-text");
 
-    // ── Phone input — block invalid characters on keypress ───────────────────
-    document.getElementById("phone").addEventListener("keypress", (e) => {
-      if (!/[\d\s+]/.test(e.key)) e.preventDefault();
+    // ── Phone input — block and strip invalid characters ─────────────────────
+    const phoneEl = document.getElementById("phone");
+    phoneEl.addEventListener("keypress", (e) => {
+      if (!/[\d\s+()\-]/.test(e.key)) e.preventDefault();
+    });
+    phoneEl.addEventListener("input", () => {
+      const pos = phoneEl.selectionStart;
+      const cleaned = phoneEl.value.replace(/[^\d\s+()\-]/g, "");
+      if (phoneEl.value !== cleaned) {
+        phoneEl.value = cleaned;
+        phoneEl.setSelectionRange(pos - 1, pos - 1);
+      }
+      phoneError.classList.add("hidden");
+      phoneEl.classList.remove("error");
+    });
+
+    // ── Email — real-time format validation ───────────────────────────────────
+    const emailEl = document.getElementById("email");
+    emailEl.addEventListener("input", () => {
+      if (emailEl.value && !isValidEmail(emailEl.value)) {
+        emailError.classList.remove("hidden");
+        emailEl.classList.add("error");
+      } else {
+        emailError.classList.add("hidden");
+        emailEl.classList.remove("error");
+      }
     });
 
     // ── Markdown renderer ─────────────────────────────────────────────────────
@@ -545,7 +561,8 @@
       loadingState.classList.remove("hidden");
       resultState.classList.add("hidden");
       apiError.classList.add("hidden");
-      caseSavedBadge.classList.add("hidden");
+      const badge = document.getElementById("case-badge");
+      if (badge) badge.remove();
       summaryContent.textContent = "";
       generateBtn.disabled = false;
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -594,8 +611,15 @@
         });
         const json = await res.json();
         if (json.caseId) {
-          caseSavedText.textContent = `Case saved to system — Reference: ${json.caseId}`;
-          caseSavedBadge.classList.remove("hidden");
+          const existing = document.getElementById("case-badge");
+          if (existing) existing.remove();
+          const resultBox = document.querySelector(".result-box");
+          resultBox.insertAdjacentHTML("afterend", `
+            <div id="case-badge" style="margin-top:12px; padding:12px 16px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:8px; display:flex; align-items:center; gap:8px;">
+              <span style="color:#22c55e; font-size:16px;">✓</span>
+              <span style="color:#22c55e; font-size:14px;">Case saved to system — Reference: <strong id="case-ref">${json.caseId}</strong></span>
+            </div>
+          `);
         }
       } catch (_) {}
     }
