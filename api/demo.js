@@ -5,18 +5,27 @@ module.exports = async (req, res) => {
 
   const { name, dob, nationality, visaType, visaExpiry, caseType, description } = req.body;
 
-  // Resolve client IP and geolocation
-  const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+  // Resolve client IP
+  const forwarded = req.headers['x-forwarded-for'];
+  const ip = forwarded ? forwarded.split(',')[0].trim() : req.socket?.remoteAddress;
+  console.log('Client IP:', ip);
+
   let city = 'Unknown';
   let country = 'Unknown';
-  try {
-    const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
-    if (geoRes.ok) {
-      const geo = await geoRes.json();
-      city = geo.city || city;
-      country = geo.country_name || country;
+
+  const isPrivate = !ip || ip === '::1' || ip === '127.0.0.1' || ip?.startsWith('192.168') || ip?.startsWith('10.');
+
+  if (!isPrivate) {
+    try {
+      const geoRes = await fetch(`http://ip-api.com/json/${ip}?fields=status,city,country`);
+      const geoData = await geoRes.json();
+      console.log('Geo result:', geoData);
+      city = geoData.status === 'success' ? geoData.city : 'Unknown';
+      country = geoData.status === 'success' ? geoData.country : 'Unknown';
+    } catch (err) {
+      console.error('Geolocation error:', err.message);
     }
-  } catch (_) {}
+  }
 
   const prompt = `You are an AI assistant for a UK immigration law firm. A new client has submitted an intake form. Based on the following details, write a professional case summary for the solicitor that includes: 1) Client overview, 2) Current immigration status, 3) Requested legal service, 4) Key considerations and urgency, 5) Recommended next steps. Keep it concise and professional.
 
