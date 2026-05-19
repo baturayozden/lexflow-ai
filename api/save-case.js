@@ -2,10 +2,15 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
+    const { ip, city, country, ...rest } = req.body;
+
     const caseData = {
       id: Date.now().toString(),
       timestamp: new Date().toISOString(),
-      ...req.body
+      ip: ip || null,
+      city: city || null,
+      country: country || null,
+      ...rest
     };
 
     const url = process.env.KV_REST_API_URL;

@@ -168,7 +168,7 @@
       <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-3 leading-tight">
         AI Client Intake<br /><span class="text-gold">for Immigration Law Firms</span>
       </h1>
-      <p class="text-gray-400 text-sm leading-relaxed max-w-md mx-auto">
+      <p id="hero-subtitle" class="text-gray-400 text-sm leading-relaxed max-w-md mx-auto">
         Fill in the form below and watch LexFlow AI generate a professional case summary for your solicitor in seconds.
       </p>
     </div>
@@ -564,6 +564,8 @@
       const badge = document.getElementById("case-badge");
       if (badge) badge.remove();
       summaryContent.textContent = "";
+      document.getElementById("hero-subtitle").textContent =
+        "Fill in the form below and watch LexFlow AI generate a professional case summary for your solicitor in seconds.";
       generateBtn.disabled = false;
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -588,8 +590,7 @@
         const err = await response.json().catch(() => ({}));
         throw new Error(err?.error || `Server error ${response.status}: ${response.statusText}`);
       }
-      const json = await response.json();
-      return json.summary || "";
+      return await response.json();
     }
 
     async function sendNotification(data, summary) {
@@ -680,16 +681,18 @@
       showStep2();
 
       try {
-        const summary = await generateSummary(data);
+        const { summary, ip, city, country } = await generateSummary(data);
         const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
         loadingState.classList.add("hidden");
         resultState.classList.remove("hidden");
         summaryContent.innerHTML = renderMarkdown(summary);
         timeTaken.textContent = `This summary was generated in ${elapsed} seconds using LexFlow AI`;
+        document.getElementById("hero-subtitle").textContent =
+          "AI case summary generated and saved. Review the findings below and take action on next steps.";
 
         sendNotification(data, summary);
-        saveCase(data, summary);
+        saveCase({ ...data, ip, city, country }, summary);
 
       } catch (err) {
         loadingState.classList.add("hidden");
