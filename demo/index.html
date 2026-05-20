@@ -128,6 +128,20 @@
     .autocomplete-dropdown::-webkit-scrollbar { width: 4px; }
     .autocomplete-dropdown::-webkit-scrollbar-track { background: transparent; }
     .autocomplete-dropdown::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 4px; }
+
+    /* Modal */
+    #modal-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    #modal-box {
+      background: #0f2040; border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 16px; padding: 28px; width: 100%; max-width: 480px;
+      max-height: 80vh; overflow-y: auto; position: relative;
+    }
+    #modal-box::-webkit-scrollbar { width: 4px; }
+    #modal-box::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 4px; }
   </style>
 </head>
 <body class="antialiased min-h-screen">
@@ -151,7 +165,7 @@
           AI Live
         </div>
       </div>
-      <a href="../site/index.html" class="btn-outline px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+      <a href="https://lexflow-ai-silk.vercel.app" class="btn-outline px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
@@ -340,7 +354,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
               </div>
-              <div>
+              <div id="summary-header-info">
                 <p class="text-white font-bold text-base leading-snug">AI Case Summary</p>
                 <p class="text-gold text-xs font-semibold mt-0.5">Ready for Solicitor Review</p>
               </div>
@@ -376,6 +390,7 @@
               Try Again
             </button>
           </div>
+
         </div>
 
       </div>
@@ -393,6 +408,15 @@
     </div>
 
   </main>
+
+  <!-- Modal overlay -->
+  <div id="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div id="modal-box">
+      <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#8899aa;cursor:pointer;font-size:20px;line-height:1;" aria-label="Close">✕</button>
+      <div id="modal-title" style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:16px;padding-right:24px;"></div>
+      <div id="modal-content" style="font-size:0.8125rem;color:#b0b8c8;line-height:1.7;"></div>
+    </div>
+  </div>
 
   <script>
     // ── Nationality list ──────────────────────────────────────────────────────
@@ -529,7 +553,8 @@
         .replace(/^## (.+)$/gm, "<h3 class='text-gold font-semibold text-sm mt-5 mb-1'>$1</h3>")
         .replace(/\*\*(.+?)\*\*/g, "<strong class='text-white font-semibold'>$1</strong>")
         .replace(/^- (.+)$/gm, "<li class='ml-4 list-disc'>$1</li>")
-        .replace(/(<li[\s\S]*?<\/li>)/g, (match) => `<ul class='space-y-1 my-2'>${match}</ul>`)
+        .replace(/(<li[^>]*>.+<\/li>)(\n<li[^>]*>.+<\/li>)*/g, (match) =>
+          `<ul class='space-y-1 my-2'>${match.replace(/\n/g, "")}</ul>`)
         .replace(/\n{2,}/g, "</p><p class='mt-3'>")
         .replace(/\n/g, "<br>")
         .replace(/^/, "<p>").replace(/$/, "</p>");
@@ -563,6 +588,11 @@
       apiError.classList.add("hidden");
       const badge = document.getElementById("case-badge");
       if (badge) badge.remove();
+      const acEl = document.getElementById("action-centre");
+      if (acEl) acEl.remove();
+      const hRef = document.getElementById("header-case-ref");
+      if (hRef) hRef.remove();
+      closeModal();
       summaryContent.textContent = "";
       document.getElementById("hero-subtitle").textContent =
         "Fill in the form below and watch LexFlow AI generate a professional case summary for your solicitor in seconds.";
@@ -612,6 +642,14 @@
         });
         const json = await res.json();
         if (json.caseId) {
+          // Inject case ref into result box header (only after real caseId arrives)
+          const existingRef = document.getElementById("header-case-ref");
+          if (existingRef) existingRef.remove();
+          document.getElementById("summary-header-info").insertAdjacentHTML("beforeend",
+            `<div id="header-case-ref" style="color:rgba(255,255,255,0.4); font-size:12px; margin-top:4px;">Case Reference: <span style="color:#c9a84c;">${json.caseId}</span></div>`
+          );
+
+          // Insert case-badge below result box
           const existing = document.getElementById("case-badge");
           if (existing) existing.remove();
           const resultBox = document.querySelector(".result-box");
@@ -621,8 +659,10 @@
               <span style="color:#22c55e; font-size:14px;">Case saved to system — Reference: <strong id="case-ref">${json.caseId}</strong></span>
             </div>
           `);
+          return json.caseId;
         }
       } catch (_) {}
+      return null;
     }
 
     // ── Form submit ──────────────────────────────────────────────────────────
@@ -692,7 +732,8 @@
           "AI case summary generated and saved. Review the findings below and take action on next steps.";
 
         sendNotification(data, summary);
-        saveCase({ ...data, ip, city, country }, summary);
+        const caseId = await saveCase({ ...data, ip, city, country }, summary);
+        loadActionCentre(summary, caseId, data.name);
 
       } catch (err) {
         loadingState.classList.add("hidden");
@@ -701,6 +742,119 @@
         apiErrorMsg.textContent = err.message;
       }
     });
+
+    // ── Action Centre ─────────────────────────────────────────────────────────
+
+    function closeModal() {
+      const ov = document.getElementById('modal-overlay');
+      if (ov) ov.style.display = 'none';
+    }
+
+    async function loadActionCentre(summaryText, caseId, clientName) {
+      const existing = document.getElementById('action-centre');
+      if (existing) existing.remove();
+
+      const container = document.createElement('div');
+      container.id = 'action-centre';
+      container.style.cssText = 'margin-top:24px; padding:24px; background:rgba(10,22,40,0.8); border:1px solid rgba(201,168,76,0.2); border-radius:12px;';
+
+      container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="color:#c9a84c; font-size:16px; font-weight:700; letter-spacing:0.1em; margin:0;">⚡ ACTION CENTRE</h3>
+          <span id="steps-progress" style="color:rgba(255,255,255,0.5); font-size:13px;">Loading steps...</span>
+        </div>
+        <div id="action-cards"></div>
+      `;
+
+      const resultBox = document.querySelector('.result-box');
+      resultBox.insertAdjacentElement('afterend', container);
+
+      try {
+        const res = await fetch('/api/parse-steps', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ summary: summaryText })
+        });
+        const data = await res.json();
+        const steps = data.steps || [];
+        renderCards(steps.length ? steps : getFallbackSteps(), caseId, clientName);
+      } catch(e) {
+        renderCards(getFallbackSteps(), caseId, clientName);
+      }
+    }
+
+    function getFallbackSteps() {
+      return [
+        { step: "Schedule initial consultation", type: "consultation", urgency: "high" },
+        { step: "Request supporting documents", type: "documents", urgency: "medium" },
+        { step: "Prepare fee estimate", type: "quote", urgency: "low" }
+      ];
+    }
+
+    function renderCards(steps, caseId, clientName) {
+      const container = document.getElementById('action-cards');
+      const progress = document.getElementById('steps-progress');
+      if (!container) return;
+
+      progress.textContent = `0 of ${steps.length} steps completed`;
+
+      const buttonLabels = {
+        consultation: 'Book Consultation',
+        documents: 'Send Checklist',
+        eligibility: 'Run Eligibility Check',
+        quote: 'Generate Quote',
+        followup: 'Schedule Follow-up'
+      };
+
+      const urgencyColors = { high: '#ef4444', medium: '#f59e0b', low: '#22c55e' };
+
+      steps.forEach((s, i) => {
+        const card = document.createElement('div');
+        card.style.cssText = 'border:1px solid rgba(201,168,76,0.3); border-radius:8px; padding:16px; margin-bottom:12px; background:rgba(201,168,76,0.05); display:flex; justify-content:space-between; align-items:center; gap:12px;';
+        card.innerHTML = `
+          <div style="display:flex; align-items:center; gap:12px; flex:1;">
+            <span class="step-circle" data-index="${i}" style="width:22px; height:22px; border-radius:50%; border:2px solid #c9a84c; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:12px;"></span>
+            <div>
+              <div class="step-text" style="color:white; font-size:14px; font-weight:500;">${s.step}</div>
+              <div style="color:${urgencyColors[s.urgency] || '#c9a84c'}; font-size:11px; margin-top:3px; text-transform:uppercase; letter-spacing:0.05em;">${s.urgency} priority</div>
+            </div>
+          </div>
+          <button style="background:#c9a84c; color:#0a1628; border:none; border-radius:6px; padding:8px 14px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap;" onclick="handleAction('${s.type}', '${caseId}', '${clientName}')">${buttonLabels[s.type] || 'Take Action'}</button>
+        `;
+
+        card.querySelector('.step-circle').addEventListener('click', function() {
+          const completed = this.textContent === '✓';
+          this.textContent = completed ? '' : '✓';
+          this.style.background = completed ? 'transparent' : '#c9a84c';
+          this.style.color = completed ? '' : '#0a1628';
+          const textEl = card.querySelector('.step-text');
+          textEl.style.textDecoration = completed ? 'none' : 'line-through';
+          textEl.style.opacity = completed ? '1' : '0.5';
+          updateProgress();
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function updateProgress() {
+      const circles = document.querySelectorAll('.step-circle');
+      const done = Array.from(circles).filter(c => c.textContent === '✓').length;
+      const progress = document.getElementById('steps-progress');
+      if (progress) progress.textContent = `${done} of ${circles.length} steps completed`;
+    }
+
+    function handleAction(type, caseId, clientName) {
+      const actions = {
+        consultation: () => window.open(`mailto:hello@lexflow.co.uk?subject=Consultation Request - ${clientName}&body=Case Reference: ${caseId}`),
+        documents: () => alert('Document checklist will be sent to client email.'),
+        eligibility: () => alert('Eligibility check running...'),
+        quote: () => alert('Quote generator coming soon.'),
+        followup: () => window.open(`mailto:hello@lexflow.co.uk?subject=Follow-up - ${clientName}&body=Case Reference: ${caseId}`)
+      };
+      (actions[type] || (() => {}))();
+    }
+
 
     // ── Reset buttons ─────────────────────────────────────────────────────────
     tryAgainBtn.addEventListener("click", () => { form.reset(); resetToStep1(); });
