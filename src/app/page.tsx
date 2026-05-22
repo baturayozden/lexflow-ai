@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 import SectionWrapper from '@/components/SectionWrapper'
 import PricingCard from '@/components/PricingCard'
+import ContactForm from '@/components/ContactForm'
 
 const pricingTiers = [
   {
@@ -256,85 +257,15 @@ export default function Home() {
       </SectionWrapper>
 
       {/* Contact */}
-      <SectionWrapper id="contact" className="py-24 px-6">
+      <section id="contact" className="py-24 px-6" style={{ position: 'relative', zIndex: 10 }}>
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-4">Book a free 20-minute audit</h2>
           <p className="text-white/50 mb-10">
             We will map your manual processes and show you exactly what can be automated.
           </p>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-white/[0.02] border border-white/10 rounded-2xl p-8 text-left"
-          >
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="text-white/60 text-xs mb-1.5 block">Full Name *</label>
-                <input
-                  type="text"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/50 transition-colors"
-                  placeholder="Jane Smith"
-                />
-              </div>
-              <div>
-                <label className="text-white/60 text-xs mb-1.5 block">Law Firm Name *</label>
-                <input
-                  type="text"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/50 transition-colors"
-                  placeholder="Smith & Associates"
-                />
-              </div>
-              <div>
-                <label className="text-white/60 text-xs mb-1.5 block">Email Address *</label>
-                <input
-                  type="email"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/50 transition-colors"
-                  placeholder="jane@smithlaw.co.uk"
-                />
-              </div>
-              <div>
-                <label className="text-white/60 text-xs mb-1.5 block">Phone Number</label>
-                <input
-                  type="tel"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/50 transition-colors"
-                  placeholder="+44 7700 900000"
-                />
-              </div>
-            </div>
-            <div className="mb-4">
-              <label className="text-white/60 text-xs mb-1.5 block">Firm Type *</label>
-              <select className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/50 transition-colors appearance-none">
-                <option value="">Select your practice area...</option>
-                <option>Immigration</option>
-                <option>Conveyancing</option>
-                <option>Employment</option>
-                <option>Family</option>
-              </select>
-            </div>
-            <div className="mb-6">
-              <label className="text-white/60 text-xs mb-1.5 block">
-                Anything you would like us to know?
-              </label>
-              <textarea
-                rows={3}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-gold/50 transition-colors resize-none"
-                placeholder="Tell us about your current challenges..."
-              />
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(201,168,76,0.3)' }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full bg-gold text-navy font-bold py-4 rounded-xl text-base"
-            >
-              Book My Free Audit →
-            </motion.button>
-            <p className="text-white/30 text-xs text-center mt-4">
-              No sales pressure. 20 minutes. We will show you exactly where you are losing time.
-            </p>
-          </motion.div>
+          <ContactForm />
         </div>
-      </SectionWrapper>
+      </section>
 
       {/* Footer */}
       <footer className="border-t border-white/5 py-8 px-6">
