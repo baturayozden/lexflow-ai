@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       client_phone: body.phone,
       nationality: body.nationality,
       visa_type: body.visaType,
-      visa_expiry: body.visaExpiry || undefined,
+      visa_expiry: (body.visaExpiry && body.visaExpiry !== 'N/A' && body.visaExpiry !== '') ? body.visaExpiry : null,
       case_type: body.caseType,
       description: body.description,
       ai_summary: body.summary,
