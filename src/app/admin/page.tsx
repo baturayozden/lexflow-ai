@@ -1,6 +1,7 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { getLeads, getCases } from '@/lib/db'
+import Link from 'next/link'
 
 export default async function AdminPage() {
   const session = await auth()
@@ -34,7 +35,11 @@ export default async function AdminPage() {
             <h2 className="text-white font-semibold mb-4">Recent Leads</h2>
             <div className="space-y-3">
               {leads?.map((lead: any) => (
-                <div key={lead.id} className="bg-white/2 border border-white/10 rounded-xl p-4">
+                <Link
+                  href={`/admin/leads/${lead.id}`}
+                  key={lead.id}
+                  className="block bg-white/2 border border-white/10 rounded-xl p-4 hover:border-[#c9a84c]/30 transition-colors cursor-pointer"
+                >
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="text-white font-medium">{lead.name}</div>
@@ -46,8 +51,8 @@ export default async function AdminPage() {
                       <div className="text-white/30 text-xs mt-1">{new Date(lead.created_at).toLocaleDateString('en-GB')}</div>
                     </div>
                   </div>
-                  {lead.message && <p className="text-white/50 text-sm mt-2 border-t border-white/5 pt-2">{lead.message}</p>}
-                </div>
+                  {lead.message && <p className="text-white/50 text-sm mt-2 border-t border-white/5 pt-2 line-clamp-1">{lead.message}</p>}
+                </Link>
               ))}
               {!leads?.length && <p className="text-white/30 text-sm">No leads yet.</p>}
             </div>
@@ -57,7 +62,11 @@ export default async function AdminPage() {
             <h2 className="text-white font-semibold mb-4">Demo Cases</h2>
             <div className="space-y-3">
               {cases?.map((c: any) => (
-                <div key={c.id} className="bg-white/2 border border-white/10 rounded-xl p-4">
+                <Link
+                  href={`/admin/cases/${c.id}`}
+                  key={c.id}
+                  className="block bg-white/2 border border-white/10 rounded-xl p-4 hover:border-[#c9a84c]/30 transition-colors cursor-pointer"
+                >
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="text-white font-medium">{c.client_name}</div>
@@ -70,7 +79,7 @@ export default async function AdminPage() {
                     </div>
                   </div>
                   <div className="text-white/30 text-xs mt-2">Ref: {c.reference_id} • {c.city}, {c.country}</div>
-                </div>
+                </Link>
               ))}
               {!cases?.length && <p className="text-white/30 text-sm">No demo cases yet.</p>}
             </div>
