@@ -2,9 +2,18 @@
 import { motion } from 'framer-motion'
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
-import SectionWrapper from '@/components/SectionWrapper'
 import PricingCard from '@/components/PricingCard'
 import ContactForm from '@/components/ContactForm'
+
+const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
+
+const sectionAnim = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-80px' },
+  transition: { duration: 0.7, ease },
+  style: { pointerEvents: 'auto' as const },
+}
 
 const pricingTiers = [
   {
@@ -72,17 +81,24 @@ export default function Home() {
       <Hero />
 
       {/* Social proof bar */}
-      <SectionWrapper className="bg-navy-light border-y border-white/5 py-4">
+      <motion.section
+        {...sectionAnim}
+        className="bg-navy-light border-y border-white/5 py-4"
+      >
         <p className="text-center text-white/40 text-sm">
           Built for immigration &amp; conveyancing firms across{' '}
           <span className="text-white/70">London</span>,{' '}
           <span className="text-white/70">Manchester</span>, and{' '}
           <span className="text-white/70">Bristol</span>
         </p>
-      </SectionWrapper>
+      </motion.section>
 
       {/* Problem */}
-      <SectionWrapper id="problem" className="py-24 px-6">
+      <motion.section
+        id="problem"
+        {...sectionAnim}
+        className="py-24 px-6"
+      >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Your team is drowning in manual work</h2>
@@ -113,8 +129,9 @@ export default function Home() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
+                transition={{ delay: i * 0.15, duration: 0.6, ease }}
                 whileHover={{ y: -6, borderColor: 'rgba(201,168,76,0.4)' }}
+                style={{ pointerEvents: 'auto' }}
                 className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 transition-colors"
               >
                 <div className="text-gold font-bold text-lg mb-1">{item.hours} lost</div>
@@ -127,6 +144,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
+            style={{ pointerEvents: 'auto' }}
             className="mt-10 text-center bg-gold/5 border border-gold/20 rounded-2xl py-6 px-8"
           >
             <p className="text-white/80">
@@ -137,10 +155,14 @@ export default function Home() {
             </p>
           </motion.div>
         </div>
-      </SectionWrapper>
+      </motion.section>
 
       {/* How it works */}
-      <SectionWrapper id="how-it-works" className="py-24 px-6 bg-navy-light">
+      <motion.section
+        id="how-it-works"
+        {...sectionAnim}
+        className="py-24 px-6 bg-navy-light"
+      >
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">How it works</h2>
@@ -172,7 +194,8 @@ export default function Home() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.2, duration: 0.6 }}
+                transition={{ delay: i * 0.2, duration: 0.6, ease }}
+                style={{ pointerEvents: 'auto' }}
                 className="text-center"
               >
                 <motion.div
@@ -194,12 +217,14 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            style={{ pointerEvents: 'auto' }}
             className="mt-12 text-center flex flex-col sm:flex-row gap-4 justify-center"
           >
             <motion.a
               href="#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
+              style={{ pointerEvents: 'auto' }}
               className="bg-gold text-navy font-bold px-8 py-4 rounded-xl"
             >
               Start with a Free Audit
@@ -208,16 +233,21 @@ export default function Home() {
               href="/demo"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
+              style={{ pointerEvents: 'auto' }}
               className="border border-gold/40 text-gold font-semibold px-8 py-4 rounded-xl hover:bg-gold/5 transition-colors"
             >
               Try Live Demo →
             </motion.a>
           </motion.div>
         </div>
-      </SectionWrapper>
+      </motion.section>
 
       {/* Pricing */}
-      <SectionWrapper id="pricing" className="py-24 px-6">
+      <motion.section
+        id="pricing"
+        {...sectionAnim}
+        className="py-24 px-6"
+      >
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Simple, transparent pricing</h2>
@@ -230,10 +260,14 @@ export default function Home() {
           </div>
           <p className="text-center text-white/30 text-sm mt-6">All prices exclude VAT.</p>
         </div>
-      </SectionWrapper>
+      </motion.section>
 
       {/* FAQ */}
-      <SectionWrapper id="faq" className="py-24 px-6 bg-navy-light">
+      <motion.section
+        id="faq"
+        {...sectionAnim}
+        className="py-24 px-6 bg-navy-light"
+      >
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Common questions</h2>
@@ -245,7 +279,8 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
+                transition={{ delay: i * 0.1, duration: 0.5, ease }}
+                style={{ pointerEvents: 'auto' }}
                 className="border border-white/10 rounded-xl p-6 hover:border-gold/30 transition-colors"
               >
                 <h3 className="font-semibold text-white mb-2">{faq.q}</h3>
@@ -254,10 +289,10 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </SectionWrapper>
+      </motion.section>
 
       {/* Contact */}
-      <section id="contact" className="py-24 px-6" style={{ position: 'relative', zIndex: 10 }}>
+      <section id="contact" className="py-24 px-6" style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}>
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-4">Book a free 20-minute audit</h2>
           <p className="text-white/50 mb-10">
@@ -268,7 +303,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-8 px-6">
+      <footer className="border-t border-white/5 py-8 px-6" style={{ pointerEvents: 'auto' }}>
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <span className="text-gold font-bold text-xl">Lex</span>

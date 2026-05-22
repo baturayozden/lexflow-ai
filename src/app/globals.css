@@ -18,6 +18,10 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
+section, .section {
+  pointer-events: auto;
+}
+
 #contact {
   position: relative;
   z-index: 10;
