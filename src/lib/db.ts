@@ -207,3 +207,119 @@ export async function updateCaseAction(
     .eq('id', actionId)
   if (error) throw error
 }
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+
+export async function getFirmSettings() {
+  const { data } = await supabaseAdmin.from('firm_settings').select('*').single()
+  return data || { firm_name: 'LexFlow', primary_color: '#c9a84c' }
+}
+
+export async function updateFirmSettings(settings: Record<string, unknown>) {
+  const existing = await supabaseAdmin.from('firm_settings').select('id').single()
+  if (existing.data) {
+    const { data } = await supabaseAdmin
+      .from('firm_settings')
+      .update({ ...settings, updated_at: new Date().toISOString() })
+      .eq('id', existing.data.id)
+      .select()
+      .single()
+    return data
+  } else {
+    const { data } = await supabaseAdmin.from('firm_settings').insert([settings]).select().single()
+    return data
+  }
+}
+
+export async function getEmailSettings() {
+  const { data } = await supabaseAdmin.from('email_settings').select('*').single()
+  return data || { from_name: 'LexFlow', from_email: 'notifications@lexflow.co.uk' }
+}
+
+export async function updateEmailSettings(settings: Record<string, unknown>) {
+  const existing = await supabaseAdmin.from('email_settings').select('id').single()
+  if (existing.data) {
+    const { data } = await supabaseAdmin
+      .from('email_settings')
+      .update({ ...settings, updated_at: new Date().toISOString() })
+      .eq('id', existing.data.id)
+      .select()
+      .single()
+    return data
+  } else {
+    const { data } = await supabaseAdmin.from('email_settings').insert([settings]).select().single()
+    return data
+  }
+}
+
+export async function getChecklistTemplates() {
+  const { data, error } = await supabaseAdmin.from('checklist_templates').select('*').order('case_type')
+  if (error) throw error
+  return data
+}
+
+export async function getChecklistByType(caseType: string) {
+  const { data } = await supabaseAdmin
+    .from('checklist_templates')
+    .select('*')
+    .eq('case_type', caseType)
+    .single()
+  return data
+}
+
+export async function updateChecklistTemplate(id: string, updates: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from('checklist_templates')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function getQuoteTemplates() {
+  const { data, error } = await supabaseAdmin.from('quote_templates').select('*').order('case_type')
+  if (error) throw error
+  return data
+}
+
+export async function getQuoteByType(caseType: string) {
+  const { data } = await supabaseAdmin
+    .from('quote_templates')
+    .select('*')
+    .eq('case_type', caseType)
+    .single()
+  return data
+}
+
+export async function updateQuoteTemplate(id: string, updates: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from('quote_templates')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function getEmailTemplate(type: string) {
+  const { data } = await supabaseAdmin
+    .from('email_templates')
+    .select('*')
+    .eq('template_type', type)
+    .single()
+  return data
+}
+
+export async function updateEmailTemplate(type: string, updates: Record<string, unknown>) {
+  const { data, error } = await supabaseAdmin
+    .from('email_templates')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('template_type', type)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
