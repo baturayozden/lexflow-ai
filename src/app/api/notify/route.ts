@@ -8,8 +8,9 @@ export async function POST(req: NextRequest) {
     const { type, data } = body
 
     if (type === 'new_lead') {
-      await resend.emails.send({
-        from: 'LexFlow <notifications@lexflow.co.uk>',
+      console.log('[notify] Sending email via Resend...')
+      const result = await resend.emails.send({
+        from: 'LexFlow <onboarding@resend.dev>',
         to: process.env.ADMIN_EMAIL!,
         subject: `New Lead: ${data.name} — ${data.firm_name}`,
         html: `
@@ -25,11 +26,13 @@ export async function POST(req: NextRequest) {
           </div>
         `,
       })
+      console.log('[notify] Resend result:', JSON.stringify(result))
     }
 
     if (type === 'new_case') {
-      await resend.emails.send({
-        from: 'LexFlow <notifications@lexflow.co.uk>',
+      console.log('[notify] Sending email via Resend...')
+      const result = await resend.emails.send({
+        from: 'LexFlow <onboarding@resend.dev>',
         to: process.env.ADMIN_EMAIL!,
         subject: `New Demo Case: ${data.client_name} — ${data.case_type}`,
         html: `
@@ -45,6 +48,7 @@ export async function POST(req: NextRequest) {
           </div>
         `,
       })
+      console.log('[notify] Resend result:', JSON.stringify(result))
     }
 
     return NextResponse.json({ success: true })
