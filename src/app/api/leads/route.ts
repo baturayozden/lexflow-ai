@@ -8,12 +8,17 @@ export async function POST(req: NextRequest) {
     const lead = await saveLead(body)
     console.log('[/api/leads] Saved lead:', lead)
 
-    // Fire-and-forget notification
-    fetch(`${process.env.NEXTAUTH_URL}/api/notify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'new_lead', data: lead }),
-    }).catch((e) => console.error('[/api/leads] Notify error:', e))
+    try {
+      const notifyRes = await fetch(`${process.env.NEXTAUTH_URL}/api/notify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'new_lead', data: lead }),
+      })
+      const notifyData = await notifyRes.json()
+      console.log('[/api/leads] Notify result:', notifyRes.status, notifyData)
+    } catch (notifyError) {
+      console.error('[/api/leads] Notify failed:', notifyError)
+    }
 
     return NextResponse.json({ success: true, lead })
   } catch (error) {
