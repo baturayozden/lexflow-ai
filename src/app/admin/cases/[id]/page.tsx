@@ -134,6 +134,11 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
             caseId={c.id}
             clientName={c.client_name}
             clientEmail={c.client_email}
+            caseType={c.case_type}
+            referenceId={c.reference_id}
+            nationality={c.nationality}
+            visaType={c.visa_type}
+            description={c.description}
             aiSummary={c.ai_summary}
           />
         </div>

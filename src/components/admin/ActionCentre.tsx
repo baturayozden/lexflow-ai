@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { ChecklistModal, QuoteModal, EligibilityModal, FollowUpModal } from './ActionModals'
 
 interface CaseAction {
   id: string
@@ -31,14 +32,19 @@ interface Props {
   caseId: string
   clientName: string
   clientEmail: string
+  caseType: string
+  referenceId: string
+  nationality?: string
+  visaType?: string
+  description?: string
   aiSummary: string
 }
 
-export function ActionCentre({ caseId, clientName, clientEmail, aiSummary }: Props) {
-  console.log('[ActionCentre] Component rendering with caseId:', caseId)
+export function ActionCentre({ caseId, clientName, clientEmail, caseType, referenceId, nationality, visaType, description, aiSummary }: Props) {
   const [actions, setActions] = useState<CaseAction[]>([])
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [activeModal, setActiveModal] = useState<string | null>(null)
 
   useEffect(() => {
     fetch(`/api/case-actions?caseId=${caseId}`)
@@ -168,16 +174,16 @@ export function ActionCentre({ caseId, clientName, clientEmail, aiSummary }: Pro
                   </span>
                 </div>
               </div>
-              <a
-                href={`mailto:${clientEmail}?subject=${encodeURIComponent(
-                  `Re: ${action.step}`
-                )}&body=${encodeURIComponent(
-                  `Dear ${clientName},\n\nFollowing up on your case.\n\nBest regards`
-                )}`}
+              <button
+                onClick={() =>
+                  setActiveModal(
+                    action.type === 'consultation' ? 'followup' : action.type
+                  )
+                }
                 className="bg-[#c9a84c]/10 border border-[#c9a84c]/20 text-[#c9a84c] text-xs px-3 py-1.5 rounded-lg hover:bg-[#c9a84c]/20 transition-colors ml-3 whitespace-nowrap flex-shrink-0"
               >
                 {ACTION_LABELS[action.type] || 'Take Action'}
-              </a>
+              </button>
             </div>
           ))}
           <button
@@ -189,6 +195,48 @@ export function ActionCentre({ caseId, clientName, clientEmail, aiSummary }: Pro
           </button>
         </div>
       )}
+
+      {/* Action Modals */}
+      <ChecklistModal
+        isOpen={activeModal === 'documents'}
+        onClose={() => setActiveModal(null)}
+        clientName={clientName}
+        clientEmail={clientEmail}
+        caseType={caseType}
+        referenceId={referenceId}
+        caseId={caseId}
+      />
+      <QuoteModal
+        isOpen={activeModal === 'quote'}
+        onClose={() => setActiveModal(null)}
+        clientName={clientName}
+        clientEmail={clientEmail}
+        caseType={caseType}
+        referenceId={referenceId}
+        caseId={caseId}
+      />
+      <EligibilityModal
+        isOpen={activeModal === 'eligibility'}
+        onClose={() => setActiveModal(null)}
+        clientName={clientName}
+        clientEmail={clientEmail}
+        caseType={caseType}
+        referenceId={referenceId}
+        caseId={caseId}
+        nationality={nationality}
+        visaType={visaType}
+        description={description}
+        aiSummary={aiSummary}
+      />
+      <FollowUpModal
+        isOpen={activeModal === 'followup'}
+        onClose={() => setActiveModal(null)}
+        clientName={clientName}
+        clientEmail={clientEmail}
+        caseType={caseType}
+        referenceId={referenceId}
+        caseId={caseId}
+      />
     </div>
   )
 }
