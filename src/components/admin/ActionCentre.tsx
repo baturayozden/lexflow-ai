@@ -35,6 +35,7 @@ interface Props {
 }
 
 export function ActionCentre({ caseId, clientName, clientEmail, aiSummary }: Props) {
+  console.log('[ActionCentre] Component rendering with caseId:', caseId)
   const [actions, setActions] = useState<CaseAction[]>([])
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
@@ -43,10 +44,14 @@ export function ActionCentre({ caseId, clientName, clientEmail, aiSummary }: Pro
     fetch(`/api/case-actions?caseId=${caseId}`)
       .then((r) => r.json())
       .then((data) => {
+        console.log('[ActionCentre] Fetched actions:', data)
         setActions(Array.isArray(data) ? data : [])
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch((err) => {
+        console.error('[ActionCentre] Fetch error:', err)
+        setLoading(false)
+      })
   }, [caseId])
 
   async function toggleAction(action: CaseAction) {
@@ -94,7 +99,7 @@ export function ActionCentre({ caseId, clientName, clientEmail, aiSummary }: Pro
   if (loading) {
     return (
       <div className="bg-white/2 border border-white/10 rounded-xl p-5">
-        <p className="text-white/30 text-sm">Loading actions…</p>
+        <p className="text-white/30 text-sm">⚡ Loading Action Centre...</p>
       </div>
     )
   }
