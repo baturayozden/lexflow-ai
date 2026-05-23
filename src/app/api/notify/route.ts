@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
 
       // Client confirmation email
       const clientResult = await resend.emails.send({
-        from: 'LexFlow <onboarding@resend.dev>',
+        from: 'LexFlow <notifications@lexflow.co.uk>',
         to: data.email,
         subject: 'We received your audit request — LexFlow',
         html: `
