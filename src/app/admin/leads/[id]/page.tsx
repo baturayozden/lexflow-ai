@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import Link from 'next/link'
+import { StatusUpdater } from '@/components/StatusUpdater'
 
 async function getLead(id: string) {
   const { data, error } = await supabaseAdmin
@@ -31,12 +32,16 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           <span className="text-white/60 text-sm">Lead — {lead.name}</span>
         </div>
 
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">{lead.name}</h1>
             <p className="text-white/40 mt-1">{lead.firm_name} • {lead.firm_type}</p>
           </div>
-          <span className="bg-[#c9a84c]/10 text-[#c9a84c] text-sm px-3 py-1 rounded-full border border-[#c9a84c]/20">{lead.status}</span>
+        </div>
+
+        {/* Status updater */}
+        <div className="mb-8">
+          <StatusUpdater id={lead.id} currentStatus={lead.status} type="leads" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

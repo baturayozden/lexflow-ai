@@ -19,6 +19,17 @@ export async function POST(req: NextRequest) {
       country: body.country,
       reference_id: body.caseId || Date.now().toString(),
     })
+
+    // Fire-and-forget notification
+    fetch(`${process.env.NEXTAUTH_URL}/api/notify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'new_case',
+        data: { ...body, reference_id: caseRecord.reference_id },
+      }),
+    }).catch((e) => console.error('[/api/cases] Notify error:', e))
+
     return NextResponse.json({ success: true, case: caseRecord })
   } catch (error) {
     console.error('Case save error:', error)
