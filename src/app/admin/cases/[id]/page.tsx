@@ -13,11 +13,12 @@ async function getCase(id: string) {
   return data
 }
 
-export default async function CaseDetailPage({ params }: { params: { id: string } }) {
+export default async function CaseDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const session = await auth()
   if (!session) redirect('/admin/login')
 
-  const c = await getCase(params.id)
+  const c = await getCase(id)
 
   return (
     <div className="min-h-screen bg-[#0a1628] p-8">

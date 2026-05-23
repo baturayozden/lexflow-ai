@@ -13,11 +13,12 @@ async function getLead(id: string) {
   return data
 }
 
-export default async function LeadDetailPage({ params }: { params: { id: string } }) {
+export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const session = await auth()
   if (!session) redirect('/admin/login')
 
-  const lead = await getLead(params.id)
+  const lead = await getLead(id)
 
   return (
     <div className="min-h-screen bg-[#0a1628] p-8">
