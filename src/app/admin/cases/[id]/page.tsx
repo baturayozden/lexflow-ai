@@ -3,11 +3,14 @@ import { auth } from '@/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import Link from 'next/link'
 import { StatusUpdater } from '@/components/StatusUpdater'
+import { AssignSection } from '@/components/admin/AssignSection'
+import { NotesSection } from '@/components/admin/NotesSection'
+import { DeleteButton } from '@/components/admin/DeleteButton'
 
 async function getCase(id: string) {
   const { data, error } = await supabaseAdmin
     .from('cases')
-    .select('*')
+    .select('*, team_members(name, email, role)')
     .eq('id', id)
     .single()
   if (error) throw error
@@ -34,12 +37,12 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
   const c = await getCase(id)
 
   return (
-    <div className="min-h-screen bg-[#0a1628] p-8">
+    <div className="p-8">
       <div className="max-w-4xl mx-auto">
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">← Back to Admin</Link>
+          <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">← Dashboard</Link>
           <span className="text-white/20">/</span>
           <span className="text-white/60 text-sm">Case {c.reference_id}</span>
         </div>
@@ -47,13 +50,19 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">{c.client_name}</h1>
-            <p className="text-white/40 mt-1">{c.case_type} • {c.nationality} • {c.city}, {c.country}</p>
+            <p className="text-white/40 mt-1">{c.case_type} · {c.nationality} · {c.city}, {c.country}</p>
           </div>
+          <DeleteButton entityType="cases" entityId={c.id} redirectTo="/admin" />
         </div>
 
         {/* Status updater */}
-        <div className="mb-8">
+        <div className="mb-6">
           <StatusUpdater id={c.id} currentStatus={c.status} type="cases" />
+        </div>
+
+        {/* Assignment */}
+        <div className="mb-6">
+          <AssignSection entityType="cases" entityId={c.id} currentAssignedTo={c.assigned_to} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -86,7 +95,7 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
               <div><div className="text-white/40 text-xs">Date</div><div className="text-white text-sm">{new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div></div>
               <div><div className="text-white/40 text-xs">Time</div><div className="text-white text-sm">{new Date(c.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div></div>
               <div><div className="text-white/40 text-xs">IP Address</div><div className="text-white text-sm font-mono text-xs">{c.ip || '—'}</div></div>
-              <div><div className="text-white/40 text-xs">Status</div><div className="text-white text-sm">{c.status}</div></div>
+              <div><div className="text-white/40 text-xs">Assigned</div><div className="text-white text-sm">{c.team_members?.name || '—'}</div></div>
             </div>
           </div>
         </div>
@@ -109,8 +118,8 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
           />
         </div>
 
-        {/* Actions */}
-        <div className="bg-white/2 border border-white/10 rounded-xl p-5">
+        {/* Quick Actions */}
+        <div className="bg-white/2 border border-white/10 rounded-xl p-5 mb-6">
           <h3 className="text-[#c9a84c] text-xs font-semibold uppercase tracking-wider mb-4">Quick Actions</h3>
           <div className="flex flex-wrap gap-3">
             <a
@@ -119,14 +128,19 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
             >
               ✉ Email Client
             </a>
-            <a
-              href={`tel:${c.client_phone}`}
-              className="border border-white/20 text-white text-sm px-4 py-2 rounded-lg hover:border-white/40 transition-colors"
-            >
-              📞 Call Client
-            </a>
+            {c.client_phone && (
+              <a
+                href={`tel:${c.client_phone}`}
+                className="border border-white/20 text-white text-sm px-4 py-2 rounded-lg hover:border-white/40 transition-colors"
+              >
+                📞 Call Client
+              </a>
+            )}
           </div>
         </div>
+
+        {/* Notes */}
+        <NotesSection entityType="case" entityId={c.id} />
 
       </div>
     </div>

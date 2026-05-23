@@ -3,11 +3,14 @@ import { auth } from '@/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import Link from 'next/link'
 import { StatusUpdater } from '@/components/StatusUpdater'
+import { AssignSection } from '@/components/admin/AssignSection'
+import { NotesSection } from '@/components/admin/NotesSection'
+import { DeleteButton } from '@/components/admin/DeleteButton'
 
 async function getLead(id: string) {
   const { data, error } = await supabaseAdmin
     .from('leads')
-    .select('*')
+    .select('*, team_members(name, email, role)')
     .eq('id', id)
     .single()
   if (error) throw error
@@ -22,12 +25,12 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   const lead = await getLead(id)
 
   return (
-    <div className="min-h-screen bg-[#0a1628] p-8">
+    <div className="p-8">
       <div className="max-w-4xl mx-auto">
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">← Back to Admin</Link>
+          <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">← Dashboard</Link>
           <span className="text-white/20">/</span>
           <span className="text-white/60 text-sm">Lead — {lead.name}</span>
         </div>
@@ -35,13 +38,19 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">{lead.name}</h1>
-            <p className="text-white/40 mt-1">{lead.firm_name} • {lead.firm_type}</p>
+            <p className="text-white/40 mt-1">{lead.firm_name} · {lead.firm_type}</p>
           </div>
+          <DeleteButton entityType="leads" entityId={lead.id} redirectTo="/admin" />
         </div>
 
         {/* Status updater */}
-        <div className="mb-8">
+        <div className="mb-6">
           <StatusUpdater id={lead.id} currentStatus={lead.status} type="leads" />
+        </div>
+
+        {/* Assignment */}
+        <div className="mb-6">
+          <AssignSection entityType="leads" entityId={lead.id} currentAssignedTo={lead.assigned_to} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -66,10 +75,11 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                 <div className="text-white/40 text-xs">Submitted</div>
                 <div className="text-white text-sm">
                   {new Date(lead.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  {' '}at{' '}
+                  {' at '}
                   {new Date(lead.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
+              <div><div className="text-white/40 text-xs">Assigned</div><div className="text-white text-sm">{lead.team_members?.name || '—'}</div></div>
             </div>
           </div>
         </div>
@@ -82,8 +92,8 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           </div>
         )}
 
-        {/* Actions */}
-        <div className="bg-white/2 border border-white/10 rounded-xl p-5">
+        {/* Quick Actions */}
+        <div className="bg-white/2 border border-white/10 rounded-xl p-5 mb-6">
           <h3 className="text-[#c9a84c] text-xs font-semibold uppercase tracking-wider mb-4">Quick Actions</h3>
           <div className="flex flex-wrap gap-3">
             <a
@@ -102,6 +112,9 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             )}
           </div>
         </div>
+
+        {/* Notes */}
+        <NotesSection entityType="lead" entityId={lead.id} />
 
       </div>
     </div>
