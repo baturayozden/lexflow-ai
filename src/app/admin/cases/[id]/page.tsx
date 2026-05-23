@@ -13,6 +13,18 @@ async function getCase(id: string) {
   return data
 }
 
+function renderMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^## (.+)$/gm, '<h3 class="text-[#c9a84c] font-semibold text-sm uppercase tracking-wider mt-6 mb-2">$1</h3>')
+    .replace(/^# (.+)$/gm, '<h2 class="text-white font-bold text-base mt-4 mb-2">$1</h2>')
+    .replace(/^- (.+)$/gm, '<li class="text-white/70 text-sm ml-4 list-disc">$1</li>')
+    .replace(/^(\d+)\. (.+)$/gm, '<li class="text-white/70 text-sm ml-4 list-decimal">$2</li>')
+    .replace(/^---$/gm, '<hr class="border-white/10 my-4">')
+    .replace(/\n\n/g, '</p><p class="mb-3">')
+    .replace(/\n/g, '<br/>')
+}
+
 export default async function CaseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const session = await auth()
@@ -86,7 +98,10 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
             <span className="text-[#c9a84c]">⚡</span>
             <h3 className="text-[#c9a84c] text-xs font-semibold uppercase tracking-wider">AI Case Summary</h3>
           </div>
-          <div className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">{c.ai_summary}</div>
+          <div
+            className="text-white/80 text-sm leading-relaxed prose prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(c.ai_summary) }}
+          />
         </div>
 
         {/* Actions */}
