@@ -22,6 +22,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 Dashboard
               </Link>
               <Link
+                href="/admin/my-work"
+                className="text-white/60 hover:text-white text-sm px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+              >
+                My Work
+              </Link>
+              <Link
                 href="/admin/team"
                 className="text-white/60 hover:text-white text-sm px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
               >

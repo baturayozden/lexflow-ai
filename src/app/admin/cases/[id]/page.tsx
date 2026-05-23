@@ -6,6 +6,7 @@ import { StatusUpdater } from '@/components/StatusUpdater'
 import { AssignSection } from '@/components/admin/AssignSection'
 import { NotesSection } from '@/components/admin/NotesSection'
 import { DeleteButton } from '@/components/admin/DeleteButton'
+import { ActionCentre } from '@/components/admin/ActionCentre'
 
 async function getCase(id: string) {
   const { data, error } = await supabaseAdmin
@@ -20,8 +21,14 @@ async function getCase(id: string) {
 function renderMarkdown(text: string): string {
   return text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^### (.+)$/gm, '<h4 class="text-[#c9a84c] font-semibold text-xs uppercase tracking-wider mt-5 mb-2">$1</h4>')
-    .replace(/^## (.+)$/gm, '<h3 class="text-[#c9a84c] font-semibold text-sm uppercase tracking-wider mt-6 mb-2">$1</h3>')
+    .replace(
+      /^### (.+)$/gm,
+      '<h4 class="text-[#c9a84c] font-semibold text-xs uppercase tracking-wider mt-5 mb-2">$1</h4>'
+    )
+    .replace(
+      /^## (.+)$/gm,
+      '<h3 class="text-[#c9a84c] font-semibold text-sm uppercase tracking-wider mt-6 mb-2">$1</h3>'
+    )
     .replace(/^# (.+)$/gm, '<h2 class="text-white font-bold text-base mt-4 mb-2">$1</h2>')
     .replace(/^- (.+)$/gm, '<li class="text-white/70 text-sm ml-4 list-disc mb-1">$1</li>')
     .replace(/^(\d+)\. (.+)$/gm, '<li class="text-white/70 text-sm ml-4 list-decimal mb-1">$2</li>')
@@ -42,7 +49,9 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">← Dashboard</Link>
+          <Link href="/admin" className="text-white/40 hover:text-white text-sm transition-colors">
+            ← Dashboard
+          </Link>
           <span className="text-white/20">/</span>
           <span className="text-white/60 text-sm">Case {c.reference_id}</span>
         </div>
@@ -50,12 +59,14 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">{c.client_name}</h1>
-            <p className="text-white/40 mt-1">{c.case_type} · {c.nationality} · {c.city}, {c.country}</p>
+            <p className="text-white/40 mt-1">
+              {c.case_type} · {c.nationality} · {c.city}, {c.country}
+            </p>
           </div>
           <DeleteButton entityType="cases" entityId={c.id} redirectTo="/admin" />
         </div>
 
-        {/* Status updater */}
+        {/* Status */}
         <div className="mb-6">
           <StatusUpdater id={c.id} currentStatus={c.status} type="cases" />
         </div>
@@ -65,8 +76,8 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
           <AssignSection entityType="cases" entityId={c.id} currentAssignedTo={c.assigned_to} />
         </div>
 
+        {/* Info grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Client Info */}
           <div className="bg-white/2 border border-white/10 rounded-xl p-5">
             <h3 className="text-[#c9a84c] text-xs font-semibold uppercase tracking-wider mb-4">Client Details</h3>
             <div className="space-y-3">
@@ -77,7 +88,6 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
             </div>
           </div>
 
-          {/* Case Info */}
           <div className="bg-white/2 border border-white/10 rounded-xl p-5">
             <h3 className="text-[#c9a84c] text-xs font-semibold uppercase tracking-wider mb-4">Case Details</h3>
             <div className="space-y-3">
@@ -88,7 +98,6 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
             </div>
           </div>
 
-          {/* Meta */}
           <div className="bg-white/2 border border-white/10 rounded-xl p-5">
             <h3 className="text-[#c9a84c] text-xs font-semibold uppercase tracking-wider mb-4">Submission</h3>
             <div className="space-y-3">
@@ -113,8 +122,19 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
             <h3 className="text-[#c9a84c] text-xs font-semibold uppercase tracking-wider">AI Case Summary</h3>
           </div>
           <div
+            data-ai-summary
             className="text-white/80 text-sm leading-relaxed"
             dangerouslySetInnerHTML={{ __html: renderMarkdown(c.ai_summary) }}
+          />
+        </div>
+
+        {/* Action Centre */}
+        <div className="mb-6">
+          <ActionCentre
+            caseId={c.id}
+            clientName={c.client_name}
+            clientEmail={c.client_email}
+            aiSummary={c.ai_summary}
           />
         </div>
 

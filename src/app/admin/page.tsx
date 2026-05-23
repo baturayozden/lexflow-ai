@@ -3,6 +3,20 @@ import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
+const ROLE_LABELS: Record<string, string> = {
+  managing_partner: 'Managing Partner',
+  senior_solicitor: 'Senior Solicitor',
+  associate_solicitor: 'Associate Solicitor',
+  paralegal: 'Paralegal',
+  receptionist: 'Receptionist',
+}
+
+interface TeamMember {
+  id: string
+  name: string
+  role: string
+}
+
 // ── Types ────────────────────────────────────────────────────────────────────
 interface Lead {
   id: string
@@ -129,6 +143,7 @@ function DeleteInline({
 export default function AdminPage() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [cases, setCases] = useState<Case[]>([])
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -151,9 +166,16 @@ export default function AdminPage() {
           router.push('/admin/login')
           return
         }
-        const [leadsData, casesData] = await Promise.all([leadsRes.json(), casesRes.json()])
+        const teamRes = fetch('/api/team')
+        const [leadsData, casesData, teamResponse] = await Promise.all([
+          leadsRes.json(),
+          casesRes.json(),
+          teamRes,
+        ])
         setLeads(leadsData.leads || [])
         setCases(casesData.cases || [])
+        const teamData = await teamResponse.json()
+        setTeamMembers(teamData.members || [])
       } catch (e) {
         console.error('Admin load error:', e)
       } finally {
@@ -253,6 +275,15 @@ export default function AdminPage() {
       `lexflow-cases-${new Date().toISOString().slice(0, 10)}.csv`
     )
   }
+
+  // ── Team workload ──────────────────────────────────────────────────────────
+  const workload = useMemo(() => {
+    return teamMembers.map((m) => ({
+      ...m,
+      caseCount: cases.filter((c) => c.assigned_to === m.id).length,
+      leadCount: leads.filter((l) => l.assigned_to === m.id).length,
+    }))
+  }, [teamMembers, cases, leads])
 
   // ── Shared input/select styles ─────────────────────────────────────────────
   const inputClass =
@@ -422,6 +453,36 @@ export default function AdminPage() {
 
           </div>
         )}
+
+        {/* ── TEAM WORKLOAD ── */}
+        {!loading && workload.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-white font-semibold mb-4">Team Workload</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {workload.map((member) => (
+                <Link
+                  key={member.id}
+                  href="/admin/my-work"
+                  className="bg-white/2 border border-white/10 rounded-xl p-4 hover:border-[#c9a84c]/30 transition-colors"
+                >
+                  <div className="text-white font-medium text-sm truncate">{member.name}</div>
+                  <div className="text-white/30 text-xs mt-0.5">{ROLE_LABELS[member.role] || member.role}</div>
+                  <div className="mt-3 flex items-end gap-3">
+                    <div>
+                      <span className="text-[#c9a84c] text-2xl font-bold">{member.caseCount}</span>
+                      <span className="text-white/30 text-xs ml-1">cases</span>
+                    </div>
+                    <div>
+                      <span className="text-white/60 text-lg font-semibold">{member.leadCount}</span>
+                      <span className="text-white/30 text-xs ml-1">leads</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   )

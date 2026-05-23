@@ -61,6 +61,16 @@ export async function getCases() {
   return data
 }
 
+export async function getCasesWithActions() {
+  const { data, error } = await supabaseAdmin
+    .from('cases')
+    .select('*, team_members(name, email, role), case_actions(*)')
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
 export async function getTeamMembers() {
   const { data, error } = await supabaseAdmin
     .from('team_members')
@@ -75,6 +85,17 @@ export async function addTeamMember(data: { name: string; email: string; role: s
   const { data: member, error } = await supabaseAdmin
     .from('team_members')
     .insert([data])
+    .select()
+    .single()
+  if (error) throw error
+  return member
+}
+
+export async function updateTeamMember(id: string, data: { name?: string; email?: string; role?: string }) {
+  const { data: member, error } = await supabaseAdmin
+    .from('team_members')
+    .update(data)
+    .eq('id', id)
     .select()
     .single()
   if (error) throw error
@@ -145,4 +166,44 @@ export async function addNote(data: {
     .single()
   if (error) throw error
   return note
+}
+
+export async function getCaseActions(caseId: string) {
+  const { data, error } = await supabaseAdmin
+    .from('case_actions')
+    .select('*')
+    .eq('case_id', caseId)
+    .order('sort_order')
+  if (error) throw error
+  return data
+}
+
+export async function saveCaseActions(
+  caseId: string,
+  steps: { step: string; type: string; urgency: string }[]
+) {
+  await supabaseAdmin.from('case_actions').delete().eq('case_id', caseId)
+  if (!steps.length) return []
+  const { data, error } = await supabaseAdmin
+    .from('case_actions')
+    .insert(steps.map((s, i) => ({ case_id: caseId, ...s, sort_order: i })))
+    .select()
+  if (error) throw error
+  return data
+}
+
+export async function updateCaseAction(
+  actionId: string,
+  completed: boolean,
+  completedBy?: string
+) {
+  const { error } = await supabaseAdmin
+    .from('case_actions')
+    .update({
+      completed,
+      completed_at: completed ? new Date().toISOString() : null,
+      completed_by: completed ? (completedBy || 'Admin') : null,
+    })
+    .eq('id', actionId)
+  if (error) throw error
 }
