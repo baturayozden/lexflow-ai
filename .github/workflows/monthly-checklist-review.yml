@@ -1,0 +1,17 @@
+name: Monthly Checklist Review
+
+on:
+  schedule:
+    - cron: '0 9 1 * *'  # 1st of every month at 9am UTC
+  workflow_dispatch:  # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  trigger-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger LexFlow checklist review
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            https://lexflow.co.uk/api/cron/checklist-review

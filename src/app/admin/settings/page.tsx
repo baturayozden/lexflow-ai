@@ -1,12 +1,14 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { LogoUploader } from '@/components/admin/LogoUploader'
 
 interface FirmSettings {
   firm_name?: string
   primary_color?: string
   website?: string
   phone?: string
+  email?: string
   logo_url?: string
   address?: string
 }
@@ -22,6 +24,7 @@ interface ChecklistTemplate {
   case_type: string
   title: string
   items: string[]
+  gov_url?: string
 }
 
 interface QuoteTemplate {
@@ -36,6 +39,7 @@ interface QuoteTemplate {
 
 interface EditingChecklist extends ChecklistTemplate {
   editItems: string[]
+  editGovUrl: string
 }
 
 export default function SettingsPage() {
@@ -90,11 +94,11 @@ export default function SettingsPage() {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  async function saveChecklist(id: string, items: string[]) {
+  async function saveChecklist(id: string, items: string[], govUrl: string) {
     await fetch('/api/settings/checklists', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, items }),
+      body: JSON.stringify({ id, items, gov_url: govUrl }),
     })
     setEditingChecklist(null)
     const updated = await fetch('/api/settings/checklists').then((r) => r.json())
@@ -197,13 +201,33 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="col-span-2">
-                <label className="text-white/40 text-xs block mb-1.5">Logo URL</label>
+                <label className="text-white/40 text-xs block mb-1.5">Firm Email</label>
                 <input
-                  value={firmSettings.logo_url || ''}
-                  onChange={(e) => setFirmSettings((p) => ({ ...p, logo_url: e.target.value }))}
-                  placeholder="https://yourfirm.co.uk/logo.png"
+                  value={firmSettings.email || ''}
+                  onChange={(e) => setFirmSettings((p) => ({ ...p, email: e.target.value }))}
+                  placeholder="hello@yourfirm.co.uk"
                   className={inputClass}
                 />
+              </div>
+              <div className="col-span-2">
+                <label className="text-white/40 text-xs block mb-1.5">Logo</label>
+                <div className="space-y-2">
+                  <input
+                    value={firmSettings.logo_url || ''}
+                    onChange={(e) => setFirmSettings((p) => ({ ...p, logo_url: e.target.value }))}
+                    placeholder="https://yourfirm.co.uk/logo.png (paste URL)"
+                    className={inputClass}
+                  />
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 border-t border-white/10" />
+                    <span className="text-white/20 text-xs">or upload</span>
+                    <div className="flex-1 border-t border-white/10" />
+                  </div>
+                  <LogoUploader
+                    onUpload={(url: string) => setFirmSettings((p) => ({ ...p, logo_url: url }))}
+                    currentUrl={firmSettings.logo_url}
+                  />
+                </div>
               </div>
               <div className="col-span-2">
                 <label className="text-white/40 text-xs block mb-1.5">Address</label>
@@ -319,7 +343,13 @@ export default function SettingsPage() {
                   <h3 className="text-white font-medium">{cl.case_type}</h3>
                   {editingChecklist?.id !== cl.id ? (
                     <button
-                      onClick={() => setEditingChecklist({ ...cl, editItems: [...(cl.items || [])] })}
+                      onClick={() =>
+                        setEditingChecklist({
+                          ...cl,
+                          editItems: [...(cl.items || [])],
+                          editGovUrl: cl.gov_url || '',
+                        })
+                      }
                       className="text-[#c9a84c] text-xs hover:underline"
                     >
                       Edit
@@ -327,7 +357,9 @@ export default function SettingsPage() {
                   ) : (
                     <div className="flex gap-3">
                       <button
-                        onClick={() => saveChecklist(cl.id, editingChecklist.editItems)}
+                        onClick={() =>
+                          saveChecklist(cl.id, editingChecklist.editItems, editingChecklist.editGovUrl)
+                        }
                         className="text-[#c9a84c] text-xs hover:underline"
                       >
                         Save
@@ -343,6 +375,17 @@ export default function SettingsPage() {
                 </div>
                 {editingChecklist?.id === cl.id ? (
                   <div className="space-y-2">
+                    <div className="mb-3">
+                      <label className="text-white/40 text-xs block mb-1">Gov.uk Reference URL</label>
+                      <input
+                        value={editingChecklist.editGovUrl}
+                        onChange={(e) =>
+                          setEditingChecklist((p) => p ? { ...p, editGovUrl: e.target.value } : p)
+                        }
+                        placeholder="https://www.gov.uk/..."
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#c9a84c]/50"
+                      />
+                    </div>
                     {editingChecklist.editItems.map((item, i) => (
                       <div key={i} className="flex gap-2">
                         <input
@@ -381,14 +424,26 @@ export default function SettingsPage() {
                     </button>
                   </div>
                 ) : (
-                  <ul className="space-y-1">
-                    {(cl.items || []).map((item, i) => (
-                      <li key={i} className="text-white/50 text-sm flex gap-2">
-                        <span className="text-[#c9a84c] flex-shrink-0">•</span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                  <>
+                    {cl.gov_url && (
+                      <a
+                        href={cl.gov_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[#c9a84c] text-xs hover:underline mb-2 block"
+                      >
+                        {cl.gov_url} ↗
+                      </a>
+                    )}
+                    <ul className="space-y-1">
+                      {(cl.items || []).map((item, i) => (
+                        <li key={i} className="text-white/50 text-sm flex gap-2">
+                          <span className="text-[#c9a84c] flex-shrink-0">•</span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
                 )}
               </div>
             ))}

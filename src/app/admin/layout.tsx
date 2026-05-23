@@ -34,6 +34,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 Team
               </Link>
               <Link
+                href="/admin/reviews"
+                className="text-white/60 hover:text-white text-sm px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+              >
+                Reviews
+              </Link>
+              <Link
                 href="/admin/settings"
                 className="text-white/60 hover:text-white text-sm px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
               >

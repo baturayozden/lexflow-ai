@@ -323,3 +323,69 @@ export async function updateEmailTemplate(type: string, updates: Record<string, 
   if (error) throw error
   return data
 }
+
+// ── Checklist Reviews ─────────────────────────────────────────────────────────
+
+export async function getChecklistReviews(status?: string) {
+  let query = supabaseAdmin
+    .from('checklist_reviews')
+    .select('*, checklist_templates(case_type, title)')
+  if (status) query = query.eq('status', status)
+  const { data, error } = await query.order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+export async function createChecklistReview(data: {
+  checklist_id: string
+  case_type: string
+  current_items: unknown[]
+  proposed_items: unknown[]
+  changes_summary: string
+  gov_url: string
+}) {
+  const { data: review, error } = await supabaseAdmin
+    .from('checklist_reviews')
+    .insert([{ ...data, status: 'pending' }])
+    .select()
+    .single()
+  if (error) throw error
+  return review
+}
+
+export async function approveChecklistReview(reviewId: string) {
+  const { data: review, error: fetchError } = await supabaseAdmin
+    .from('checklist_reviews')
+    .select('*')
+    .eq('id', reviewId)
+    .single()
+  if (fetchError) throw fetchError
+
+  await supabaseAdmin
+    .from('checklist_templates')
+    .update({
+      items: review.proposed_items,
+      last_reviewed_at: new Date().toISOString(),
+    })
+    .eq('id', review.checklist_id)
+
+  const { data, error } = await supabaseAdmin
+    .from('checklist_reviews')
+    .update({ status: 'approved', reviewed_at: new Date().toISOString() })
+    .eq('id', reviewId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function rejectChecklistReview(reviewId: string) {
+  const { data, error } = await supabaseAdmin
+    .from('checklist_reviews')
+    .update({ status: 'rejected', reviewed_at: new Date().toISOString() })
+    .eq('id', reviewId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
