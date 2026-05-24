@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { seedSuperAdmin } from '@/lib/auth-db'
 
 export async function POST(req: NextRequest) {
-  // Auth temporarily disabled for seeding
-  console.log('CRON_SECRET value:', process.env.CRON_SECRET)
+  const authHeader = req.headers.get('authorization')
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
 
   try {
     const admin = await seedSuperAdmin()
