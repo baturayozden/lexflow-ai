@@ -19,6 +19,10 @@ async function getCase(id: string) {
 }
 
 function renderMarkdown(text: string): string {
+  // Force Date/Prepared for/Case Reference onto separate lines
+  text = text.replace(/(\*\*Date:\*\*\s*[^\n*]+?)\s+(\*\*(?:Prepared for|Client Name|Matter):\*\*)/g, '$1\n$2')
+  text = text.replace(/(\*\*(?:Prepared for|Client Name|Matter):\*\*\s*[^\n*]+?)\s+(\*\*(?:Case Reference|Reference|Matter Reference):\*\*)/g, '$1\n$2')
+  text = text.replace(/(\*\*(?:Case Reference|Reference):\*\*\s*[^\n*]+?)\s+(\*\*(?:Date|Client|Priority|Status):\*\*)/g, '$1\n$2')
   // Fix header meta lines — put each on its own line
   text = text.replace(/(\*\*Date:\*\*[^\n]+)\s+(\*\*Prepared for:\*\*)/g, '$1\n$2')
   text = text.replace(/(\*\*Prepared for:\*\*[^\n]+)\s+(\*\*(?:Case Reference|Matter):\*\*)/g, '$1\n$2')
