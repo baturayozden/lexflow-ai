@@ -38,7 +38,7 @@ export default function DashboardTeamPage() {
   const [adding, setAdding] = useState(false)
   const [error, setError] = useState('')
   const [resetEmail, setResetEmail] = useState<string | null>(null)
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     if (firmId) {
@@ -78,10 +78,10 @@ export default function DashboardTeamPage() {
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, active: !active } : u))
   }
 
-  async function deleteUserConfirm(userId: string) {
+  async function deleteUserConfirm(userId: string, _userName: string) {
     await fetch(`/api/users/${userId}`, { method: 'DELETE' })
     setUsers(prev => prev.filter(u => u.id !== userId))
-    setConfirmDelete(null)
+    setDeletingId(null)
   }
 
   async function sendPasswordReset(email: string) {
@@ -126,71 +126,42 @@ export default function DashboardTeamPage() {
         </div>
       )}
 
-      <div className="bg-white/2 border border-white/10 rounded-xl overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-white/10">
-              <th className="text-left text-white/40 text-xs font-medium px-6 py-3">NAME</th>
-              <th className="text-left text-white/40 text-xs font-medium px-6 py-3">EMAIL</th>
-              <th className="text-left text-white/40 text-xs font-medium px-6 py-3">ROLE</th>
-              <th className="text-left text-white/40 text-xs font-medium px-6 py-3">STATUS</th>
-              <th className="text-left text-white/40 text-xs font-medium px-6 py-3">LAST LOGIN</th>
-              <th className="px-6 py-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(u => (
-              <tr key={u.id} className="border-b border-white/5 hover:bg-white/2">
-                <td className="px-6 py-4 text-white font-medium text-sm">{u.name}</td>
-                <td className="px-6 py-4 text-white/50 text-sm">{u.email}</td>
-                <td className="px-6 py-4">
-                  <span className="text-white/50 text-sm">{ROLE_LABELS[u.role] || u.role}</span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`text-xs px-2 py-1 rounded-full ${u.active ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
-                    {u.active ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-white/30 text-sm">
-                  {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('en-GB') : 'Never'}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex gap-3 justify-end items-center">
-                    <button
-                      onClick={() => sendPasswordReset(u.email)}
-                      className="text-[#c9a84c]/60 text-xs hover:text-[#c9a84c] transition-colors"
-                    >
-                      {resetEmail === u.email ? '✓ Sent' : 'Reset'}
-                    </button>
-                    <button
-                      onClick={() => toggleActive(u.id, u.active)}
-                      className={`text-xs transition-colors ${u.active ? 'text-yellow-400/50 hover:text-yellow-400' : 'text-green-400/50 hover:text-green-400'}`}
-                    >
-                      {u.active ? 'Deactivate' : 'Activate'}
-                    </button>
-                    {confirmDelete === u.id ? (
-                      <span className="flex gap-2 items-center">
-                        <span className="text-red-400 text-xs">Sure?</span>
-                        <button onClick={() => deleteUserConfirm(u.id)} className="text-red-400 text-xs font-medium hover:underline">Yes</button>
-                        <button onClick={() => setConfirmDelete(null)} className="text-white/30 text-xs hover:underline">No</button>
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => setConfirmDelete(u.id)}
-                        className="text-red-400/40 text-xs hover:text-red-400 transition-colors"
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {!users.length && (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-white/30 text-sm">No team members yet.</td></tr>
-            )}
-          </tbody>
-        </table>
+      <div className="space-y-2">
+        {users.map(u => (
+          <div key={u.id} className="bg-white/2 border border-white/10 rounded-xl p-4 flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="text-white font-medium text-sm truncate">{u.name}</div>
+              <div className="text-white/40 text-xs truncate">{u.email}</div>
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <span className="text-white/40 text-xs hidden md:block">{ROLE_LABELS[u.role] || u.role}</span>
+              <span className={`text-xs px-2 py-1 rounded-full ${u.active ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                {u.active ? 'Active' : 'Inactive'}
+              </span>
+              <span className="text-white/20 text-xs hidden lg:block">
+                {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('en-GB') : 'Never'}
+              </span>
+              <button onClick={() => sendPasswordReset(u.email)} className="text-[#c9a84c]/60 text-xs hover:text-[#c9a84c] transition-colors whitespace-nowrap">
+                {resetEmail === u.email ? '✓ Sent' : 'Reset'}
+              </button>
+              <button onClick={() => toggleActive(u.id, u.active)} className={`text-xs transition-colors whitespace-nowrap ${u.active ? 'text-yellow-400/50 hover:text-yellow-400' : 'text-green-400/50 hover:text-green-400'}`}>
+                {u.active ? 'Deactivate' : 'Activate'}
+              </button>
+              {deletingId === u.id ? (
+                <div className="flex gap-1 items-center">
+                  <span className="text-red-400 text-xs">Sure?</span>
+                  <button onClick={() => deleteUserConfirm(u.id, u.name)} className="text-red-400 text-xs hover:underline">Yes</button>
+                  <button onClick={() => setDeletingId(null)} className="text-white/30 text-xs hover:underline">No</button>
+                </div>
+              ) : (
+                <button onClick={() => setDeletingId(u.id)} className="text-red-400/40 text-xs hover:text-red-400 transition-colors">
+                  Delete
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+        {!users.length && <p className="text-white/30 text-sm text-center py-8">No team members yet.</p>}
       </div>
     </div>
   )
