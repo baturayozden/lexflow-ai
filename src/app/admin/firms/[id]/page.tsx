@@ -4,6 +4,7 @@ import { getFirmById, getUsersByFirm } from '@/lib/auth-db'
 import { isPlatformAdmin } from '@/lib/permissions'
 import Link from 'next/link'
 import { FirmActions } from '@/components/admin/FirmActions'
+import { FirmUsersTable } from '@/components/admin/FirmUsersTable'
 
 const PLAN_LABELS: Record<string, string> = {
   quick_win: 'Quick Win — £997',
@@ -11,14 +12,6 @@ const PLAN_LABELS: Record<string, string> = {
   retainer: 'Retainer — £1,500/mo',
   starter: 'Starter',
   platform: 'Platform',
-}
-
-const ROLE_LABELS: Record<string, string> = {
-  managing_partner: 'Managing Partner',
-  senior_solicitor: 'Senior Solicitor',
-  associate_solicitor: 'Associate Solicitor',
-  paralegal: 'Paralegal',
-  receptionist: 'Receptionist',
 }
 
 export default async function FirmDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -81,28 +74,14 @@ export default async function FirmDetailPage({ params }: { params: Promise<{ id:
           <h2 className="text-white font-semibold">Users ({users?.length || 0})</h2>
           <FirmActions firmId={id} />
         </div>
-        <div className="space-y-2">
-          {users?.map((user: Record<string, unknown>) => (
-            <div key={user.id as string} className="flex items-center justify-between bg-white/2 border border-white/5 rounded-lg p-3">
-              <div>
-                <div className="text-white text-sm font-medium">{user.name as string}</div>
-                <div className="text-white/40 text-xs">{user.email as string}</div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-white/40 text-xs">{ROLE_LABELS[user.role as string] || user.role as string}</span>
-                <span className={`text-xs px-2 py-1 rounded-full ${user.active ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
-                  {user.active ? 'Active' : 'Inactive'}
-                </span>
-                {!!user.last_login_at && (
-                  <span className="text-white/20 text-xs">
-                    Last login: {new Date(user.last_login_at as string).toLocaleDateString('en-GB')}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-          {!users?.length && <p className="text-white/30 text-sm">No users yet.</p>}
-        </div>
+        <FirmUsersTable initialUsers={(users || []) as {
+          id: string
+          name: string
+          email: string
+          role: string
+          active: boolean
+          last_login_at: string | null
+        }[]} />
       </div>
     </div>
   )

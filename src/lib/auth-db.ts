@@ -114,6 +114,14 @@ export async function updateUserPassword(id: string, password: string) {
   await supabaseAdmin.from('users').update({ password_hash }).eq('id', id)
 }
 
+export async function deleteUser(id: string) {
+  const { error } = await supabaseAdmin
+    .from('users')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
+}
+
 export async function seedSuperAdmin() {
   const password_hash = await hashPassword(process.env.ADMIN_PASSWORD || 'LexFlow2026!')
   const email = process.env.ADMIN_EMAIL || 'baturay@lexflow.co.uk'

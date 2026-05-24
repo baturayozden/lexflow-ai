@@ -8,15 +8,34 @@ import { NotesSection } from '@/components/admin/NotesSection'
 import Link from 'next/link'
 
 function renderMarkdown(text: string): string {
-  return text
+  let result = text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^### (.+)$/gm, '<h4 class="text-[#c9a84c] font-semibold text-xs uppercase tracking-wider mt-5 mb-2">$1</h4>')
-    .replace(/^## (.+)$/gm, '<h3 class="text-[#c9a84c] font-semibold text-sm uppercase tracking-wider mt-6 mb-2">$1</h3>')
-    .replace(/^# (.+)$/gm, '<h2 class="text-white font-bold text-base mt-4 mb-2">$1</h2>')
-    .replace(/^- (.+)$/gm, '<li class="text-white/70 text-sm ml-4 list-disc mb-1">$1</li>')
-    .replace(/^(\d+)\. (.+)$/gm, '<li class="text-white/70 text-sm ml-4 list-decimal mb-1">$2</li>')
-    .replace(/^---$/gm, '<hr class="border-white/10 my-4">')
-    .replace(/\n\n/g, '<br/><br/>')
+    .replace(/^#### (.+)$/gm, '<p style="color:#c9a84c;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin:20px 0 6px 0;">$1</p>')
+    .replace(/^### (.+)$/gm, '<p style="color:#c9a84c;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin:20px 0 6px 0;">$1</p>')
+    .replace(/^## (.+)$/gm, '<p style="color:#c9a84c;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:24px 0 8px 0;">$1</p>')
+    .replace(/^# (.+)$/gm, '<p style="color:white;font-size:14px;font-weight:700;margin:0 0 16px 0;">$1</p>')
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:16px 0;"/>')
+
+  result = result.replace(/(^- .+$(\n^- .+$)*)/gm, (match) => {
+    const items = match.split('\n').map(line =>
+      `<li style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:3px;">${line.replace(/^- /, '')}</li>`
+    ).join('')
+    return `<ul style="margin:6px 0 12px 16px;padding:0;list-style:disc;">${items}</ul>`
+  })
+
+  result = result.replace(/(^\d+\. .+$(\n^\d+\. .+$)*)/gm, (match) => {
+    const items = match.split('\n').map(line =>
+      `<li style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:3px;">${line.replace(/^\d+\. /, '')}</li>`
+    ).join('')
+    return `<ol style="margin:6px 0 12px 16px;padding:0;list-style:decimal;">${items}</ol>`
+  })
+
+  result = result
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/\n\n/g, '<br style="display:block;margin:6px 0;"/>')
+    .replace(/\n/g, ' ')
+
+  return result
 }
 
 export default async function DashboardCaseDetailPage({ params }: { params: Promise<{ id: string }> }) {

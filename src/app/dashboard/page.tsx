@@ -33,7 +33,7 @@ export default async function DashboardPage() {
           <h1 className="text-white font-bold text-2xl">Good morning 👋</h1>
           <p className="text-white/40 mt-1">Here&apos;s what&apos;s happening at your firm today.</p>
         </div>
-        <Link href="/demo" className="bg-[#c9a84c] text-[#0a1628] font-bold text-sm px-5 py-2.5 rounded-lg hover:bg-[#f0d080] transition-colors">
+        <Link href="/dashboard/intake" className="bg-[#c9a84c] text-[#0a1628] font-bold text-sm px-5 py-2.5 rounded-lg hover:bg-[#f0d080] transition-colors">
           ⚡ New Client Intake
         </Link>
       </div>

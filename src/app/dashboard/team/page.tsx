@@ -38,6 +38,7 @@ export default function DashboardTeamPage() {
   const [adding, setAdding] = useState(false)
   const [error, setError] = useState('')
   const [resetEmail, setResetEmail] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
   useEffect(() => {
     if (firmId) {
@@ -75,6 +76,12 @@ export default function DashboardTeamPage() {
       body: JSON.stringify({ active: !active }),
     })
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, active: !active } : u))
+  }
+
+  async function deleteUserConfirm(userId: string) {
+    await fetch(`/api/users/${userId}`, { method: 'DELETE' })
+    setUsers(prev => prev.filter(u => u.id !== userId))
+    setConfirmDelete(null)
   }
 
   async function sendPasswordReset(email: string) {
@@ -148,19 +155,33 @@ export default function DashboardTeamPage() {
                   {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('en-GB') : 'Never'}
                 </td>
                 <td className="px-6 py-4">
-                  <div className="flex gap-3 justify-end">
+                  <div className="flex gap-3 justify-end items-center">
                     <button
                       onClick={() => sendPasswordReset(u.email)}
                       className="text-[#c9a84c]/60 text-xs hover:text-[#c9a84c] transition-colors"
                     >
-                      {resetEmail === u.email ? '✓ Sent' : 'Reset Password'}
+                      {resetEmail === u.email ? '✓ Sent' : 'Reset'}
                     </button>
                     <button
                       onClick={() => toggleActive(u.id, u.active)}
-                      className={`text-xs transition-colors ${u.active ? 'text-red-400/50 hover:text-red-400' : 'text-green-400/50 hover:text-green-400'}`}
+                      className={`text-xs transition-colors ${u.active ? 'text-yellow-400/50 hover:text-yellow-400' : 'text-green-400/50 hover:text-green-400'}`}
                     >
                       {u.active ? 'Deactivate' : 'Activate'}
                     </button>
+                    {confirmDelete === u.id ? (
+                      <span className="flex gap-2 items-center">
+                        <span className="text-red-400 text-xs">Sure?</span>
+                        <button onClick={() => deleteUserConfirm(u.id)} className="text-red-400 text-xs font-medium hover:underline">Yes</button>
+                        <button onClick={() => setConfirmDelete(null)} className="text-white/30 text-xs hover:underline">No</button>
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => setConfirmDelete(u.id)}
+                        className="text-red-400/40 text-xs hover:text-red-400 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
