@@ -28,9 +28,14 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-white font-bold text-2xl">Good morning 👋</h1>
-        <p className="text-white/40 mt-1">Here&apos;s what&apos;s happening at your firm today.</p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-white font-bold text-2xl">Good morning 👋</h1>
+          <p className="text-white/40 mt-1">Here&apos;s what&apos;s happening at your firm today.</p>
+        </div>
+        <Link href="/demo" className="bg-[#c9a84c] text-[#0a1628] font-bold text-sm px-5 py-2.5 rounded-lg hover:bg-[#f0d080] transition-colors">
+          ⚡ New Client Intake
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

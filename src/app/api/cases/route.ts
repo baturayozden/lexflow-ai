@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       city: body.city,
       country: body.country,
       reference_id: body.caseId || Date.now().toString(),
+      firm_id: body.firm_id || null,
     })
 
     // Fire-and-forget notification

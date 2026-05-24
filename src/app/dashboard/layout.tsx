@@ -18,6 +18,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/dashboard/leads', label: 'Leads' },
     { href: '/dashboard/team', label: 'Team' },
     { href: '/dashboard/settings', label: 'Settings' },
+    { href: '/demo', label: '⚡ New Intake' },
   ]
 
   const ROLE_LABELS: Record<string, string> = {

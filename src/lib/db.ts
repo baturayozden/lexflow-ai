@@ -31,6 +31,7 @@ export async function saveCase(data: {
   city?: string
   country?: string
   reference_id: string
+  firm_id?: string | null
 }) {
   const { data: caseRecord, error } = await supabaseAdmin
     .from('cases')
