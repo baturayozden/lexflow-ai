@@ -7,10 +7,11 @@ export async function saveLead(data: {
   phone?: string
   firm_type: string
   message?: string
+  firm_id?: string | null
 }) {
   const { data: lead, error } = await supabaseAdmin
     .from('leads')
-    .insert([{ ...data, status: 'new', source: 'contact_form' }])
+    .insert([{ ...data, status: 'new', source: data.firm_id ? 'manual' : 'contact_form' }])
     .select()
     .single()
   if (error) throw error
@@ -46,6 +47,7 @@ export async function getLeads() {
   const { data, error } = await supabaseAdmin
     .from('leads')
     .select('*, team_members(name, email, role)')
+    .is('firm_id', null)
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
   if (error) throw error
@@ -56,6 +58,7 @@ export async function getCases() {
   const { data, error } = await supabaseAdmin
     .from('cases')
     .select('*, team_members(name, email, role)')
+    .is('firm_id', null)
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
   if (error) throw error
