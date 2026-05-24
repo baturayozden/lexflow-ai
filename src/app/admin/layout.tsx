@@ -1,10 +1,17 @@
-import type { ReactNode } from 'react'
+'use client'
+import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { SignOutButton } from '@/components/SignOutButton'
-import { auth } from '@/auth'
 
-export default async function AdminLayout({ children }: { children: ReactNode }) {
-  const session = await auth()
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const { data: session } = useSession()
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
+
   const role = (session?.user as Record<string, unknown>)?.role as string | undefined
 
   return (
