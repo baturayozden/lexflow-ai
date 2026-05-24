@@ -4,27 +4,41 @@ import { NextResponse } from 'next/server'
 export default auth((req) => {
   const { pathname } = req.nextUrl
   const session = req.auth
+  const host = req.headers.get('host') || ''
+  const isAppSubdomain = host.startsWith('app.')
 
-  // Skip auth for cron and seed endpoints
+  // Skip auth for public API routes
   if (pathname.startsWith('/api/seed') || pathname.startsWith('/api/cron')) {
     return NextResponse.next()
   }
 
-  // Protect /admin routes (except login page itself)
+  // App subdomain routing
+  if (isAppSubdomain) {
+    if (pathname === '/login' || pathname.startsWith('/api/auth')) {
+      return NextResponse.next()
+    }
+    if (!session) {
+      return NextResponse.redirect(new URL('/login', req.url))
+    }
+    // Platform admins should not use app subdomain
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((session.user as any)?.role === 'platform_admin') {
+      return NextResponse.redirect(new URL('https://lexflow.co.uk/admin', req.url))
+    }
+    return NextResponse.next()
+  }
+
+  // Main domain - protect /admin routes
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     if (!session) {
       return NextResponse.redirect(new URL('/admin/login', req.url))
     }
   }
 
-  // Protect /platform routes — platform_admin only
+  // Protect /platform routes — redirect to /admin/firms
   if (pathname.startsWith('/platform')) {
     if (!session) {
       return NextResponse.redirect(new URL('/admin/login', req.url))
-    }
-    const role = (session.user as Record<string, unknown>)?.role as string | undefined
-    if (role !== 'platform_admin') {
-      return NextResponse.redirect(new URL('/admin', req.url))
     }
   }
 
@@ -32,5 +46,5 @@ export default auth((req) => {
 })
 
 export const config = {
-  matcher: ['/admin/:path*', '/platform/:path*', '/api/seed', '/api/cron/:path*'],
+  matcher: ['/admin/:path*', '/platform/:path*', '/dashboard/:path*', '/login', '/api/seed', '/api/cron/:path*'],
 }
