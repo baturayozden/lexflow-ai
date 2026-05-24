@@ -115,31 +115,22 @@ export async function updateUserPassword(id: string, password: string) {
 }
 
 export async function seedSuperAdmin() {
-  const existing = await getUserByEmail(
-    process.env.ADMIN_EMAIL || 'baturay@lexflow.co.uk'
-  )
-  if (existing) return existing
+  const password_hash = await hashPassword(process.env.ADMIN_PASSWORD || 'LexFlow2026!')
+  const email = process.env.ADMIN_EMAIL || 'baturay@lexflow.co.uk'
 
-  const password_hash = await hashPassword(
-    process.env.ADMIN_PASSWORD || 'LexFlow2026!'
-  )
   const { data, error } = await supabaseAdmin
     .from('users')
-    .upsert(
-      [
-        {
-          id: '00000000-0000-0000-0000-000000000002',
-          firm_id: '00000000-0000-0000-0000-000000000001',
-          name: 'Baturay Ozden',
-          email: process.env.ADMIN_EMAIL || 'baturay@lexflow.co.uk',
-          password_hash,
-          role: 'platform_admin',
-        },
-      ],
-      { onConflict: 'id' }
-    )
+    .upsert([{
+      id: '00000000-0000-0000-0000-000000000002',
+      firm_id: '00000000-0000-0000-0000-000000000001',
+      name: 'Baturay Ozden',
+      email: email,
+      password_hash,
+      role: 'platform_admin',
+    }], { onConflict: 'id' })
     .select()
     .single()
+
   if (error) throw error
   return data
 }
