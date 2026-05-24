@@ -8,6 +8,14 @@ import { NotesSection } from '@/components/admin/NotesSection'
 import Link from 'next/link'
 
 function renderMarkdown(text: string): string {
+  // Aggressively split header meta fields onto separate lines
+  text = text
+    .replace(/\*\*Date:\*\*/g, '\n**Date:**')
+    .replace(/\*\*Prepared for:\*\*/g, '\n**Prepared for:**')
+    .replace(/\*\*Client Name:\*\*/g, '\n**Client Name:**')
+    .replace(/\*\*Case Reference:\*\*/g, '\n**Case Reference:**')
+    .replace(/\*\*Matter:\*\*/g, '\n**Matter:**')
+    .trim()
   // Force Date/Prepared for/Case Reference onto separate lines
   text = text.replace(/(\*\*Date:\*\*\s*[^\n*]+?)\s+(\*\*(?:Prepared for|Client Name|Matter):\*\*)/g, '$1\n$2')
   text = text.replace(/(\*\*(?:Prepared for|Client Name|Matter):\*\*\s*[^\n*]+?)\s+(\*\*(?:Case Reference|Reference|Matter Reference):\*\*)/g, '$1\n$2')

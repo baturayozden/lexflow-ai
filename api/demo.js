@@ -44,11 +44,15 @@ Client details:
 - Client Location: ${city}, ${country} (based on IP)
 - Today's Date: ${new Date().toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'})}
 
-Write the summary with these exact sections, each on a NEW LINE:
+Start the summary with these three items each on their own separate line:
 
 **Date:** [today's date]
+
 **Prepared for:** Supervising Solicitor
+
 **Case Reference:** Pending Assignment
+
+Each must be on its own line with a blank line between them. Do not put them on the same line.
 
 ---
 
