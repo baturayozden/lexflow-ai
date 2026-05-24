@@ -57,7 +57,12 @@ Each must be on its own line with a blank line between them. Do not put them on 
 ---
 
 ## 1) CLIENT OVERVIEW
-[Name, DOB with age, nationality, location]
+**Name:** [full name]
+**Date of Birth:** [dob with age]
+**Nationality:** [nationality]
+**Current Location:** [location]
+
+Each field MUST be on its own separate line. Never put multiple fields on the same line.
 
 ## 2) CLIENT'S DESCRIPTION
 [If not in English, state: "Originally submitted in [language]:" then provide the original text, followed by "Translation:" and the English translation. If already in English, just include the description.]
