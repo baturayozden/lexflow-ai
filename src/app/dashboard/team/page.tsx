@@ -139,7 +139,7 @@ export default function DashboardTeamPage() {
                 {u.active ? 'Active' : 'Inactive'}
               </span>
               <span className="text-white/20 text-xs hidden lg:block">
-                {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('en-GB') : 'Never'}
+                Last login: {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('en-GB') : 'Never'}
               </span>
               <button onClick={() => sendPasswordReset(u.email)} className="text-[#c9a84c]/60 text-xs hover:text-[#c9a84c] transition-colors whitespace-nowrap">
                 {resetEmail === u.email ? '✓ Sent' : 'Reset'}
