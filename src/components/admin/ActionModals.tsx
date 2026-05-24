@@ -335,6 +335,24 @@ export function FollowUpModal({ isOpen, onClose, clientName, clientEmail, caseTy
   const [scheduledDate, setScheduledDate] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
+  const [generating, setGenerating] = useState(false)
+
+  async function generateMessage() {
+    setGenerating(true)
+    try {
+      const res = await fetch('/api/actions/generate-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caseType, clientName, referenceId, messageType: 'follow-up' }),
+      })
+      const data = await res.json()
+      setMessage(data.message)
+    } catch {
+      // silent
+    } finally {
+      setGenerating(false)
+    }
+  }
 
   async function sendFollowUp() {
     setSending(true)
@@ -362,7 +380,17 @@ export function FollowUpModal({ isOpen, onClose, clientName, clientEmail, caseTy
           <p className="text-white/60 text-sm">{clientEmail}</p>
         </div>
         <div>
-          <label className="text-white/40 text-xs block mb-1.5">Message to client (optional)</label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-white/40 text-xs">Message to client (optional)</label>
+            <button
+              type="button"
+              onClick={generateMessage}
+              disabled={generating}
+              className="text-[#c9a84c] text-xs hover:underline disabled:opacity-50 transition-opacity"
+            >
+              {generating ? 'Generating...' : '⚡ Generate AI message'}
+            </button>
+          </div>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}

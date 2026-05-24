@@ -8,6 +8,11 @@ import { NotesSection } from '@/components/admin/NotesSection'
 import Link from 'next/link'
 
 function renderMarkdown(text: string): string {
+  // Fix header meta lines — put each on its own line
+  text = text.replace(/(\*\*Date:\*\*[^\n]+)\s+(\*\*Prepared for:\*\*)/g, '$1\n$2')
+  text = text.replace(/(\*\*Prepared for:\*\*[^\n]+)\s+(\*\*(?:Case Reference|Matter):\*\*)/g, '$1\n$2')
+  text = text.replace(/(\*\*(?:Case Reference|Matter):\*\*[^\n]+)\s+(\*\*)/g, '$1\n$2')
+
   let result = text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/^#### (.+)$/gm, '<p style="color:#c9a84c;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin:20px 0 6px 0;">$1</p>')

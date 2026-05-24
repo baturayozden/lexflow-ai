@@ -27,19 +27,50 @@ module.exports = async (req, res) => {
     }
   }
 
-  const prompt = `You are an AI assistant for a UK immigration law firm. A new client has submitted an intake form. Based on the following details, write a professional case summary for the solicitor that includes: 1) Client overview, 2) Current immigration status, 3) Requested legal service, 4) Key considerations and urgency, 5) Recommended next steps. Keep it concise and professional.
+  const prompt = `You are an expert UK immigration law solicitor's assistant. A new client has submitted an intake form.
+
+IMPORTANT LANGUAGE INSTRUCTION: The client may have written their description in any language. If it is not in English, translate it and note the original language. Always write the full case summary in professional English.
+
+Based on the following client details, write a comprehensive professional case summary for the supervising solicitor. Format it clearly with each header on its own line.
 
 Client details:
 - Full Name: ${name}
 - Date of Birth: ${dob}
 - Nationality: ${nationality}
 - Current Visa Type: ${visaType}
-- Visa Expiry Date: ${visaExpiry}
+- Visa Expiry Date: ${visaExpiry || 'Not provided'}
 - Case Type: ${caseType}
-- Client description: ${description}
-- Client's approximate location based on IP: ${city}, ${country}. Include this in the case summary as 'Location: ${city}, ${country} (based on IP)'
+- Client's description (may be in any language): ${description}
+- Client Location: ${city}, ${country} (based on IP)
+- Today's Date: ${new Date().toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'})}
 
-Today's date is ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}. Use this as the date in the case summary header.`;
+Write the summary with these exact sections, each on a NEW LINE:
+
+**Date:** [today's date]
+**Prepared for:** Supervising Solicitor
+**Case Reference:** Pending Assignment
+
+---
+
+## 1) CLIENT OVERVIEW
+[Name, DOB with age, nationality, location]
+
+## 2) CLIENT'S DESCRIPTION
+[If not in English, state: "Originally submitted in [language]:" then provide the original text, followed by "Translation:" and the English translation. If already in English, just include the description.]
+
+## 3) CURRENT IMMIGRATION STATUS
+[Current visa, expiry, status assessment]
+
+## 4) REQUESTED LEGAL SERVICE
+[Case type and what the client is seeking]
+
+## 5) KEY CONSIDERATIONS & URGENCY
+[Critical factors, risks, timeline concerns, urgency level: HIGH/MEDIUM/LOW]
+
+## 6) RECOMMENDED NEXT STEPS
+[Numbered action list for the solicitor]
+
+**Priority Level:** [HIGH/MEDIUM/LOW] — [one sentence reason]`;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
