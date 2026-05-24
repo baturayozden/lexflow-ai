@@ -53,7 +53,7 @@ export default function NewFirmPage() {
         }
       }
 
-      router.push('/admin/firms')
+      router.push(`/admin/firms/${firm.id}`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       setLoading(false)

@@ -68,6 +68,25 @@ export default async function FirmDetailPage({ params }: { params: Promise<{ id:
         )}
       </div>
 
+      {/* Public Intake URL */}
+      <div className="bg-[#c9a84c]/5 border border-[#c9a84c]/20 rounded-xl p-5 mb-6">
+        <p className="text-[#c9a84c] text-xs font-semibold uppercase tracking-wider mb-1">Public Intake URL</p>
+        <p className="text-white/40 text-xs mb-3">Share this URL with the firm. Their clients can submit intake forms directly.</p>
+        <div className="flex items-center gap-3">
+          <code className="text-[#c9a84c] text-sm bg-[#c9a84c]/5 border border-[#c9a84c]/20 rounded-lg px-3 py-2 flex-1 truncate">
+            app.lexflow.co.uk/intake/{(f.slug as string) || (f.id as string)}
+          </code>
+          <a
+            href={`https://app.lexflow.co.uk/intake/${(f.slug as string) || (f.id as string)}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-[#c9a84c] text-sm border border-[#c9a84c]/30 px-3 py-2 rounded-lg hover:bg-[#c9a84c]/10 transition-colors flex-shrink-0"
+          >
+            Open →
+          </a>
+        </div>
+      </div>
+
       {/* Users */}
       <div className="bg-white/2 border border-white/10 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">

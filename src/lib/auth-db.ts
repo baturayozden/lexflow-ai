@@ -27,15 +27,32 @@ export async function updateLastLogin(userId: string) {
     .eq('id', userId)
 }
 
+export async function getFirmBySlug(slug: string) {
+  const { data, error } = await supabaseAdmin
+    .from('firms')
+    .select('*')
+    .eq('slug', slug)
+    .eq('active', true)
+    .single()
+  if (error) return null
+  return data
+}
+
 export async function createFirm(data: {
   name: string
   email?: string
   phone?: string
   plan?: string
+  address?: string
 }) {
+  const slug = data.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+
   const { data: firm, error } = await supabaseAdmin
     .from('firms')
-    .insert([{ ...data }])
+    .insert([{ ...data, slug }])
     .select()
     .single()
   if (error) throw error

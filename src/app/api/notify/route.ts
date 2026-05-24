@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY || 'placeholder')
@@ -126,10 +127,34 @@ export async function POST(req: NextRequest) {
 
     if (type === 'new_case') {
       console.log('[notify] Sending email via Resend...')
+
+      // For firm cases, notify the managing partner; for demo cases, notify platform admin
+      let notifyEmail = process.env.ADMIN_EMAIL!
+      let caseLabel = 'Demo Case'
+      let dashboardUrl = 'https://lexflow.co.uk/admin'
+
+      if (data.firm_id) {
+        caseLabel = 'New Client Enquiry'
+        dashboardUrl = 'https://app.lexflow.co.uk/dashboard/cases'
+        try {
+          const { data: firmUser } = await supabaseAdmin
+            .from('users')
+            .select('email')
+            .eq('firm_id', data.firm_id)
+            .eq('role', 'managing_partner')
+            .eq('active', true)
+            .limit(1)
+            .single()
+          if (firmUser?.email) notifyEmail = firmUser.email
+        } catch {
+          // fall back to ADMIN_EMAIL
+        }
+      }
+
       const result = await resend.emails.send({
         from: 'LexFlow <onboarding@resend.dev>',
-        to: process.env.ADMIN_EMAIL!,
-        subject: `New Demo Case: ${data.client_name} — ${data.case_type}`,
+        to: notifyEmail,
+        subject: `${caseLabel}: ${data.client_name} — ${data.case_type}`,
         html: `
 <!DOCTYPE html>
 <html>
@@ -141,12 +166,12 @@ export async function POST(req: NextRequest) {
         <tr>
           <td style="padding: 32px 40px; border-bottom: 1px solid rgba(255,255,255,0.1);">
             <span style="color:#c9a84c; font-size:22px; font-weight:700;">Lex</span><span style="color:#ffffff; font-size:22px; font-weight:700;">Flow</span>
-            <span style="color:rgba(255,255,255,0.4); font-size:14px; margin-left:12px;">New Demo Case</span>
+            <span style="color:rgba(255,255,255,0.4); font-size:14px; margin-left:12px;">${caseLabel}</span>
           </td>
         </tr>
         <tr>
           <td style="padding: 32px 40px;">
-            <p style="color:#c9a84c; font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; margin:0 0 24px 0;">Demo Submission</p>
+            <p style="color:#c9a84c; font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; margin:0 0 24px 0;">${caseLabel}</p>
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr><td style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
                 <span style="color:rgba(255,255,255,0.4); font-size:12px; display:block; margin-bottom:4px;">Client Name</span>
@@ -174,7 +199,7 @@ export async function POST(req: NextRequest) {
               </td></tr>
             </table>
             <div style="margin-top:32px;">
-              <a href="https://lexflow.co.uk/admin" style="display:inline-block; background:#c9a84c; color:#0a1628; padding:14px 28px; border-radius:8px; text-decoration:none; font-weight:700; font-size:14px;">View in Admin Panel →</a>
+              <a href="${dashboardUrl}" style="display:inline-block; background:#c9a84c; color:#0a1628; padding:14px 28px; border-radius:8px; text-decoration:none; font-weight:700; font-size:14px;">View Case →</a>
             </div>
           </td>
         </tr>

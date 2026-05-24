@@ -12,6 +12,11 @@ export default auth((req) => {
     return NextResponse.next()
   }
 
+  // Public intake pages — no auth required
+  if (pathname.startsWith('/intake/')) {
+    return NextResponse.next()
+  }
+
   // App subdomain routing
   if (isAppSubdomain) {
     if (pathname === '/login' || pathname.startsWith('/api/auth')) {
@@ -46,5 +51,5 @@ export default auth((req) => {
 })
 
 export const config = {
-  matcher: ['/admin/:path*', '/platform/:path*', '/dashboard/:path*', '/login', '/api/seed', '/api/cron/:path*'],
+  matcher: ['/admin/:path*', '/platform/:path*', '/dashboard/:path*', '/intake/:path*', '/login', '/api/seed', '/api/cron/:path*'],
 }
