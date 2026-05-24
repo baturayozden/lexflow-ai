@@ -1,8 +1,12 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { SignOutButton } from '@/components/SignOutButton'
+import { auth } from '@/auth'
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  const session = await auth()
+  const role = (session?.user as Record<string, unknown>)?.role as string | undefined
+
   return (
     <div className="min-h-screen bg-[#0a1628]">
       {/* Top nav */}
@@ -45,6 +49,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               >
                 Settings
               </Link>
+              {role === 'platform_admin' && (
+                <Link
+                  href="/platform"
+                  className="text-[#c9a84c] hover:text-[#f0d080] text-sm px-3 py-1.5 rounded-lg hover:bg-[#c9a84c]/5 transition-colors font-medium"
+                >
+                  Platform ↗
+                </Link>
+              )}
             </div>
           </div>
           <SignOutButton />
