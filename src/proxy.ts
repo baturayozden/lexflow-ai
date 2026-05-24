@@ -5,6 +5,11 @@ export default auth((req) => {
   const { pathname } = req.nextUrl
   const session = req.auth
 
+  // Skip auth for cron and seed endpoints
+  if (pathname.startsWith('/api/seed') || pathname.startsWith('/api/cron')) {
+    return NextResponse.next()
+  }
+
   // Protect /admin routes (except login page itself)
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     if (!session) {
@@ -27,5 +32,5 @@ export default auth((req) => {
 })
 
 export const config = {
-  matcher: ['/admin/:path*', '/platform/:path*'],
+  matcher: ['/admin/:path*', '/platform/:path*', '/api/seed', '/api/cron/:path*'],
 }
