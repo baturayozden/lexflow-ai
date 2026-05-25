@@ -232,6 +232,28 @@ export async function getFirmStats(firmId: string) {
   }
 }
 
+// ── Alerts ────────────────────────────────────────────────────────────────────
+
+export async function getOverdueAlerts() {
+  const { data, error } = await supabaseAdmin
+    .from('payments')
+    .select('*, firms(id, name)')
+    .eq('status', 'overdue')
+    .order('due_at', { ascending: true })
+  if (error) return []
+  return data || []
+}
+
+export async function getPendingPayments() {
+  const { data, error } = await supabaseAdmin
+    .from('payments')
+    .select('*, firms(id, name)')
+    .eq('status', 'pending')
+    .order('due_at', { ascending: true })
+  if (error) return []
+  return data || []
+}
+
 // ── Seed ──────────────────────────────────────────────────────────────────────
 
 export async function seedSuperAdmin() {

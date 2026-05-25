@@ -2,11 +2,17 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { getFirmById, getUsersByFirm, getPaymentsByFirm, getFirmNotes, getFirmStats } from '@/lib/auth-db'
 import { isPlatformAdmin } from '@/lib/permissions'
+import { supabaseAdmin } from '@/lib/supabase'
 import Link from 'next/link'
 import { FirmUsersTable } from '@/components/admin/FirmUsersTable'
 import { FirmPayments } from '@/components/admin/FirmPayments'
 import { FirmNotes } from '@/components/admin/FirmNotes'
 import { FirmActions } from '@/components/admin/FirmActions'
+import { FirmEditor } from '@/components/admin/FirmEditor'
+import { RevenueChart } from '@/components/admin/RevenueChart'
+import { PaymentTimeline } from '@/components/admin/PaymentTimeline'
+import { UsageChart } from '@/components/admin/UsageChart'
+import { OnboardingChecklist } from '@/components/admin/OnboardingChecklist'
 
 const PLAN_LABELS: Record<string, string> = {
   quick_win: 'Quick Win — £997',
@@ -36,11 +42,26 @@ export default async function FirmDetailPage({ params }: { params: Promise<{ id:
 
   if (!firm) redirect('/admin/firms')
 
+  // Fetch cases for usage chart
+  const casesResult = await supabaseAdmin
+    .from('cases')
+    .select('created_at')
+    .eq('firm_id', id)
+    .is('deleted_at', null)
+  const firmCases = casesResult.data
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const f = firm as any
 
-  const totalRevenue = payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0)
-  const pendingRevenue = payments.filter(p => p.status === 'pending' || p.status === 'overdue').reduce((sum, p) => sum + p.amount, 0)
+  const totalRevenue = payments.filter((p: { status: string }) => p.status === 'paid').reduce((sum: number, p: { amount: number }) => sum + p.amount, 0)
+  const pendingRevenue = payments.filter((p: { status: string }) => p.status === 'pending' || p.status === 'overdue').reduce((sum: number, p: { amount: number }) => sum + p.amount, 0)
+
+  const onboardingSteps: Record<string, boolean> = (f.onboarding_steps as Record<string, boolean>) || {}
+  const autoDetect = {
+    hasUsers: (users?.length || 0) > 0,
+    hasCases: stats.totalCases > 0,
+    hasPayments: payments.some((p: { status: string }) => p.status === 'paid'),
+  }
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -57,6 +78,22 @@ export default async function FirmDetailPage({ params }: { params: Promise<{ id:
         }`}>
           {PLAN_LABELS[f.plan] || f.plan}
         </span>
+        {!f.active && (
+          <span className="text-xs px-2 py-1 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">Inactive</span>
+        )}
+        <div className="ml-auto">
+          <FirmEditor firm={{
+            id: f.id,
+            name: f.name,
+            email: f.email,
+            phone: f.phone,
+            website: f.website,
+            address: f.address,
+            plan: f.plan,
+            primary_color: f.primary_color,
+            active: f.active,
+          }} />
+        </div>
       </div>
 
       {/* Stats */}
@@ -83,6 +120,12 @@ export default async function FirmDetailPage({ params }: { params: Promise<{ id:
         </div>
       </div>
 
+      {/* Charts */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <UsageChart cases={firmCases || []} casesThisMonth={stats.casesThisMonth} />
+        <RevenueChart payments={payments as { amount: number; status: string; paid_at?: string | null; created_at: string }[]} />
+      </div>
+
       {/* Firm Details */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-white/2 border border-white/10 rounded-xl p-4">
@@ -99,6 +142,12 @@ export default async function FirmDetailPage({ params }: { params: Promise<{ id:
             {new Date(f.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
+        {!!f.website && (
+          <div className="bg-white/2 border border-white/10 rounded-xl p-4">
+            <p className="text-white/40 text-xs mb-1">Website</p>
+            <a href={f.website} target="_blank" rel="noreferrer" className="text-[#c9a84c] text-sm hover:underline truncate block">{f.website}</a>
+          </div>
+        )}
         {!!f.address && (
           <div className="col-span-3 bg-white/2 border border-white/10 rounded-xl p-4">
             <p className="text-white/40 text-xs mb-1">Address</p>
@@ -106,6 +155,9 @@ export default async function FirmDetailPage({ params }: { params: Promise<{ id:
           </div>
         )}
       </div>
+
+      {/* Onboarding Checklist */}
+      <OnboardingChecklist firmId={id} steps={onboardingSteps} autoDetect={autoDetect} />
 
       {/* Public Intake URL */}
       <div className="bg-[#c9a84c]/5 border border-[#c9a84c]/20 rounded-xl p-5 mb-4">
@@ -150,6 +202,16 @@ export default async function FirmDetailPage({ params }: { params: Promise<{ id:
       <div className="mb-6">
         <FirmPayments firmId={id} initialPayments={payments} firmPlan={f.plan || 'starter'} />
       </div>
+
+      {/* Payment Timeline */}
+      {payments.length > 0 && (
+        <div className="mb-6">
+          <PaymentTimeline payments={payments as {
+            id: string; amount: number; status: string; payment_type?: string | null;
+            description?: string | null; paid_at?: string | null; due_at?: string | null; created_at: string
+          }[]} />
+        </div>
+      )}
 
       {/* Users */}
       <div className="bg-white/2 border border-white/10 rounded-xl p-6 mb-6">

@@ -1,6 +1,6 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
-import { getFirms } from '@/lib/auth-db'
+import { getFirms, getOverdueAlerts } from '@/lib/auth-db'
 import { isPlatformAdmin } from '@/lib/permissions'
 import Link from 'next/link'
 
@@ -21,14 +21,16 @@ export default async function FirmsPage() {
   if (!session) redirect('/admin/login')
   if (!isPlatformAdmin((session.user as Record<string, unknown>).role as string)) redirect('/admin')
 
-  const firms = await getFirms()
+  const [firms, overdueAlerts] = await Promise.all([
+    getFirms(),
+    getOverdueAlerts().catch(() => []),
+  ])
 
   const totalMRR = firms?.reduce((sum: number, f: Record<string, unknown>) => {
     const planValues: Record<string, number> = { retainer: 1500, full_setup: 0, quick_win: 0, starter: 0 }
     return sum + (planValues[f.plan as string] || 0)
   }, 0) || 0
 
-  // Also add revenue from recorded monthly payments for non-retainer clients
   const retainerCount = firms?.filter((f: Record<string, unknown>) => f.plan === 'retainer').length || 0
   const newThisMonth = firms?.filter((f: Record<string, unknown>) =>
     new Date(f.created_at as string) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
@@ -48,6 +50,42 @@ export default async function FirmsPage() {
           + Add Client Firm
         </Link>
       </div>
+
+      {/* Overdue Alerts Banner */}
+      {overdueAlerts.length > 0 && (
+        <div className="bg-red-500/8 border border-red-500/20 rounded-xl p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 rounded-full bg-red-400 flex-shrink-0 mt-0.5 flex items-center justify-center">
+              <span className="text-white text-[10px] font-bold">!</span>
+            </div>
+            <div>
+              <p className="text-red-400 font-semibold text-sm">
+                {overdueAlerts.length} overdue payment{overdueAlerts.length !== 1 ? 's' : ''} require attention
+              </p>
+              <div className="mt-2 space-y-1">
+                {overdueAlerts.slice(0, 3).map((alert: Record<string, unknown>) => {
+                  const alertFirm = alert.firms as Record<string, unknown> | null
+                  return (
+                    <div key={alert.id as string} className="flex items-center gap-2">
+                      <span className="text-red-400/60 text-xs">•</span>
+                      <Link
+                        href={`/admin/firms/${alertFirm?.id}`}
+                        className="text-red-400/80 text-xs hover:text-red-400 transition-colors"
+                      >
+                        {alertFirm?.name as string || 'Unknown firm'} — £{(alert.amount as number).toLocaleString()} overdue
+                        {!!alert.due_at && ` (due ${new Date(alert.due_at as string).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })})`}
+                      </Link>
+                    </div>
+                  )
+                })}
+                {overdueAlerts.length > 3 && (
+                  <p className="text-red-400/50 text-xs ml-3">+{overdueAlerts.length - 3} more</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4 mb-8">

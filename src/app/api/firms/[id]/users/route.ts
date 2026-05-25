@@ -43,9 +43,9 @@ export async function POST(
 
   // Send welcome email
   const resend = new Resend(process.env.RESEND_API_KEY)
+  const firm = await getFirmById(id).catch(() => null)
   try {
-    const firm = await getFirmById(id)
-    console.log('[welcome-email] Sending to:', body.email, 'firm:', (firm as Record<string, unknown>)?.name)
+    console.log('[welcome-email] Sending to:', body.email, 'firm:', (firm as Record<string, unknown> | null)?.name)
     const emailResult = await resend.emails.send({
       from: 'LexFlow <notifications@lexflow.co.uk>',
       to: body.email,
@@ -64,7 +64,7 @@ export async function POST(
         <tr><td style="padding:32px 40px;">
           <h2 style="color:#ffffff;margin:0 0 16px;">Welcome to LexFlow, ${body.name}!</h2>
           <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.6;margin:0 0 24px;">
-            Your account has been created for <strong style="color:#ffffff;">${(firm as Record<string, unknown>)?.name as string || 'your firm'}</strong>.
+            Your account has been created for <strong style="color:#ffffff;">${(firm as Record<string, unknown> | null)?.name as string || 'your firm'}</strong>.
             You can now access your AI-powered case management dashboard.
           </p>
           <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:20px 24px;margin-bottom:24px;">
@@ -89,6 +89,56 @@ export async function POST(
     console.log('[welcome-email] Result:', JSON.stringify(emailResult))
   } catch (emailErr) {
     console.error('[welcome-email] Error:', emailErr)
+  }
+
+  // If this is the first user, send onboarding notification to platform admin
+  try {
+    const allUsers = await getUsersByFirm(id)
+    if (allUsers.length === 1) {
+      const firm2 = firm
+      const adminEmail = process.env.ADMIN_EMAIL || 'baturay@lexflow.co.uk'
+      await resend.emails.send({
+        from: 'LexFlow <notifications@lexflow.co.uk>',
+        to: adminEmail,
+        subject: `🎉 First User Created — ${(firm2 as Record<string, unknown>)?.name as string || 'New Firm'}`,
+        html: `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#0a1628;border-radius:12px;overflow:hidden;">
+        <tr><td style="padding:32px 40px;border-bottom:1px solid rgba(255,255,255,0.1);">
+          <span style="color:#c9a84c;font-size:22px;font-weight:700;">Lex</span>
+          <span style="color:#ffffff;font-size:22px;font-weight:700;">Flow</span>
+        </td></tr>
+        <tr><td style="padding:32px 40px;">
+          <h2 style="color:#ffffff;margin:0 0 16px;">First User Created</h2>
+          <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.6;margin:0 0 24px;">
+            <strong style="color:#ffffff;">${(firm2 as Record<string, unknown>)?.name as string || 'A firm'}</strong> has had their first user added.
+            The onboarding checklist has been automatically updated.
+          </p>
+          <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:20px 24px;margin-bottom:24px;">
+            <p style="color:rgba(255,255,255,0.4);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 12px;">New User Details</p>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="color:rgba(255,255,255,0.5);font-size:13px;padding-bottom:8px;width:80px;">Name</td><td style="color:#ffffff;font-size:13px;padding-bottom:8px;">${body.name}</td></tr>
+              <tr><td style="color:rgba(255,255,255,0.5);font-size:13px;">Email</td><td style="color:#ffffff;font-size:13px;">${body.email}</td></tr>
+            </table>
+          </div>
+          <a href="https://lexflow.co.uk/admin/firms/${id}" style="display:inline-block;background:#c9a84c;color:#0a1628;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">View Firm →</a>
+        </td></tr>
+        <tr><td style="padding:20px 40px;border-top:1px solid rgba(255,255,255,0.1);">
+          <p style="color:rgba(255,255,255,0.2);font-size:12px;margin:0;">LexFlow · lexflow.co.uk</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+      })
+    }
+  } catch (onboardingErr) {
+    console.error('[onboarding-email] Error:', onboardingErr)
   }
 
   return NextResponse.json(user)
