@@ -3,6 +3,34 @@ import { auth } from '@/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { isPlatformAdmin } from '@/lib/permissions'
 
+export async function GET(
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { id } = await params
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userFirmId = (session.user as any)?.firmId as string | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = (session.user as any)?.role as string | undefined
+
+  // Users can only get their own firm; platform admins can get any
+  if (!isPlatformAdmin(userRole || '') && userFirmId !== id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('firms')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data)
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
