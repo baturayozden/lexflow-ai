@@ -4,6 +4,18 @@ import { getFirms } from '@/lib/auth-db'
 import { isPlatformAdmin } from '@/lib/permissions'
 import Link from 'next/link'
 
+function paymentDot(payments: { status: string }[]): { color: string; title: string } {
+  if (!payments?.length) return { color: 'bg-white/20', title: 'No payments recorded' }
+  const sorted = [...payments].sort((a, b) =>
+    a.status === 'overdue' ? -1 : b.status === 'overdue' ? 1 :
+    a.status === 'pending' ? -1 : b.status === 'pending' ? 1 : 0
+  )
+  const top = sorted[0].status
+  if (top === 'overdue') return { color: 'bg-red-400', title: 'Payment overdue' }
+  if (top === 'pending') return { color: 'bg-yellow-400', title: 'Payment pending' }
+  return { color: 'bg-green-400', title: 'Up to date' }
+}
+
 export default async function FirmsPage() {
   const session = await auth()
   if (!session) redirect('/admin/login')
@@ -16,6 +28,7 @@ export default async function FirmsPage() {
     return sum + (planValues[f.plan as string] || 0)
   }, 0) || 0
 
+  // Also add revenue from recorded monthly payments for non-retainer clients
   const retainerCount = firms?.filter((f: Record<string, unknown>) => f.plan === 'retainer').length || 0
   const newThisMonth = firms?.filter((f: Record<string, unknown>) =>
     new Date(f.created_at as string) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
@@ -50,7 +63,7 @@ export default async function FirmsPage() {
           <div className="text-[#c9a84c] font-bold text-3xl">{newThisMonth}</div>
           <div className="text-white/40 text-sm mt-1">New This Month</div>
         </div>
-        <div className="bg-white/2 border border-white/10 rounded-xl p-5">
+        <div className="bg-[#c9a84c]/5 border border-[#c9a84c]/20 rounded-xl p-5">
           <div className="text-[#c9a84c] font-bold text-3xl">£{totalMRR.toLocaleString()}</div>
           <div className="text-white/40 text-sm mt-1">Monthly MRR</div>
         </div>
@@ -58,54 +71,64 @@ export default async function FirmsPage() {
 
       {/* Firms list */}
       <div className="space-y-3">
-        {firms?.map((firm: Record<string, unknown>) => (
-          <Link
-            key={firm.id as string}
-            href={`/admin/firms/${firm.id}`}
-            className="block bg-white/2 border border-white/10 rounded-xl p-5 hover:border-[#c9a84c]/30 transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                {firm.logo_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={firm.logo_url as string}
-                    alt={firm.name as string}
-                    className="w-10 h-10 rounded-lg object-contain bg-white/5 p-1"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/20 flex items-center justify-center text-[#c9a84c] font-bold text-sm">
-                    {(firm.name as string).charAt(0)}
-                  </div>
-                )}
-                <div>
-                  <div className="text-white font-medium">{firm.name as string}</div>
-                  <div className="text-white/40 text-sm">{(firm.email as string) || '—'}</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="text-white/40 text-xs">Plan</div>
-                  <span className={`text-xs px-2 py-1 rounded-full border ${
-                    firm.plan === 'retainer' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                    firm.plan === 'full_setup' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                    firm.plan === 'quick_win' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                    'bg-white/5 text-white/40 border-white/10'
-                  }`}>
-                    {(firm.plan as string)?.replace('_', ' ')}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <div className="text-white/40 text-xs">Added</div>
-                  <div className="text-white/60 text-sm">
-                    {new Date(firm.created_at as string).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+        {firms?.map((firm: Record<string, unknown>) => {
+          const payments = (firm.payments as { status: string }[]) || []
+          const dot = paymentDot(payments)
+          return (
+            <Link
+              key={firm.id as string}
+              href={`/admin/firms/${firm.id}`}
+              className="block bg-white/2 border border-white/10 rounded-xl p-5 hover:border-[#c9a84c]/30 transition-colors"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  {firm.logo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={firm.logo_url as string}
+                      alt={firm.name as string}
+                      className="w-10 h-10 rounded-lg object-contain bg-white/5 p-1"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/20 flex items-center justify-center text-[#c9a84c] font-bold text-sm">
+                      {(firm.name as string).charAt(0)}
+                    </div>
+                  )}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-white font-medium">{firm.name as string}</div>
+                      <span
+                        className={`inline-block w-2 h-2 rounded-full ${dot.color}`}
+                        title={dot.title}
+                      />
+                    </div>
+                    <div className="text-white/40 text-sm">{(firm.email as string) || '—'}</div>
                   </div>
                 </div>
-                <div className="text-white/20 text-sm">→</div>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <div className="text-white/40 text-xs">Plan</div>
+                    <span className={`text-xs px-2 py-1 rounded-full border ${
+                      firm.plan === 'retainer' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                      firm.plan === 'full_setup' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                      firm.plan === 'quick_win' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                      'bg-white/5 text-white/40 border-white/10'
+                    }`}>
+                      {(firm.plan as string)?.replace('_', ' ')}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-white/40 text-xs">Added</div>
+                    <div className="text-white/60 text-sm">
+                      {new Date(firm.created_at as string).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </div>
+                  </div>
+                  <div className="text-white/20 text-sm">→</div>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          )
+        })}
         {!firms?.length && (
           <div className="bg-white/2 border border-white/10 rounded-xl p-12 text-center">
             <p className="text-white/30 text-sm">No client firms yet.</p>

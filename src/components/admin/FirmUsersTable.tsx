@@ -19,7 +19,7 @@ interface User {
   last_login_at: string | null
 }
 
-export function FirmUsersTable({ initialUsers }: { initialUsers: User[] }) {
+export function FirmUsersTable({ initialUsers, firmId: _firmId }: { initialUsers: User[]; firmId?: string }) {
   const [users, setUsers] = useState<User[]>(initialUsers)
 
   function handleUpdate(id: string, changes: Partial<User>) {

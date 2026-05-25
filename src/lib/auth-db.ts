@@ -62,7 +62,7 @@ export async function createFirm(data: {
 export async function getFirms() {
   const { data, error } = await supabaseAdmin
     .from('firms')
-    .select('*, users(count)')
+    .select('*, users(count), payments(amount, status, payment_type)')
     .neq('plan', 'platform')
     .order('created_at', { ascending: false })
   if (error) throw error
@@ -138,6 +138,101 @@ export async function deleteUser(id: string) {
     .eq('id', id)
   if (error) throw error
 }
+
+// ── Payments ──────────────────────────────────────────────────────────────────
+
+export async function getPaymentsByFirm(firmId: string) {
+  const { data, error } = await supabaseAdmin
+    .from('payments')
+    .select('*')
+    .eq('firm_id', firmId)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data || []
+}
+
+export async function addPayment(data: {
+  firm_id: string
+  amount: number
+  currency?: string
+  payment_type?: string
+  status?: string
+  description?: string
+  paid_at?: string
+  due_at?: string
+}) {
+  const { data: payment, error } = await supabaseAdmin
+    .from('payments')
+    .insert([data])
+    .select()
+    .single()
+  if (error) throw error
+  return payment
+}
+
+export async function updatePaymentStatus(id: string, status: string) {
+  const { data, error } = await supabaseAdmin
+    .from('payments')
+    .update({ status, paid_at: status === 'paid' ? new Date().toISOString() : null })
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+// ── Firm Notes ────────────────────────────────────────────────────────────────
+
+export async function getFirmNotes(firmId: string) {
+  const { data, error } = await supabaseAdmin
+    .from('firm_notes')
+    .select('*')
+    .eq('firm_id', firmId)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data || []
+}
+
+export async function addFirmNote(firmId: string, content: string, author: string) {
+  const { data, error } = await supabaseAdmin
+    .from('firm_notes')
+    .insert([{ firm_id: firmId, content, author }])
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+// ── Firm Stats ────────────────────────────────────────────────────────────────
+
+export async function getFirmStats(firmId: string) {
+  const [casesRes, actionsRes, usersRes] = await Promise.all([
+    supabaseAdmin.from('cases').select('id, created_at, status').eq('firm_id', firmId).is('deleted_at', null),
+    supabaseAdmin.from('case_actions').select('id, completed, case_id'),
+    supabaseAdmin.from('users').select('id, active').eq('firm_id', firmId),
+  ])
+
+  const cases = casesRes.data || []
+  const allActions = actionsRes.data || []
+  const users = usersRes.data || []
+
+  const caseIds = new Set(cases.map(c => c.id))
+  const firmActions = allActions.filter(a => caseIds.has(a.case_id))
+
+  const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+  const casesThisMonth = cases.filter(c => new Date(c.created_at) > monthAgo).length
+
+  return {
+    totalCases: cases.length,
+    casesThisMonth,
+    totalActions: firmActions.length,
+    completedActions: firmActions.filter(a => a.completed).length,
+    activeUsers: users.filter(u => u.active).length,
+    aiCallsEstimate: cases.length + firmActions.filter(a => a.completed).length,
+  }
+}
+
+// ── Seed ──────────────────────────────────────────────────────────────────────
 
 export async function seedSuperAdmin() {
   const password_hash = await hashPassword(process.env.ADMIN_PASSWORD || 'LexFlow2026!')

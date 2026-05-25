@@ -8,7 +8,7 @@ export default auth((req) => {
   const isAppSubdomain = host.startsWith('app.')
 
   // Skip auth for public API routes
-  if (pathname.startsWith('/api/seed') || pathname.startsWith('/api/cron')) {
+  if (pathname.startsWith('/api/seed') || pathname.startsWith('/api/cron') || pathname.startsWith('/api/chat')) {
     return NextResponse.next()
   }
 
@@ -51,5 +51,5 @@ export default auth((req) => {
 })
 
 export const config = {
-  matcher: ['/admin/:path*', '/platform/:path*', '/dashboard/:path*', '/intake/:path*', '/login', '/api/seed', '/api/cron/:path*'],
+  matcher: ['/admin/:path*', '/platform/:path*', '/dashboard/:path*', '/intake/:path*', '/login', '/api/seed', '/api/cron/:path*', '/api/chat'],
 }

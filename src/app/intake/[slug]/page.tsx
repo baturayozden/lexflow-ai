@@ -2,8 +2,16 @@ import { getFirmBySlug } from '@/lib/auth-db'
 import { notFound } from 'next/navigation'
 import { PublicIntakeForm } from '@/components/PublicIntakeForm'
 
-export default async function PublicIntakePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PublicIntakePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ embed?: string }>
+}) {
   const { slug } = await params
+  const { embed } = await searchParams
+  const isEmbed = embed === 'true'
   const firm = await getFirmBySlug(slug)
 
   if (!firm) notFound()
@@ -11,6 +19,18 @@ export default async function PublicIntakePage({ params }: { params: Promise<{ s
   const f = firm as Record<string, unknown>
   const primaryColor = (f.primary_color as string) || '#c9a84c'
   const firmName = f.name as string
+
+  if (isEmbed) {
+    return (
+      <div className="min-h-screen bg-[#0a1628] p-4">
+        <PublicIntakeForm
+          firmId={f.id as string}
+          firmName={firmName}
+          primaryColor={primaryColor}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#0a1628]">
