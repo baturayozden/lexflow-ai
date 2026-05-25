@@ -8,7 +8,7 @@ export default auth((req) => {
   const isAppSubdomain = host.startsWith('app.')
 
   // Skip auth for public API routes
-  if (pathname.startsWith('/api/seed') || pathname.startsWith('/api/cron') || pathname.startsWith('/api/chat')) {
+  if (pathname.startsWith('/api/seed') || pathname.startsWith('/api/cron') || pathname.startsWith('/api/chat') || pathname === '/widget-test') {
     return NextResponse.next()
   }
 
