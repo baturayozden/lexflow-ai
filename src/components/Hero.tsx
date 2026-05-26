@@ -370,14 +370,14 @@ export default function Hero() {
                   See How It Works
                 </motion.a>
                 <motion.a
-                  href="/demo"
+                  href="/demo/index.html"
                   whileHover={reduced ? {} : { scale: 1.03 }}
                   whileTap={reduced ? {} : { scale: 0.97 }}
                   transition={{ type: 'spring', stiffness: 420, damping: 18 }}
                   className="inline-flex items-center justify-center gap-2 font-semibold px-7 py-3.5 rounded-xl text-sm text-white/90 hover:text-white transition-colors"
                   style={{ border: '1px solid rgba(201,168,76,0.35)' }}
                 >
-                  Try Live Demo →
+                  ▶ See it in action
                 </motion.a>
               </motion.div>
 

@@ -65,6 +65,20 @@ export default function Navbar() {
             </motion.a>
           ))}
 
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 * NAV_LINKS.length + 0.3, ease }}
+          >
+            <Link
+              href="/why-not-harvey"
+              className="relative group text-white/60 hover:text-white text-sm font-medium transition-colors duration-200"
+            >
+              Why not Harvey?
+              <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-gold group-hover:w-full transition-all duration-300" />
+            </Link>
+          </motion.div>
+
           <motion.a
             href="#contact"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -132,6 +146,13 @@ export default function Navbar() {
                 {item}
               </a>
             ))}
+            <Link
+              href="/why-not-harvey"
+              onClick={() => setMenuOpen(false)}
+              className="text-white/70 hover:text-white font-medium transition-colors"
+            >
+              Why not Harvey?
+            </Link>
             <a
               href="#contact"
               onClick={() => setMenuOpen(false)}

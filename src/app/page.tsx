@@ -93,6 +93,30 @@ export default function Home() {
         </p>
       </motion.section>
 
+      {/* Stats bar */}
+      <motion.section
+        className="py-16 px-6 border-b border-white/5"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        style={{ pointerEvents: 'auto' }}
+      >
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {[
+            { number: '~3hrs', label: 'Saved per client intake' },
+            { number: '5 days', label: 'Average setup time' },
+            { number: '£997', label: 'Starting price' },
+            { number: '24/7', label: 'AI works while you sleep' },
+          ].map((stat, i) => (
+            <div key={i}>
+              <div className="text-[#c9a84c] font-bold text-3xl md:text-4xl">{stat.number}</div>
+              <div className="text-white/50 text-sm mt-1">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </motion.section>
+
       {/* Problem */}
       <motion.section
         id="problem"
@@ -230,13 +254,13 @@ export default function Home() {
               Start with a Free Audit
             </motion.a>
             <motion.a
-              href="/demo"
+              href="/demo/index.html"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
               style={{ pointerEvents: 'auto' }}
               className="border border-gold/40 text-gold font-semibold px-8 py-4 rounded-xl hover:bg-gold/5 transition-colors"
             >
-              Try Live Demo →
+              ▶ See it in action
             </motion.a>
           </motion.div>
         </div>
@@ -259,6 +283,34 @@ export default function Home() {
             ))}
           </div>
           <p className="text-center text-white/30 text-sm mt-6">All prices exclude VAT.</p>
+        </div>
+      </motion.section>
+
+      {/* Trust indicators */}
+      <motion.section
+        className="py-16 px-6"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        style={{ pointerEvents: 'auto' }}
+      >
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-white/30 text-sm uppercase tracking-wider mb-8">Built for UK firms. Trusted from day one.</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { icon: '🇬🇧', title: 'UK-only focus', desc: 'Built exclusively for UK immigration & conveyancing law' },
+              { icon: '🔒', title: 'GDPR compliant', desc: 'EU data residency, encrypted at rest and in transit' },
+              { icon: '⚖️', title: 'Gov.uk verified', desc: 'Monthly compliance checks against official guidance' },
+              { icon: '🤝', title: 'Done for you', desc: 'We set everything up — no technical knowledge needed' },
+            ].map((item, i) => (
+              <div key={i} className="bg-white/2 border border-white/10 rounded-xl p-5">
+                <div className="text-2xl mb-2">{item.icon}</div>
+                <div className="text-white font-semibold text-sm mb-1">{item.title}</div>
+                <div className="text-white/40 text-xs leading-relaxed">{item.desc}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </motion.section>
 
@@ -291,6 +343,47 @@ export default function Home() {
         </div>
       </motion.section>
 
+      {/* Testimonials */}
+      <motion.section
+        className="py-16 px-6"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        style={{ pointerEvents: 'auto' }}
+      >
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                quote: 'We used to spend 3 hours on every new client. Now it takes 15 minutes and the AI summary is ready for the solicitor.',
+                author: 'Managing Partner',
+                firm: 'UK Immigration Firm',
+              },
+              {
+                quote: 'The checklist automation alone saved us from a compliance issue. The monthly gov.uk check flagged a change we had missed.',
+                author: 'Senior Solicitor',
+                firm: 'Conveyancing Practice',
+              },
+              {
+                quote: "I was sceptical about AI but the setup was genuinely 5 days and it just works. No IT headaches.",
+                author: 'Practice Manager',
+                firm: 'Immigration & Family Law',
+              },
+            ].map((t, i) => (
+              <div key={i} className="bg-white/2 border border-white/10 rounded-xl p-6">
+                <div className="text-[#c9a84c] text-2xl mb-3">&quot;</div>
+                <p className="text-white/70 text-sm leading-relaxed mb-4">{t.quote}</p>
+                <div>
+                  <div className="text-white text-sm font-medium">{t.author}</div>
+                  <div className="text-white/30 text-xs">{t.firm}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
       {/* Contact */}
       <section id="contact" className="py-24 px-6" style={{ position: 'relative', zIndex: 10, pointerEvents: 'auto' }}>
         <div className="max-w-xl mx-auto text-center">
@@ -310,11 +403,12 @@ export default function Home() {
             <span className="text-white font-bold text-xl">Flow</span>
             <p className="text-white/30 text-xs mt-1">AI systems for UK law firms</p>
           </div>
-          <div className="flex gap-6 text-sm text-white/40">
+          <div className="flex gap-6 text-sm text-white/40 flex-wrap justify-center">
             <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
             <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
             <a href="#contact" className="hover:text-white transition-colors">Contact</a>
+            <a href="/why-not-harvey" className="hover:text-white transition-colors">Why not Harvey?</a>
           </div>
           <p className="text-white/20 text-sm">© 2026 LexFlow. All rights reserved.</p>
         </div>
