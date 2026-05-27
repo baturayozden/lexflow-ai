@@ -95,14 +95,24 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
           <span className="text-white/60 text-sm">Case {c.reference_id}</span>
         </div>
 
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
           <div>
             <h1 className="text-2xl font-bold text-white">{c.client_name}</h1>
             <p className="text-white/40 mt-1">
               {c.case_type} · {c.nationality} · {c.city}, {c.country}
             </p>
           </div>
-          <DeleteButton entityType="cases" entityId={c.id} redirectTo="/admin" />
+          <div className="flex items-center gap-3">
+            <a
+              href={`/admin/cases/${c.id}/print`}
+              target="_blank"
+              rel="noreferrer"
+              className="border border-white/20 text-white/60 text-sm px-4 py-2 rounded-lg hover:border-white/40 hover:text-white transition-colors"
+            >
+              🖨 Export PDF
+            </a>
+            <DeleteButton entityType="cases" entityId={c.id} redirectTo="/admin" />
+          </div>
         </div>
 
         {/* Status */}

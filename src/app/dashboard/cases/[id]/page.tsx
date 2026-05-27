@@ -90,12 +90,22 @@ export default async function DashboardCaseDetailPage({ params }: { params: Prom
         <span className="text-white/60 text-sm">{c.client_name}</span>
       </div>
 
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
         <div>
           <h1 className="text-white font-bold text-2xl">{c.client_name}</h1>
           <p className="text-white/40 mt-1">{c.case_type} · {c.nationality} · {c.city}, {c.country}</p>
         </div>
-        <StatusUpdater id={c.id} currentStatus={c.status} type="cases" />
+        <div className="flex items-center gap-3 flex-wrap">
+          <a
+            href={`/dashboard/cases/${c.id}/print`}
+            target="_blank"
+            rel="noreferrer"
+            className="border border-white/20 text-white/60 text-sm px-4 py-2 rounded-lg hover:border-white/40 hover:text-white transition-colors"
+          >
+            🖨 Export PDF
+          </a>
+          <StatusUpdater id={c.id} currentStatus={c.status} type="cases" />
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
