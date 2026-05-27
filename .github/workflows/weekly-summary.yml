@@ -1,0 +1,17 @@
+name: Weekly Summary Email
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # Every Monday at 8am UTC (9am UK time)
+  workflow_dispatch:
+
+jobs:
+  send-weekly-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send weekly summary emails
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            https://lexflow.co.uk/api/cron/weekly-summary

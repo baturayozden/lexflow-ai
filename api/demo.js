@@ -1,6 +1,27 @@
+const demoRateLimit = new Map()
+
+function checkRateLimit(ip) {
+  const now = Date.now()
+  const record = demoRateLimit.get(ip)
+
+  if (!record || now > record.resetAt) {
+    demoRateLimit.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 })
+    return true
+  }
+
+  if (record.count >= 10) return false
+  record.count++
+  return true
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const clientIp = req.headers['x-forwarded-for']?.split(',')[0] || 'unknown'
+  if (!checkRateLimit(clientIp)) {
+    return res.status(429).json({ error: 'Too many requests. Please try again later.' })
   }
 
   const { name, dob, nationality, visaType, visaExpiry, caseType, description } = req.body;

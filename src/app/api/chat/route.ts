@@ -1,7 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getFirmBySlug } from '@/lib/auth-db'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 20 messages per IP per hour for chatbot
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ||
+             req.headers.get('x-real-ip') ||
+             'unknown'
+
+  const { success } = rateLimit(`chat:${ip}`, 20, 60 * 60 * 1000)
+
+  if (!success) {
+    return NextResponse.json(
+      { message: "I've reached my message limit for now. Please try again in an hour or contact us directly.", intakeData: null },
+      { status: 200 } // Return 200 so chatbot shows the message gracefully
+    )
+  }
+
   const { messages, slug } = await req.json()
 
   const firm = slug ? await getFirmBySlug(slug) : null

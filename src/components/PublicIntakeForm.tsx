@@ -105,7 +105,12 @@ export function PublicIntakeForm({ firmId, firmName, primaryColor }: Props) {
       setReferenceId(ref)
       setStep('success')
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.'
+      if (msg.includes('Too many') || msg.includes('429')) {
+        setError('You have submitted too many forms recently. Please wait an hour and try again, or contact the firm directly.')
+      } else {
+        setError(msg)
+      }
       setStep('form')
     }
   }

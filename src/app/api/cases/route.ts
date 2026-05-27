@@ -1,7 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { saveCase } from '@/lib/db'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 5 submissions per IP per hour
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ||
+             req.headers.get('x-real-ip') ||
+             'unknown'
+
+  const { success, remaining, resetAt } = rateLimit(`cases:${ip}`, 5, 60 * 60 * 1000)
+
+  if (!success) {
+    const resetInMinutes = Math.ceil((resetAt - Date.now()) / 60000)
+    return NextResponse.json(
+      { error: `Too many submissions. Please try again in ${resetInMinutes} minutes.` },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(Math.ceil((resetAt - Date.now()) / 1000)),
+          'X-RateLimit-Limit': '5',
+          'X-RateLimit-Remaining': '0',
+        }
+      }
+    )
+  }
+
+  console.log(`[/api/cases] IP: ${ip}, remaining: ${remaining}`)
+
   try {
     const body = await req.json()
     const caseRecord = await saveCase({

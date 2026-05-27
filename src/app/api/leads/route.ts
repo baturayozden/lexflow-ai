@@ -1,7 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { saveLead } from '@/lib/db'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 3 submissions per IP per hour for contact form
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ||
+             req.headers.get('x-real-ip') ||
+             'unknown'
+
+  const { success, remaining, resetAt } = rateLimit(`leads:${ip}`, 3, 60 * 60 * 1000)
+
+  if (!success) {
+    const resetInMinutes = Math.ceil((resetAt - Date.now()) / 60000)
+    return NextResponse.json(
+      { error: `Too many submissions. Please try again in ${resetInMinutes} minutes.` },
+      { status: 429 }
+    )
+  }
+
+  console.log(`[/api/leads] IP: ${ip}, remaining: ${remaining}`)
+
   try {
     const body = await req.json()
     console.log('[/api/leads] Received body:', body)
