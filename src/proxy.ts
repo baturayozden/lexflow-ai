@@ -3,14 +3,20 @@ import { NextResponse } from 'next/server'
 
 export default auth((req) => {
   const { pathname } = req.nextUrl
+
+  // Public API routes — no auth required (must be FIRST, before any session/host checks)
+  if (
+    pathname.startsWith('/api/seed') ||
+    pathname.startsWith('/api/cron') ||
+    pathname.startsWith('/api/chat') ||
+    pathname === '/widget-test'
+  ) {
+    return NextResponse.next()
+  }
+
   const session = req.auth
   const host = req.headers.get('host') || ''
   const isAppSubdomain = host.startsWith('app.')
-
-  // Skip auth for public API routes
-  if (pathname.startsWith('/api/seed') || pathname.startsWith('/api/cron') || pathname.startsWith('/api/chat') || pathname === '/widget-test') {
-    return NextResponse.next()
-  }
 
   // Public intake pages — no auth required
   if (pathname.startsWith('/intake/')) {
