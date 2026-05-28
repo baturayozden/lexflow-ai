@@ -8,6 +8,8 @@ export async function POST(req: NextRequest) {
              req.headers.get('x-real-ip') ||
              'unknown'
 
+  console.log('[cases] UPSTASH_URL:', process.env.UPSTASH_REDIS_REST_URL ? 'SET' : 'NOT SET')
+
   const { success, remaining, resetAt } = await rateLimit(`cases:${ip}`, 5, 60 * 60 * 1000)
 
   if (!success) {
