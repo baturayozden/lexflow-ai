@@ -1,29 +1,55 @@
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
 
-export function rateLimit(key: string, limit: number, windowMs: number): { success: boolean; remaining: number; resetAt: number } {
-  const now = Date.now()
-  const record = rateLimitMap.get(key)
+// Lazy init — only created when first called
+let redis: Redis | null = null
+const rateLimiters: Record<string, Ratelimit> = {}
 
-  if (!record || now > record.resetAt) {
-    const resetAt = now + windowMs
-    rateLimitMap.set(key, { count: 1, resetAt })
-    return { success: true, remaining: limit - 1, resetAt }
+function getRedis(): Redis {
+  if (!redis) {
+    redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    })
   }
-
-  if (record.count >= limit) {
-    return { success: false, remaining: 0, resetAt: record.resetAt }
-  }
-
-  record.count++
-  return { success: true, remaining: limit - record.count, resetAt: record.resetAt }
+  return redis
 }
 
-// Clean up expired entries every 10 minutes
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    const now = Date.now()
-    for (const [key, record] of rateLimitMap.entries()) {
-      if (now > record.resetAt) rateLimitMap.delete(key)
+function getLimiter(key: string, limit: number, windowSeconds: number): Ratelimit {
+  const cacheKey = `${key}:${limit}:${windowSeconds}`
+  if (!rateLimiters[cacheKey]) {
+    rateLimiters[cacheKey] = new Ratelimit({
+      redis: getRedis(),
+      limiter: Ratelimit.slidingWindow(limit, `${windowSeconds} s`),
+      prefix: `lexflow:${key}`,
+    })
+  }
+  return rateLimiters[cacheKey]
+}
+
+export async function rateLimit(
+  identifier: string,
+  limit: number,
+  windowMs: number
+): Promise<{ success: boolean; remaining: number; resetAt: number }> {
+  // If Upstash not configured, allow all requests
+  if (!process.env.UPSTASH_REDIS_REST_URL) {
+    console.warn('[rate-limit] UPSTASH_REDIS_REST_URL not set — rate limiting disabled')
+    return { success: true, remaining: limit, resetAt: Date.now() + windowMs }
+  }
+
+  try {
+    const windowSeconds = Math.floor(windowMs / 1000)
+    const limiter = getLimiter(identifier.split(':')[0], limit, windowSeconds)
+    const result = await limiter.limit(identifier)
+    return {
+      success: result.success,
+      remaining: result.remaining,
+      resetAt: result.reset,
     }
-  }, 10 * 60 * 1000)
+  } catch (err) {
+    console.error('[rate-limit] Error:', err)
+    // Fail open — don't block requests if Redis is down
+    return { success: true, remaining: limit, resetAt: Date.now() + windowMs }
+  }
 }

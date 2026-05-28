@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
              req.headers.get('x-real-ip') ||
              'unknown'
 
-  const { success } = rateLimit(`chat:${ip}`, 20, 60 * 60 * 1000)
+  const { success } = await rateLimit(`chat:${ip}`, 20, 60 * 60 * 1000)
 
   if (!success) {
     return NextResponse.json(

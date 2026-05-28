@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
              req.headers.get('x-real-ip') ||
              'unknown'
 
-  const { success, remaining, resetAt } = rateLimit(`leads:${ip}`, 3, 60 * 60 * 1000)
+  const { success, remaining, resetAt } = await rateLimit(`leads:${ip}`, 3, 60 * 60 * 1000)
 
   if (!success) {
     const resetInMinutes = Math.ceil((resetAt - Date.now()) / 60000)
