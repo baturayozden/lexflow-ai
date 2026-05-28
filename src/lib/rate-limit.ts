@@ -8,7 +8,7 @@ const rateLimiters: Record<string, Ratelimit> = {}
 function getRedis(): Redis {
   if (!redis) {
     redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL!,
+      url: process.env.UPSTASH_REDIS_REST_URL || process.env.UPSTASH_URL!,
       token: process.env.UPSTASH_REDIS_REST_TOKEN!,
     })
   }
@@ -33,8 +33,9 @@ export async function rateLimit(
   windowMs: number
 ): Promise<{ success: boolean; remaining: number; resetAt: number }> {
   // If Upstash not configured, allow all requests
-  if (!process.env.UPSTASH_REDIS_REST_URL) {
-    console.warn('[rate-limit] UPSTASH_REDIS_REST_URL not set — rate limiting disabled')
+  const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.UPSTASH_URL
+  if (!redisUrl) {
+    console.warn('[rate-limit] No Upstash URL set — rate limiting disabled')
     return { success: true, remaining: limit, resetAt: Date.now() + windowMs }
   }
 
