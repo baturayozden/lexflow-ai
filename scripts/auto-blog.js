@@ -86,6 +86,44 @@ async function savePost(post) {
   });
 }
 
+const topicSystemPrompt = 'You are a JSON-only responder. Output only valid JSON, no markdown, no backticks.';
+
+const articleSystemPrompt = `You are a senior legal content writer and SEO specialist for UK immigration and conveyancing law firms.
+
+Writing rules:
+- UK English spelling throughout
+- 1400-1800 words total
+- Reference UK legislation, UKVI guidance, SRA rules, Land Registry where appropriate
+- Mention LexFlow (AI intake automation for UK law firms, £997 one-time) once or twice naturally
+- Never use generic filler content
+
+HTML STRUCTURE — output ONLY this, no html/body tags:
+
+1. Open with <h1> containing the exact post title
+2. Use <h2> and <h3> for sections
+3. Use <p>, <ul>, <li>, <strong>, <blockquote>
+
+INTERNAL LINKS — include 2-3 links to these pages naturally within the content:
+- <a href="/why-not-harvey">Why small UK firms choose LexFlow over Harvey AI</a>
+- <a href="/#pricing">LexFlow pricing</a>
+- <a href="/blog">more insights on our blog</a>
+
+EXTERNAL AUTHORITY LINKS — include 2-3 links to real UK government/regulatory sources relevant to the topic:
+- Use real URLs from: gov.uk, legislation.gov.uk, sra.org.uk, landregistry.data.gov.uk, judiciary.gov.uk
+- Example: <a href="https://www.gov.uk/guidance/immigration-rules" target="_blank" rel="noopener noreferrer">UK Immigration Rules</a>
+
+FAQ SECTION — end the article with:
+<h2>Frequently Asked Questions</h2>
+Then 3-4 FAQ items as:
+<div class="faq-item">
+  <h3>Question here?</h3>
+  <p>Answer here.</p>
+</div>
+
+CONCLUSION — after FAQ, add:
+<h2>Ready to Automate Your Firm?</h2>
+<p>...brief paragraph mentioning LexFlow...</p>`;
+
 async function main() {
   const recentSlugs = await getRecentSlugs();
   console.log('Recent slugs:', recentSlugs.slice(0, 5));
@@ -93,16 +131,27 @@ async function main() {
   const day = new Date().getDay();
   const categories = { 1: 'immigration', 3: 'conveyancing', 5: 'legal-tech', 0: 'immigration' };
   const category = categories[day] || 'immigration';
+  console.log('Category:', category);
 
+  // Step 1: Generate topic + metadata + authority URLs
   const topicRaw = await callClaude(
-    'You are a JSON-only responder. Output only valid JSON, no markdown, no backticks.',
+    topicSystemPrompt,
     `You are an SEO strategist for LexFlow, an AI SaaS for small UK immigration and conveyancing law firms.
 Recent slugs to AVOID: ${recentSlugs.join(', ')}
 Pick ONE blog post topic for category: "${category}"
 Target: UK solicitors at small firms. UK-specific content (UKVI, Land Registry, SRA).
+Also suggest 3 relevant external authority URLs (gov.uk, sra.org.uk etc) for this topic.
 Return ONLY valid JSON:
-{"title":"exact post title","slug":"url-slug-max-60-chars","focus_keyword":"primary keyword","meta_description":"150-160 char description","excerpt":"2-3 sentence excerpt","category":"${category}"}`,
-    500
+{
+  "title": "exact post title",
+  "slug": "url-slug-max-60-chars",
+  "focus_keyword": "primary keyword",
+  "meta_description": "150-160 char description",
+  "excerpt": "2-3 sentence excerpt",
+  "category": "${category}",
+  "authority_urls": ["https://url1", "https://url2", "https://url3"]
+}`,
+    600
   );
 
   let topic;
@@ -111,34 +160,96 @@ Return ONLY valid JSON:
   } catch (e) {
     throw new Error('Topic JSON parse failed: ' + topicRaw);
   }
+  console.log('Topic:', topic.title, '|', topic.slug);
 
   if (recentSlugs.includes(topic.slug)) topic.slug += '-' + Date.now();
 
+  // Step 2: Generate full article HTML
+  const authorityUrlsHint = topic.authority_urls?.length
+    ? `Use these authority URLs for external links: ${topic.authority_urls.join(', ')}`
+    : 'Include 2-3 real gov.uk or sra.org.uk links relevant to the topic.';
+
   const content = await callClaude(
-    `You are a senior legal content writer for UK immigration and conveyancing law firms.
-Write authoritative, practical, SEO-optimised blog content.
-UK English. Reference UK legislation, UKVI, SRA where relevant.
-Mention LexFlow (AI intake automation, £997 one-time) once or twice where it fits naturally.
-Output ONLY HTML body: use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <blockquote>. No html/body tags.`,
-    `Write a 1000-1400 word blog post.
+    articleSystemPrompt,
+    `Write a 1400-1800 word blog post.
 Title: ${topic.title}
 Focus keyword: ${topic.focus_keyword}
 Category: ${topic.category}
-Use focus keyword 3-5 times naturally. End with brief mention of LexFlow.`,
-    3000
+Include H1 tag as first element with the exact title.
+Use focus keyword 3-5 times naturally.
+Include 2-3 internal links, 2-3 external authority links.
+${authorityUrlsHint}
+End with FAQ section (3-4 questions) with faq-item divs, then "Ready to Automate Your Firm?" conclusion.`,
+    4000
   );
 
-  const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
+  // Step 3: Parse FAQ items and build JSON-LD schema
+  const publishedDate = new Date().toISOString();
+  const faqs = [];
+  const faqRegex = /<div class="faq-item">[\s\S]*?<h3>(.*?)<\/h3>[\s\S]*?<p>(.*?)<\/p>[\s\S]*?<\/div>/g;
+  let match;
+  while ((match = faqRegex.exec(content)) !== null) {
+    faqs.push({ question: match[1], answer: match[2] });
+  }
+  console.log('FAQ items found:', faqs.length);
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: topic.title,
+        description: topic.meta_description,
+        author: {
+          '@type': 'Organization',
+          name: 'LexFlow',
+          url: 'https://lexflow.co.uk'
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'LexFlow',
+          url: 'https://lexflow.co.uk',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://lexflow.co.uk/logo.png'
+          }
+        },
+        datePublished: publishedDate,
+        dateModified: publishedDate,
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': `https://lexflow.co.uk/blog/${topic.slug}`
+        }
+      },
+      ...(faqs.length > 0 ? [{
+        '@type': 'FAQPage',
+        mainEntity: faqs.map(f => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: f.answer
+          }
+        }))
+      }] : [])
+    ]
+  };
+
+  const finalContent = content + `\n<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`;
+
+  const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
+  console.log('Word count:', wordCount);
+
+  // Step 4: Save to Supabase
   await savePost({
     title: topic.title,
     slug: topic.slug,
     excerpt: topic.excerpt,
-    content,
+    content: finalContent,
     meta_description: topic.meta_description,
     focus_keyword: topic.focus_keyword,
     category: topic.category,
-    published_at: new Date().toISOString(),
+    published_at: publishedDate,
     is_published: true,
     word_count: wordCount,
     reading_time_minutes: Math.ceil(wordCount / 200)
