@@ -2,188 +2,24 @@ name: Auto Blog Post Generator
 
 on:
   schedule:
-    - cron: '0 7 * * 1'   # Monday    07:00 UTC → immigration
-    - cron: '0 7 * * 3'   # Wednesday 07:00 UTC → conveyancing
-    - cron: '0 7 * * 5'   # Friday    07:00 UTC → legal-tech
-    - cron: '0 7 * * 0'   # Sunday    07:00 UTC → immigration
+    - cron: '0 7 * * 1'
+    - cron: '0 7 * * 3'
+    - cron: '0 7 * * 5'
+    - cron: '0 7 * * 0'
   workflow_dispatch:
-    inputs:
-      category:
-        description: 'Category override (immigration | conveyancing | legal-tech)'
-        required: false
-        default: ''
 
 jobs:
   generate-blog-post:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Generate and publish blog post
-        run: |
-          node << 'SCRIPT'
-          const https = require('https')
-
-          // Determine category by day of week (or override)
-          const override = '${{ github.event.inputs.category }}'
-          const dayCategories = {
-            0: 'immigration',   // Sunday
-            1: 'immigration',   // Monday
-            3: 'conveyancing',  // Wednesday
-            5: 'legal-tech',    // Friday
-          }
-          const category = override || dayCategories[new Date().getDay()] || 'immigration'
-          console.log('Category:', category)
-
-          const ANTHROPIC_API_KEY = '${{ secrets.ANTHROPIC_API_KEY }}'
-          const SUPABASE_URL = '${{ secrets.SUPABASE_URL }}'
-          const SUPABASE_SERVICE_ROLE_KEY = '${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}'
-
-          async function fetchJson(url, options) {
-            return new Promise((resolve, reject) => {
-              const urlObj = new URL(url)
-              const reqOptions = {
-                hostname: urlObj.hostname,
-                path: urlObj.pathname + urlObj.search,
-                method: options.method || 'GET',
-                headers: options.headers || {},
-              }
-              const req = https.request(reqOptions, (res) => {
-                let data = ''
-                res.on('data', chunk => data += chunk)
-                res.on('end', () => resolve(JSON.parse(data)))
-              })
-              req.on('error', reject)
-              if (options.body) req.write(options.body)
-              req.end()
-            })
-          }
-
-          async function callClaude(prompt) {
-            const body = JSON.stringify({
-              model: 'claude-haiku-4-5-20251001',
-              max_tokens: 2048,
-              messages: [{ role: 'user', content: prompt }],
-            })
-            const data = await fetchJson('https://api.anthropic.com/v1/messages', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': ANTHROPIC_API_KEY,
-                'anthropic-version': '2023-06-01',
-              },
-              body,
-            })
-            if (data.error) throw new Error(data.error.message)
-            return data.content[0].text
-          }
-
-          async function getRecentSlugs() {
-            const data = await fetchJson(
-              `${SUPABASE_URL}/rest/v1/blog_posts?select=slug&order=published_at.desc&limit=20`,
-              {
-                headers: {
-                  'apikey': SUPABASE_SERVICE_ROLE_KEY,
-                  'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-                },
-              }
-            )
-            return Array.isArray(data) ? data.map(p => p.slug) : []
-          }
-
-          async function savePost(post) {
-            return fetchJson(`${SUPABASE_URL}/rest/v1/blog_posts`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'apikey': SUPABASE_SERVICE_ROLE_KEY,
-                'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-                'Prefer': 'return=minimal',
-              },
-              body: JSON.stringify(post),
-            })
-          }
-
-          // --- Main ---
-          const recentSlugs = await getRecentSlugs()
-          console.log('Recent slugs:', recentSlugs)
-
-          const categoryTopics = {
-            immigration: 'UK immigration law, visa applications, ILR, skilled worker visas, family visas, British citizenship, right to work, immigration appeals',
-            conveyancing: 'UK conveyancing, property purchase process, stamp duty, leasehold vs freehold, remortgage, searches, exchange of contracts, completion',
-            'legal-tech': 'legal technology, AI in law firms, legal automation, law firm efficiency, client intake, document automation, legal SaaS',
-          }
-
-          const topicArea = categoryTopics[category]
-          const slugList = recentSlugs.length > 0 ? `Avoid these already-published slugs: ${recentSlugs.join(', ')}` : ''
-
-          // Step 1: Generate topic + metadata
-          const metaPrompt = `You are an SEO content strategist for LexFlow, an AI platform for small UK immigration and conveyancing law firms.
-
-Generate a blog post topic in this category: ${category}
-Topic area: ${topicArea}
-${slugList}
-
-Return ONLY valid JSON (no markdown, no explanation):
-{
-  "title": "SEO-optimised title (50-60 chars)",
-  "slug": "url-friendly-slug-with-hyphens",
-  "excerpt": "Compelling 1-2 sentence excerpt (120-150 chars)",
-  "meta_description": "SEO meta description (150-160 chars)",
-  "focus_keyword": "primary keyword phrase",
-  "reading_time_minutes": 5
-}`
-
-          const metaRaw = await callClaude(metaPrompt)
-          let meta
-          try {
-            const jsonMatch = metaRaw.match(/\{[\s\S]*\}/)
-            meta = JSON.parse(jsonMatch[0])
-          } catch (e) {
-            console.error('Failed to parse meta JSON:', metaRaw)
-            process.exit(1)
-          }
-          console.log('Generated meta:', meta.title, meta.slug)
-
-          // Check slug uniqueness
-          if (recentSlugs.includes(meta.slug)) {
-            meta.slug = meta.slug + '-' + Date.now().toString().slice(-4)
-          }
-
-          // Step 2: Generate full article HTML
-          const contentPrompt = `Write a high-quality, SEO-optimised blog article for LexFlow (AI platform for UK law firms).
-
-Title: ${meta.title}
-Category: ${category}
-Focus keyword: ${meta.focus_keyword}
-Target audience: Small UK immigration and conveyancing law firm partners and solicitors
-
-Requirements:
-- 800-1000 words
-- Professional but approachable UK English tone
-- Include practical, actionable advice
-- Naturally include the focus keyword 3-5 times
-- Structure with H2 and H3 headings
-- End with a brief mention that LexFlow helps law firms automate similar processes
-- Return ONLY the article as clean HTML (use <h2>, <h3>, <p>, <ul>, <li>, <strong> tags)
-- Do NOT include <html>, <head>, <body>, or <article> wrapper tags
-- Do NOT include the title as an H1 (it is rendered separately)`
-
-          const content = await callClaude(contentPrompt)
-          const wordCount = content.replace(/<[^>]+>/g, '').split(/\s+/).filter(Boolean).length
-
-          const post = {
-            title: meta.title,
-            slug: meta.slug,
-            excerpt: meta.excerpt,
-            meta_description: meta.meta_description,
-            focus_keyword: meta.focus_keyword,
-            category,
-            content,
-            reading_time_minutes: meta.reading_time_minutes || Math.ceil(wordCount / 200),
-            word_count: wordCount,
-            is_published: true,
-            published_at: new Date().toISOString(),
-          }
-
-          await savePost(post)
-          console.log(`✓ Published: "${post.title}" → /blog/${post.slug}`)
-          SCRIPT
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/auto-blog.js
