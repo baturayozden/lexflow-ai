@@ -183,12 +183,19 @@ End with FAQ section (3-4 questions) with faq-item divs, then "Ready to Automate
     4000
   );
 
+  // Strip markdown code fences if Claude wrapped the output
+  const cleanContent = content
+    .replace(/^```html\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/\s*```\s*$/i, '')
+    .trim();
+
   // Step 3: Parse FAQ items and build JSON-LD schema
   const publishedDate = new Date().toISOString();
   const faqs = [];
   const faqRegex = /<div class="faq-item">[\s\S]*?<h3>(.*?)<\/h3>[\s\S]*?<p>(.*?)<\/p>[\s\S]*?<\/div>/g;
   let match;
-  while ((match = faqRegex.exec(content)) !== null) {
+  while ((match = faqRegex.exec(cleanContent)) !== null) {
     faqs.push({ question: match[1], answer: match[2] });
   }
   console.log('FAQ items found:', faqs.length);
@@ -235,9 +242,9 @@ End with FAQ section (3-4 questions) with faq-item divs, then "Ready to Automate
     ]
   };
 
-  const finalContent = content + `\n<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`;
+  const finalContent = cleanContent + `\n<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`;
 
-  const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
+  const wordCount = cleanContent.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
   console.log('Word count:', wordCount);
 
   // Step 4: Save to Supabase
