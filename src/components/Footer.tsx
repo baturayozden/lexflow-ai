@@ -44,7 +44,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             {/* Company details */}
             <div className="text-white/20 text-xs leading-relaxed space-y-0.5">
-              <p>LexFlow is a trading name of <span className="text-white/30">B4Mind Brand Consulting and Digital Marketing Ltd</span></p>
+              <p>LexFlow is a brand owned by <span className="text-white/30">B4Mind Brand Consulting and Digital Marketing Ltd</span></p>
               <p>Company No. 11296210 · Registered office: 66 Paul Street, London, England, EC2A 4NA</p>
               <p>
                 <a href="tel:+442036952872" className="hover:text-white/40 transition-colors">+44 203 695 2872</a>
