@@ -22,8 +22,10 @@ async function callClaude(systemPrompt, userPrompt, maxTokens = 4000) {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
+        console.log('Claude API response status:', res.statusCode);
+        console.log('Claude API response body:', data.substring(0, 500));
         try { resolve(JSON.parse(data).content[0].text); }
-        catch (e) { reject(e); }
+        catch (e) { reject(new Error('Parse failed: ' + data.substring(0, 200))); }
       });
     });
     req.on('error', reject);
@@ -145,4 +147,8 @@ Use focus keyword 3-5 times naturally. End with brief mention of LexFlow.`,
   console.log('✅ Published:', topic.slug);
 }
 
-main().catch(err => { console.error('❌', err.message); process.exit(1); });
+main().catch(err => {
+  console.error('❌ Error:', err.message);
+  console.error('Stack:', err.stack);
+  process.exit(1);
+});
