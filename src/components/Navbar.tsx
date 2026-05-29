@@ -71,6 +71,20 @@ export default function Navbar() {
             transition={{ delay: 0.1 * NAV_LINKS.length + 0.3, ease }}
           >
             <Link
+              href="/blog"
+              className="relative group text-white/60 hover:text-white text-sm font-medium transition-colors duration-200"
+            >
+              Blog
+              <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-gold group-hover:w-full transition-all duration-300" />
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 * (NAV_LINKS.length + 1) + 0.3, ease }}
+          >
+            <Link
               href="/why-not-harvey"
               className="relative group text-white/60 hover:text-white text-sm font-medium transition-colors duration-200"
             >
@@ -146,6 +160,13 @@ export default function Navbar() {
                 {item}
               </a>
             ))}
+            <Link
+              href="/blog"
+              onClick={() => setMenuOpen(false)}
+              className="text-white/70 hover:text-white font-medium transition-colors"
+            >
+              Blog
+            </Link>
             <Link
               href="/why-not-harvey"
               onClick={() => setMenuOpen(false)}
