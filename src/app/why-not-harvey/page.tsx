@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Why Not Harvey AI? | LexFlow — AI for Small UK Law Firms',
@@ -285,23 +286,7 @@ export default function WhyNotHarveyPage() {
         <p className="text-white/30 text-sm mt-3">Free · 20 minutes · No obligation</p>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 px-6 py-8">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <span className="text-[#c9a84c] font-bold">Lex</span>
-            <span className="text-white font-bold">Flow</span>
-            <span className="text-white/30 text-sm ml-2">AI Systems for UK Law Firms</span>
-          </div>
-          <div className="flex gap-6 text-sm text-white/40 flex-wrap justify-center">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <Link href="/#pricing" className="hover:text-white transition-colors">Pricing</Link>
-            <Link href="/demo/index.html" className="hover:text-white transition-colors">Demo</Link>
-            <Link href="/#contact" className="hover:text-white transition-colors">Contact</Link>
-          </div>
-          <p className="text-white/20 text-sm">© 2026 LexFlow. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

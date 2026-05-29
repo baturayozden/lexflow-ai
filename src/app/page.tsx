@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
 import PricingCard from '@/components/PricingCard'
 import ContactForm from '@/components/ContactForm'
+import Footer from '@/components/Footer'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -395,24 +396,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-8 px-6" style={{ pointerEvents: 'auto' }}>
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <span className="text-gold font-bold text-xl">Lex</span>
-            <span className="text-white font-bold text-xl">Flow</span>
-            <p className="text-white/30 text-xs mt-1">AI systems for UK law firms</p>
-          </div>
-          <div className="flex gap-6 text-sm text-white/40 flex-wrap justify-center">
-            <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
-            <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
-            <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
-            <a href="#contact" className="hover:text-white transition-colors">Contact</a>
-            <a href="/why-not-harvey" className="hover:text-white transition-colors">Why not Harvey?</a>
-          </div>
-          <p className="text-white/20 text-sm">© 2026 LexFlow. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </main>
   )
 }
