@@ -5,11 +5,16 @@ import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Why Not Harvey AI? | LexFlow — AI for Small UK Law Firms',
-  description: 'Harvey AI costs £288,000/year and requires 20+ licences. LexFlow is built for small UK immigration and conveyancing firms. Starting at £997.',
+  description: 'Harvey AI costs £288,000/year and requires 20+ licences. LexFlow is built for small UK immigration and conveyancing firms. From £199/month, fully set up.',
   keywords: 'Harvey AI alternative, legal AI small law firm UK, affordable legal AI, immigration law software UK',
   openGraph: {
     title: 'Why Small UK Law Firms Choose LexFlow Over Harvey AI',
-    description: 'Harvey AI costs £288,000/year. LexFlow starts at £997. Built specifically for UK immigration and conveyancing firms with 2-20 solicitors.',
+    description: 'Harvey AI costs £288,000/year. LexFlow starts from £199/month, fully managed. Built specifically for UK immigration and conveyancing firms with 2-20 solicitors.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Why Small UK Law Firms Choose LexFlow Over Harvey AI',
+    description: 'Harvey AI costs £288,000/year. LexFlow starts from £199/month, fully managed. Built specifically for UK immigration and conveyancing firms with 2-20 solicitors.',
   },
 }
 
@@ -47,7 +52,7 @@ const comparisons = [
   {
     title: '£288,000 per year minimum',
     harvey: 'At 20 licences × £12,000 per licence per year — before implementation costs',
-    lexflow: 'LexFlow Quick Win is £997 one-time. Retainer is £1,500/month — everything included',
+    lexflow: 'LexFlow starts from £199/month with a one-time setup — everything included, first month free',
     icon: '💷',
   },
 ]
@@ -140,9 +145,9 @@ export default function WhyNotHarveyPage() {
               >
                 Best for you
               </div>
-              <div className="text-[#D4A843] font-bold text-5xl mb-2">£997</div>
-              <div className="text-white/60 text-sm">LexFlow one-time setup</div>
-              <div className="text-white/30 text-xs mt-2">No monthly fees · Built for UK firms</div>
+              <div className="text-[#D4A843] font-bold text-5xl mb-2">£199</div>
+              <div className="text-white/60 text-sm">LexFlow per month</div>
+              <div className="text-white/30 text-xs mt-2">From £199/mo + setup · First month free · Built for UK firms</div>
             </div>
           </div>
         </section>
