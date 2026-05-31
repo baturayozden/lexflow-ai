@@ -108,9 +108,36 @@ INTERNAL LINKS — include 2-3 links to these pages naturally within the content
 - <a href="/#pricing">LexFlow pricing</a>
 - <a href="/blog">more insights on our blog</a>
 
-EXTERNAL AUTHORITY LINKS — include 2-3 links to real UK government/regulatory sources relevant to the topic:
-- Use real URLs from: gov.uk, legislation.gov.uk, sra.org.uk, landregistry.data.gov.uk, judiciary.gov.uk
-- Example: <a href="https://www.gov.uk/guidance/immigration-rules" target="_blank" rel="noopener noreferrer">UK Immigration Rules</a>
+EXTERNAL AUTHORITY LINKS — include 2-3 links to UK government/regulatory sources.
+CRITICAL: Only use these VERIFIED working URLs, do not invent or modify URLs:
+
+For immigration topics:
+- https://www.gov.uk/browse/visas-immigration
+- https://www.gov.uk/government/organisations/uk-visas-and-immigration
+- https://www.gov.uk/immigration-operational-guidance
+- https://www.gov.uk/guidance/immigration-rules
+
+For SRA/legal regulation:
+- https://www.sra.org.uk/solicitors/standards-regulations/
+- https://www.sra.org.uk/solicitors/guidance/
+- https://www.sra.org.uk/consumers/using-solicitor/
+
+For conveyancing:
+- https://www.gov.uk/buy-sell-your-home
+- https://www.gov.uk/stamp-duty-land-tax
+- https://landregistry.data.gov.uk
+- https://www.gov.uk/guidance/hm-land-registry-services-and-fees
+
+For data protection:
+- https://ico.org.uk/for-organisations/
+- https://ico.org.uk/for-organisations/guide-to-data-protection/
+
+For general legal:
+- https://www.legislation.gov.uk
+- https://www.judiciary.gov.uk
+- https://www.lawsociety.org.uk/topics/
+
+Use only URLs from this list. Link anchor text should be descriptive and natural.
 
 FAQ SECTION — end the article with:
 <h2>Frequently Asked Questions</h2>
@@ -140,7 +167,6 @@ async function main() {
 Recent slugs to AVOID: ${recentSlugs.join(', ')}
 Pick ONE blog post topic for category: "${category}"
 Target: UK solicitors at small firms. UK-specific content (UKVI, Land Registry, SRA).
-Also suggest 3 relevant external authority URLs (gov.uk, sra.org.uk etc) for this topic.
 Return ONLY valid JSON:
 {
   "title": "exact post title",
@@ -148,8 +174,7 @@ Return ONLY valid JSON:
   "focus_keyword": "primary keyword",
   "meta_description": "150-160 char description",
   "excerpt": "2-3 sentence excerpt",
-  "category": "${category}",
-  "authority_urls": ["https://url1", "https://url2", "https://url3"]
+  "category": "${category}"
 }`,
     600
   );
@@ -165,10 +190,6 @@ Return ONLY valid JSON:
   if (recentSlugs.includes(topic.slug)) topic.slug += '-' + Date.now();
 
   // Step 2: Generate full article HTML
-  const authorityUrlsHint = topic.authority_urls?.length
-    ? `Use these authority URLs for external links: ${topic.authority_urls.join(', ')}`
-    : 'Include 2-3 real gov.uk or sra.org.uk links relevant to the topic.';
-
   const content = await callClaude(
     articleSystemPrompt,
     `Write a 1400-1800 word blog post.
@@ -177,8 +198,7 @@ Focus keyword: ${topic.focus_keyword}
 Category: ${topic.category}
 Include H1 tag as first element with the exact title.
 Use focus keyword 3-5 times naturally.
-Include 2-3 internal links, 2-3 external authority links.
-${authorityUrlsHint}
+Include 2-3 internal links, 2-3 external authority links (use only the verified URLs listed above).
 End with FAQ section (3-4 questions) with faq-item divs, then "Ready to Automate Your Firm?" conclusion.`,
     4000
   );
