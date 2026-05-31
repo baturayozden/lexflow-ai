@@ -528,7 +528,7 @@ export default function Home() {
       <section id="problem" style={{ background: '#FFFFFF', padding: '120px 24px' }}>
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>THE PROBLEM</p>
+            <p style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C99A35', marginBottom: '10px' }}>THE PROBLEM</p>
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               Your team is drowning in manual work
             </h2>
@@ -574,7 +574,7 @@ export default function Home() {
             whileInView={reduced ? {} : { opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <p className="mb-4" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(212,168,67,0.7)' }}>THE HIDDEN COST</p>
+            <p style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C99A35', marginBottom: '10px' }}>THE HIDDEN COST</p>
             <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', marginBottom: '16px' }}>
               That is <strong style={{ color: '#FFFFFF' }}>18–28 billable hours per week</strong> your firm is giving away.
               At £200/hr, that is up to:
@@ -593,7 +593,7 @@ export default function Home() {
       <section id="features" style={{ background: '#F8FAFC', padding: '120px 24px' }}>
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>WHAT YOU GET</p>
+            <p style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C99A35', marginBottom: '10px' }}>WHAT YOU GET</p>
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               Everything your firm needs.{' '}
               <span style={{ color: '#D4A843' }}>Nothing it doesn&apos;t.</span>
@@ -661,7 +661,7 @@ export default function Home() {
       <section id="how-it-works" style={{ background: '#FFFFFF', padding: '120px 24px' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>THE PROCESS</p>
+            <p style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C99A35', marginBottom: '10px' }}>THE PROCESS</p>
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               A simple process.{' '}
               <span style={{ color: '#94A3B8' }}>We do the heavy lifting.</span>
@@ -733,7 +733,7 @@ export default function Home() {
       <section style={{ background: '#F8FAFC', padding: '120px 24px' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-12">
-            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>WHY LEXFLOW</p>
+            <p style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C99A35', marginBottom: '10px' }}>WHY LEXFLOW</p>
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               Built for firms like yours.{' '}
               <span style={{ color: '#94A3B8' }}>Unlike everything else.</span>
@@ -822,7 +822,7 @@ export default function Home() {
       <section id="pricing" style={{ background: '#0D1117', padding: '120px 24px' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-8">
-            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(212,168,67,0.7)' }}>SIMPLE PRICING</p>
+            <p style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C99A35', marginBottom: '10px' }}>SIMPLE PRICING</p>
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#FFFFFF', lineHeight: 1.15 }}>
               Transparent pricing.{' '}
               <span style={{ color: '#D4A843' }}>No per-user fees. Ever.</span>
@@ -925,7 +925,7 @@ export default function Home() {
       <section style={{ background: '#FFFFFF', padding: '120px 24px' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-12">
-            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>CLIENT RESULTS</p>
+            <p style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C99A35', marginBottom: '10px' }}>CLIENT RESULTS</p>
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               What firms are saying
             </h2>
@@ -965,7 +965,7 @@ export default function Home() {
       >
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <motion.div {...fadeUp} className="text-center mb-12">
-            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>COMMON QUESTIONS</p>
+            <p style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C99A35', marginBottom: '10px' }}>COMMON QUESTIONS</p>
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               Straight answers to what firms actually ask
             </h2>
@@ -989,7 +989,7 @@ export default function Home() {
         </div>
         <div className="relative" style={{ maxWidth: '560px', margin: '0 auto', textAlign: 'center' }}>
           <motion.div {...fadeUp}>
-            <div className="inline-flex items-center gap-2 mb-4" style={{ color: 'rgba(212,168,67,0.8)', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            <div className="inline-flex items-center gap-2 mb-4" style={{ color: '#C99A35', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
               <span style={{ width: '24px', height: '1px', background: 'rgba(212,168,67,0.5)', display: 'inline-block' }} />
               Free Audit
               <span style={{ width: '24px', height: '1px', background: 'rgba(212,168,67,0.5)', display: 'inline-block' }} />
