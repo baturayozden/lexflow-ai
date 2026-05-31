@@ -43,30 +43,53 @@ function useCountUp(target: number, duration = 1500) {
 
 const pricingTiers = [
   {
-    tier: 'Quick Win',
-    price: '£997',
-    period: 'one-time',
-    description: 'Best for firms new to AI',
-    features: ['One core automation installed', 'Live in 5 business days', '30-day support included'],
+    tier: 'Starter',
+    monthlyPrice: '£199',
+    annualPrice: '£2,030',
+    setupOriginal: '£1,500',
+    setupDiscounted: '£900',
+    description: 'For practices with 2–4 solicitors',
+    features: [
+      'AI client intake & case summaries',
+      'Gov.uk checklist automation',
+      'Live in 7 days',
+      'Email support',
+    ],
     cta: 'Get Started',
     popular: false,
   },
   {
-    tier: 'Full Setup',
-    price: '£2,500',
-    period: 'one-time',
-    description: 'Best for firms ready to scale',
-    features: ['Complete AI back office', '2–3 week implementation', '60-day support included', 'Staff training session'],
+    tier: 'Professional',
+    monthlyPrice: '£399',
+    annualPrice: '£4,070',
+    setupOriginal: '£2,950',
+    setupDiscounted: '£1,750',
+    description: 'For growing firms with 4–10 solicitors',
+    features: [
+      'Everything in Starter',
+      'Action Centre & quote automation',
+      'AI chatbot widget',
+      'Priority support',
+      'Monthly ROI report',
+    ],
     cta: 'Get Started',
     popular: true,
   },
   {
-    tier: 'Retainer',
-    price: '£1,500',
-    period: '/month',
-    description: 'Best for hands-off growth',
-    features: ['Everything managed ongoing', 'New automation added monthly', 'Dedicated Slack channel', 'Monthly ROI report'],
-    cta: 'Get Started',
+    tier: 'Managed',
+    monthlyPrice: '£799',
+    annualPrice: '£8,150',
+    setupOriginal: '£4,950',
+    setupDiscounted: '£2,950',
+    description: 'Fully managed, hands-off',
+    features: [
+      'Everything in Professional',
+      'Unlimited automations',
+      'Dedicated Slack channel',
+      'Monthly optimisation call',
+      'Dedicated account manager',
+    ],
+    cta: 'Talk to Us',
     popular: false,
   },
 ]
@@ -105,7 +128,7 @@ const faqsRight = [
   },
   {
     q: 'How is the pricing different from the per-user monthly model?',
-    a: 'Clio, LEAP, and Smokeball charge per user, every month, indefinitely. A five-person firm can pay £3,000+ a year before add-ons. LexFlow is a one-time fee from £997, with no per-user charges and no long-term contract.',
+    a: 'Clio, LEAP, and Smokeball charge per user, every month, indefinitely. A five-person firm can pay £3,000+ a year before add-ons — and that number grows as you hire. LexFlow starts from £199/month with no per-user charges, no long-term contract, and a one-time setup rather than endless per-seat costs.',
   },
   {
     q: 'How long until we actually see results?',
@@ -126,7 +149,7 @@ const faqsRight = [
 ]
 
 const comparisonRows = [
-  { feature: 'Pricing model', lexflow: '£997 one-time', clio: '£59+/user/month', leap: '£60–100+/user/month', smokeball: '£49+/user/month' },
+  { feature: 'Pricing model', lexflow: 'From £199/mo + setup', clio: '£59+/user/month', leap: '£60–100+/user/month', smokeball: '£49+/user/month' },
   { feature: 'Done-for-you setup', lexflow: '✅', clio: '❌', leap: '❌', smokeball: '❌' },
   { feature: 'UK immigration–specific', lexflow: '✅', clio: '❌', leap: '❌', smokeball: '❌' },
   { feature: 'AI-native (not bolt-on)', lexflow: '✅', clio: '⚠️ Add-on', leap: '❌', smokeball: '❌' },
@@ -316,6 +339,7 @@ function ProductMockup() {
 
 export default function Home() {
   const reduced = useReducedMotion()
+  const [isAnnual, setIsAnnual] = useState(false)
   const { count: lostRevenue, ref: revenueRef } = useCountUp(291200)
 
   return (
@@ -797,22 +821,100 @@ export default function Home() {
       ════════════════════════════════════════════════════════════════ */}
       <section id="pricing" style={{ background: '#0D1117', padding: '120px 24px' }}>
         <div className="max-w-5xl mx-auto">
-          <motion.div {...fadeUp} className="text-center mb-16">
+          <motion.div {...fadeUp} className="text-center mb-8">
             <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(212,168,67,0.7)' }}>SIMPLE PRICING</p>
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#FFFFFF', lineHeight: 1.15 }}>
-              Simple, transparent pricing
+              Transparent pricing.{' '}
+              <span style={{ color: '#D4A843' }}>No per-user fees. Ever.</span>
             </h2>
-            <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.6)', maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
-              No hidden fees. No complicated contracts. No per-user charges.
+            <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.6)', maxWidth: '540px', margin: '0 auto', lineHeight: 1.7 }}>
+              A fixed monthly subscription plus a one-time setup. No surprises.
             </p>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
+
+          {/* Offer banner */}
+          <motion.div
+            {...fadeUp}
+            className="flex justify-center mb-6"
+          >
+            <span style={{
+              display: 'inline-block',
+              background: 'rgba(212,168,67,0.10)',
+              border: '1px solid rgba(212,168,67,0.30)',
+              borderRadius: '100px',
+              color: '#D4A843',
+              fontSize: '0.85rem',
+              fontWeight: 500,
+              padding: '8px 20px',
+              textAlign: 'center',
+            }}>
+              ✦ Founding rate — reduced setup for firms that join before 31 July. Your first month is on us.
+            </span>
+          </motion.div>
+
+          {/* Monthly / Annual toggle */}
+          <motion.div
+            {...fadeUp}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', marginBottom: '52px' }}
+          >
+            <span style={{
+              color: isAnnual ? 'rgba(255,255,255,0.38)' : '#FFFFFF',
+              fontSize: '0.9rem',
+              fontWeight: isAnnual ? 400 : 600,
+              transition: 'color 0.2s, font-weight 0.2s',
+            }}>
+              Monthly
+            </span>
+            <button
+              onClick={() => setIsAnnual((a) => !a)}
+              aria-label="Toggle annual billing"
+              style={{
+                width: '50px',
+                height: '28px',
+                borderRadius: '100px',
+                background: isAnnual ? '#D4A843' : 'rgba(255,255,255,0.14)',
+                position: 'relative',
+                cursor: 'pointer',
+                border: 'none',
+                transition: 'background 0.25s ease',
+                flexShrink: 0,
+              }}
+            >
+              <motion.div
+                animate={{ x: isAnnual ? 24 : 3 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                style={{
+                  position: 'absolute',
+                  top: '4px',
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  background: '#FFFFFF',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
+                }}
+              />
+            </button>
+            <span style={{
+              color: isAnnual ? '#D4A843' : 'rgba(255,255,255,0.38)',
+              fontSize: '0.9rem',
+              fontWeight: isAnnual ? 600 : 400,
+              transition: 'color 0.2s, font-weight 0.2s',
+            }}>
+              Annual{' '}
+              <span style={{ fontSize: '0.8rem', opacity: 0.75 }}>(save 15%)</span>
+            </span>
+          </motion.div>
+
+          {/* Pricing cards */}
+          <div className="grid md:grid-cols-3 gap-6 items-stretch">
             {pricingTiers.map((tier, i) => (
-              <PricingCard key={tier.tier} {...tier} delay={i * 0.15} />
+              <PricingCard key={tier.tier} {...tier} delay={i * 0.15} isAnnual={isAnnual} />
             ))}
           </div>
-          <p className="text-center mt-6" style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem' }}>
-            All prices exclude VAT. No hidden fees. No per-user charges.
+
+          {/* Footer note */}
+          <p className="text-center mt-8" style={{ color: 'rgba(255,255,255,0.38)', fontSize: '0.85rem', lineHeight: 1.7 }}>
+            All prices exclude VAT. First month free after setup. No per-user charges, ever. Cancel anytime — no long-term contract.
           </p>
         </div>
       </section>
@@ -896,7 +998,7 @@ export default function Home() {
               Ready to get your time back?
             </h2>
             <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.6)', marginBottom: '40px', lineHeight: 1.7 }}>
-              Book a free 20-minute audit. We map your processes, show you exactly what can be automated, and give you a clear plan — no obligation.
+              Book your free audit — and lock in founding rates before 31 July. We map your processes, show you exactly what can be automated, and give you a clear plan — no obligation.
             </p>
           </motion.div>
           <motion.div
