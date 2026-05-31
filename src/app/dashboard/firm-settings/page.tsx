@@ -101,20 +101,23 @@ export default function FirmSettingsPage() {
   const [activeTab, setActiveTab] = useState('branding')
 
   useEffect(() => {
+    console.log('[FirmSettings] useEffect fired — firmId:', firmId, '| session:', session?.user)
     if (!firmId) {
       // Session might still be loading — wait for firmId before giving up
       return
     }
     Promise.all([
-      fetch(`/api/firms/${firmId}`).then(r => r.json()).catch(() => ({})),
-      fetch('/api/settings/email').then(r => r.json()).catch(() => ({})),
+      fetch(`/api/firms/${firmId}`).then(r => r.json()).catch((e) => { console.error('[FirmSettings] /api/firms fetch error:', e); return {} }),
+      fetch('/api/settings/email').then(r => r.json()).catch((e) => { console.error('[FirmSettings] /api/settings/email fetch error:', e); return {} }),
     ]).then(([firm, email]) => {
+      console.log('[FirmSettings] /api/firms response:', firm)
+      console.log('[FirmSettings] /api/settings/email response:', email)
       // Guard against error objects returned by the API
       setSettings(firm?.error ? {} : (firm || {}))
       setEmailSettings(email?.error ? {} : (email || {}))
       setLoading(false)
     })
-  }, [firmId])
+  }, [firmId, session])
 
   async function saveBranding() {
     if (!firmId) return

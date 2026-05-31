@@ -21,12 +21,14 @@ export async function GET(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
+  console.log('[/api/firms/[id] GET] firmId requested:', id, '| session firmId:', userFirmId, '| role:', userRole)
   const { data, error } = await supabaseAdmin
     .from('firms')
     .select('*')
     .eq('id', id)
     .single()
 
+  console.log('[/api/firms/[id] GET] result error:', error?.message ?? null, '| data keys:', data ? Object.keys(data) : null)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
