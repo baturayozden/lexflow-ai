@@ -30,6 +30,10 @@ export default function PricingCard({
 }: PricingCardProps) {
   const reduced = useReducedMotion()
 
+  // Discounted monthly when billed annually (×0.85, rounded)
+  const monthlyNum = parseInt(monthlyPrice.replace(/[£,]/g, ''), 10)
+  const discountedMonthly = `£${Math.round(monthlyNum * 0.85)}`
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -95,15 +99,19 @@ export default function PricingCard({
         >
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', marginBottom: '4px' }}>
             <span style={{ fontSize: '2.6rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1 }}>
-              {isAnnual ? annualPrice : monthlyPrice}
+              {isAnnual ? discountedMonthly : monthlyPrice}
             </span>
             <span style={{ color: 'rgba(255,255,255,0.45)', marginBottom: '5px', fontSize: '0.9rem' }}>
-              {isAnnual ? '/year' : '/month'}
+              /month
             </span>
           </div>
-          {isAnnual && (
+          {isAnnual ? (
             <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: '0.78rem', marginBottom: '2px' }}>
-              billed annually · save 15%
+              {annualPrice} billed annually · save 15%
+            </div>
+          ) : (
+            <div style={{ color: 'rgba(255,255,255,0.22)', fontSize: '0.78rem', marginBottom: '2px' }}>
+              billed monthly
             </div>
           )}
         </motion.div>

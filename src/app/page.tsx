@@ -970,10 +970,10 @@ export default function Home() {
               Straight answers to what firms actually ask
             </h2>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FaqAccordion faqs={faqsLeft} />
-            <FaqAccordion faqs={faqsRight} />
-          </div>
+          <FaqAccordion
+            faqs={faqsLeft.flatMap((f, i) => [f, faqsRight[i]])}
+            columns={2}
+          />
         </div>
       </section>
 
