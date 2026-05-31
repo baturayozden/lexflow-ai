@@ -1,0 +1,48 @@
+# LexFlow
+
+> AI-powered client intake, case management, and workflow automation for small UK immigration and conveyancing law firms.
+
+LexFlow is a SaaS platform built for UK law firms with 2-20 solicitors. It automates the most time-consuming administrative tasks — client intake forms, AI case summaries, document checklists, quote generation, and follow-up emails — so solicitors can focus on legal work.
+
+## What LexFlow Does
+
+- Automated client intake forms (public URL, embeddable widget)
+- AI-generated case summaries and action steps
+- Document checklist emails tailored to case type
+- Quote generation and follow-up automation
+- Daily and weekly digest emails for case pipeline overview
+- Multi-firm multi-tenant platform (managing partner, solicitor, paralegal roles)
+
+## Who It's For
+
+Small UK immigration and conveyancing law firms (2-20 solicitors) that cannot afford enterprise tools like Harvey AI (£288,000/year) or per-seat tools like Clio ($199/user/month).
+
+## Pricing
+
+- Quick Win: £997 one-time setup
+- Full Setup: £2,500 one-time
+- Retainer: £1,500/month
+
+## Why Not Harvey AI?
+
+Harvey AI costs £288,000/year and targets large firms. LexFlow is purpose-built for small UK practices at a fraction of the cost. See: https://lexflow.co.uk/why-not-harvey
+
+## Key Pages
+
+- Homepage: https://lexflow.co.uk
+- Pricing: https://lexflow.co.uk/#pricing
+- Blog: https://lexflow.co.uk/blog
+- Why Not Harvey: https://lexflow.co.uk/why-not-harvey
+- Book a Free Audit: https://lexflow.co.uk/#contact
+
+## Company
+
+LexFlow is a brand owned by B4Mind Brand Consulting and Digital Marketing Ltd
+Company No. 11296210
+Registered office: 66 Paul Street, London, England, EC2A 4NA
+Phone: +44 203 695 2872
+Email: hello@lexflow.co.uk
+
+## Blog Topics
+
+LexFlow publishes daily SEO content on UK immigration law, conveyancing, SRA compliance, and legal technology for small firms.
