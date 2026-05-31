@@ -16,7 +16,7 @@ export default function FaqAccordion({ faqs }: Props) {
   const reduced = useReducedMotion()
 
   return (
-    <div className="space-y-3">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {faqs.map((faq, i) => (
         <motion.div
           key={i}
@@ -24,22 +24,23 @@ export default function FaqAccordion({ faqs }: Props) {
           whileInView={reduced ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: i * 0.07, duration: 0.5 }}
-          className={`border rounded-xl overflow-hidden transition-colors duration-200 ${
-            open === i
-              ? 'border-[#D4A843]/40 bg-[#D4A843]/5'
-              : 'border-black/8 bg-white'
-          }`}
-          style={{ boxShadow: open === i ? '0 2px 12px rgba(212,168,67,0.08)' : '0 1px 3px rgba(0,0,0,0.05)' }}
+          style={{
+            background: '#FFFFFF',
+            border: open === i ? '1px solid rgba(212,168,67,0.4)' : '1px solid rgba(15,23,42,0.08)',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            transition: 'border-color 0.2s ease',
+          }}
         >
           <button
-            className="w-full flex items-center justify-between px-6 py-5 text-left"
+            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', textAlign: 'left', cursor: 'pointer', background: 'none', border: 'none' }}
             onClick={() => setOpen(open === i ? null : i)}
           >
-            <span className="text-[#0F172A] font-semibold text-sm pr-4">{faq.q}</span>
+            <span style={{ color: '#0F172A', fontWeight: 600, fontSize: '0.95rem', paddingRight: '16px' }}>{faq.q}</span>
             <motion.span
               animate={reduced ? {} : { rotate: open === i ? 45 : 0 }}
               transition={{ duration: 0.2 }}
-              className="text-[#D4A843] text-xl flex-shrink-0"
+              style={{ color: '#D4A843', fontSize: '1.2rem', flexShrink: 0 }}
             >
               +
             </motion.span>
@@ -52,9 +53,9 @@ export default function FaqAccordion({ faqs }: Props) {
                 animate={reduced ? {} : { height: 'auto', opacity: 1 }}
                 exit={reduced ? {} : { height: 0, opacity: 0 }}
                 transition={{ duration: 0.25, ease: 'easeInOut' }}
-                className="overflow-hidden"
+                style={{ overflow: 'hidden' }}
               >
-                <p className="px-6 pb-5 text-[#475569] text-sm leading-relaxed">{faq.a}</p>
+                <p style={{ padding: '0 24px 20px', color: '#475569', fontSize: '0.9rem', lineHeight: 1.7, borderTop: '1px solid rgba(15,23,42,0.08)' }}>{faq.a}</p>
               </motion.div>
             )}
           </AnimatePresence>

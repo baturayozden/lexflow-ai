@@ -18,8 +18,6 @@ const fadeUp = {
   transition: { duration: 0.7, ease },
 }
 
-// ─── Count-up hook ───────────────────────────────────────────────────────────
-// once:true + margin ensures the counter fires exactly once when visible
 function useCountUp(target: number, duration = 1500) {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLSpanElement>(null)
@@ -43,7 +41,6 @@ function useCountUp(target: number, duration = 1500) {
   return { count, ref }
 }
 
-// ─── Data ────────────────────────────────────────────────────────────────────
 const pricingTiers = [
   {
     tier: 'Quick Win',
@@ -111,7 +108,6 @@ const comparisonRows = [
   { feature: 'Setup time', lexflow: '5–7 days', clio: 'Weeks', leap: 'Months', smokeball: 'Weeks' },
 ]
 
-// ─── Product Mock-up (lives inside the dark hero) ────────────────────────────
 function ProductMockup() {
   return (
     <div className="relative">
@@ -120,9 +116,7 @@ function ProductMockup() {
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         className="relative"
       >
-        {/* Browser frame */}
         <div className="bg-[#161F2E] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
-          {/* Chrome bar */}
           <div className="bg-[#0D1117] px-4 py-3 flex items-center gap-2 border-b border-white/8">
             <div className="flex gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
@@ -133,7 +127,6 @@ function ProductMockup() {
               <span className="text-white/30 text-[10px]">app.lexflow.co.uk/cases/LXF-2847</span>
             </div>
           </div>
-          {/* Content */}
           <div className="p-4 space-y-3">
             <div className="flex items-start justify-between">
               <div>
@@ -183,7 +176,6 @@ function ProductMockup() {
   )
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Home() {
   const reduced = useReducedMotion()
   const { count: lostRevenue, ref: revenueRef } = useCountUp(291200)
@@ -194,16 +186,17 @@ export default function Home() {
       <Navbar />
 
       {/* ═══════════════════════════════════════════════════════════════
-          1 · HERO — dark background, stays as-is
+          1 · HERO — dark gradient background
       ════════════════════════════════════════════════════════════════ */}
       <section
         className="relative min-h-screen flex items-center pt-24 pb-16 px-6 overflow-hidden"
-        style={{ background: '#0D1117' }}
+        style={{ background: 'linear-gradient(135deg, #0D1117 0%, #111827 50%, #0D1117 100%)' }}
       >
-        {/* Background glow */}
+        {/* Ambient glow orbs */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden>
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#D4A843]/6 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-[#10B981]/4 rounded-full blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, rgba(212,168,67,0.06) 0%, transparent 70%)' }} />
+          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.04) 0%, transparent 70%)' }} />
+          <div className="absolute top-0 left-0 right-0 bottom-0" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(212,168,67,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(212,168,67,0.04) 0%, transparent 40%)', pointerEvents: 'none' }} />
         </div>
 
         <div className="relative max-w-6xl mx-auto w-full grid lg:grid-cols-5 gap-12 lg:gap-16 items-center">
@@ -214,7 +207,8 @@ export default function Home() {
               initial={reduced ? {} : { opacity: 0, y: 20 }}
               animate={reduced ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease }}
-              className="inline-flex items-center gap-2.5 bg-[#10B981]/10 border border-[#10B981]/25 rounded-full px-4 py-2"
+              className="inline-flex items-center gap-2.5 rounded-full px-4 py-2"
+              style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)' }}
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75" />
@@ -250,7 +244,8 @@ export default function Home() {
               initial={reduced ? {} : { opacity: 0, y: 20 }}
               animate={reduced ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.25, ease }}
-              className="text-[#94A3B8] text-lg leading-relaxed max-w-xl"
+              className="text-lg leading-relaxed max-w-xl"
+              style={{ color: 'rgba(148,163,184,1)' }}
             >
               Immigration and conveyancing firms are spending £30–50k/year on tasks AI handles in seconds. We install the systems. You keep the savings.
             </motion.p>
@@ -266,8 +261,8 @@ export default function Home() {
                 href="#how-it-works"
                 whileHover={reduced ? {} : { scale: 1.03 }}
                 whileTap={reduced ? {} : { scale: 0.97 }}
-                className="inline-flex items-center justify-center px-7 py-4 rounded-xl font-bold text-[#0D1117] text-sm"
-                style={{ background: 'linear-gradient(135deg,#D4A843,#E8BC5A)' }}
+                className="inline-flex items-center justify-center px-7 py-4 rounded-xl font-bold text-sm"
+                style={{ background: 'linear-gradient(135deg,#D4A843,#E8BC5A)', color: '#0D1117' }}
               >
                 See How It Works
               </motion.a>
@@ -275,7 +270,8 @@ export default function Home() {
                 href="/demo/index.html"
                 whileHover={reduced ? {} : { scale: 1.03 }}
                 whileTap={reduced ? {} : { scale: 0.97 }}
-                className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl font-semibold text-[#D4A843] text-sm border border-[#D4A843]/40 hover:bg-[#D4A843]/5 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl font-semibold text-sm transition-colors"
+                style={{ color: '#D4A843', border: '1px solid rgba(212,168,67,0.4)' }}
               >
                 ▶ See it in action
               </motion.a>
@@ -286,18 +282,19 @@ export default function Home() {
               initial={reduced ? {} : { opacity: 0 }}
               animate={reduced ? {} : { opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5, ease }}
-              className="flex flex-wrap gap-6 pt-2"
+              className="inline-flex items-center gap-0 rounded-xl"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', padding: '20px 32px' }}
             >
               {[
                 { number: '10+', label: 'Hours saved/week' },
                 { number: '7 days', label: 'To go live' },
                 { number: '30-day', label: 'ROI guarantee' },
               ].map((s, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  {i > 0 && <div className="w-px h-8 bg-white/10" />}
-                  <div>
-                    <div className="text-[#D4A843] font-bold text-lg leading-none">{s.number}</div>
-                    <div className="text-[#64748B] text-xs mt-0.5">{s.label}</div>
+                <div key={i} className="flex items-center gap-0">
+                  {i > 0 && <div className="mx-6 self-stretch" style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />}
+                  <div className="text-center">
+                    <div style={{ color: '#D4A843', fontWeight: 700, fontSize: '1.5rem', lineHeight: 1 }}>{s.number}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '4px' }}>{s.label}</div>
                   </div>
                 </div>
               ))}
@@ -317,18 +314,18 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          2 · TRUST BAR — #F1F5F9, light badges
+          2 · TRUST BAR — #F8FAFC
       ════════════════════════════════════════════════════════════════ */}
       <motion.section
         {...fadeUp}
-        className="py-10 px-6 border-y"
-        style={{ borderColor: 'rgba(0,0,0,0.08)', background: '#F1F5F9' }}
+        className="px-6"
+        style={{ background: '#F8FAFC', borderTop: '1px solid rgba(15,23,42,0.08)', borderBottom: '1px solid rgba(15,23,42,0.08)', padding: '24px 24px' }}
       >
         <div className="max-w-5xl mx-auto">
-          <p className="text-center text-[#475569] text-xs uppercase tracking-widest mb-8 font-semibold">
+          <p className="text-center mb-6" style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', color: '#94A3B8', textTransform: 'uppercase' }}>
             Trusted by firms across England &amp; Wales
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center" style={{ gap: '8px' }}>
             {[
               { icon: '🇬🇧', label: 'UK-Only Focus' },
               { icon: '🔒', label: 'GDPR Compliant' },
@@ -342,11 +339,11 @@ export default function Home() {
                 whileInView={reduced ? {} : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.5 }}
-                className="flex items-center gap-2 bg-white border rounded-full px-5 py-2.5"
-                style={{ borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+                className="flex items-center"
+                style={{ background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.14)', borderRadius: '100px', padding: '8px 16px', gap: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)' }}
               >
-                <span className={badge.mono ? 'text-[#10B981] font-bold' : 'text-base'}>{badge.icon}</span>
-                <span className="text-[#475569] text-sm font-medium">{badge.label}</span>
+                <span style={{ fontSize: badge.mono ? '0.9rem' : '1rem', color: badge.mono ? '#10B981' : undefined, fontWeight: badge.mono ? 700 : undefined }}>{badge.icon}</span>
+                <span style={{ color: '#475569', fontSize: '0.85rem', fontWeight: 500 }}>{badge.label}</span>
               </motion.div>
             ))}
           </div>
@@ -354,15 +351,16 @@ export default function Home() {
       </motion.section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          3 · PROBLEM — #FFFFFF, dark text, white cards
+          3 · PROBLEM — #FFFFFF
       ════════════════════════════════════════════════════════════════ */}
-      <section id="problem" className="py-28 px-6" style={{ background: '#FFFFFF' }}>
+      <section id="problem" style={{ background: '#FFFFFF', padding: '120px 24px' }}>
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <h2 className="font-bold text-[#0F172A] mb-4" style={{ fontSize: 'clamp(1.8rem,3vw,2.5rem)' }}>
+            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>THE PROBLEM</p>
+            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               Your team is drowning in manual work
             </h2>
-            <p className="text-[#475569] max-w-xl mx-auto">
+            <p style={{ fontSize: '1.05rem', color: '#475569', maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
               Every hour your fee-earners spend on admin is an hour not billed.
             </p>
           </motion.div>
@@ -379,77 +377,83 @@ export default function Home() {
                 whileInView={reduced ? {} : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12, duration: 0.6, ease }}
-                whileHover={reduced ? {} : { y: -4, borderColor: 'rgba(212,168,67,0.4)' }}
-                className="rounded-2xl p-7 border transition-all cursor-default"
-                style={{ background: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}
+                className="cursor-default"
+                style={{ background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.08)', borderRadius: '16px', padding: '32px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', transition: 'box-shadow 0.2s ease, transform 0.2s ease' }}
+                whileHover={reduced ? {} : { y: -2, boxShadow: '0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)' }}
               >
-                <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 text-red-500 text-xs font-semibold px-3 py-1 rounded-full mb-4">
+                <div className="inline-flex items-center gap-2 mb-4" style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid rgba(220,38,38,0.15)', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 600, padding: '4px 12px' }}>
                   {item.hours}
                 </div>
-                <h3 className="text-[#0F172A] font-semibold mb-2">{item.title}</h3>
-                <p className="text-[#475569] text-sm leading-relaxed">{item.desc}</p>
+                <h3 style={{ color: '#0F172A', fontWeight: 700, fontSize: '1.05rem', marginBottom: '10px' }}>{item.title}</h3>
+                <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.65 }}>{item.desc}</p>
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
 
-          {/* Count-up block */}
+      {/* ═══════════════════════════════════════════════════════════════
+          4 · DARK STATS — #0D1117 — £291,200 count-up
+      ════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#0D1117', padding: '80px 24px' }}>
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={reduced ? {} : { opacity: 0, scale: 0.96 }}
             whileInView={reduced ? {} : { opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="mt-10 rounded-2xl py-8 px-10 border text-center"
-            style={{ background: 'rgba(212,168,67,0.05)', borderColor: 'rgba(212,168,67,0.2)' }}
           >
-            <p className="text-[#475569] text-base">
-              That is{' '}
-              <strong className="text-[#0F172A]">18–28 billable hours per week</strong> your firm is giving away.
-              At £200/hr, that is up to{' '}
-              <strong className="text-[#D4A843]">
-                £<span ref={revenueRef}>{reduced ? '291,200' : lostRevenue.toLocaleString()}</span> in lost revenue annually.
-              </strong>
+            <p className="mb-4" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(212,168,67,0.7)' }}>THE HIDDEN COST</p>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', marginBottom: '16px' }}>
+              That is <strong style={{ color: '#FFFFFF' }}>18–28 billable hours per week</strong> your firm is giving away.
+              At £200/hr, that is up to:
             </p>
+            <div style={{ fontWeight: 900, color: '#D4A843', letterSpacing: '-0.02em', fontSize: 'clamp(3rem, 6vw, 5rem)', lineHeight: 1 }}>
+              £<span ref={revenueRef}>{reduced ? '291,200' : lostRevenue.toLocaleString()}</span>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1rem', marginTop: '12px' }}>in lost revenue annually</p>
           </motion.div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          4 · FEATURES — #F8FAFC, white cards
+          5 · FEATURES — #F8FAFC
       ════════════════════════════════════════════════════════════════ */}
-      <section className="py-28 px-6" style={{ background: '#F8FAFC' }}>
+      <section style={{ background: '#F8FAFC', padding: '120px 24px' }}>
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <h2 className="font-bold text-[#0F172A] mb-4" style={{ fontSize: 'clamp(1.8rem,3vw,2.5rem)' }}>
+            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>WHAT YOU GET</p>
+            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               Everything your firm needs.{' '}
-              <span className="text-[#94A3B8]">Nothing it doesn&apos;t.</span>
+              <span style={{ color: '#D4A843' }}>Nothing it doesn&apos;t.</span>
             </h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               {
-                big: true, icon: '🤖', title: 'AI Client Intake',
+                icon: '🤖', title: 'AI Client Intake',
                 desc: "A potential client fills in a form. AI reads it, summarises the case, flags urgency, and has it ready for your solicitor — before they've had their morning coffee.",
-                tag: '~3 hrs saved per client', tagColor: 'text-[#10B981] bg-[#10B981]/10 border-[#10B981]/25',
+                tag: '~3 hrs saved per client',
               },
               {
-                big: true, icon: '⚡', title: 'Action Centre',
+                icon: '⚡', title: 'Action Centre',
                 desc: 'For every case, AI generates the next steps automatically. Schedule, send, check eligibility — one click. No more staring at a file wondering what to do next.',
-                tag: 'Zero missed deadlines', tagColor: 'text-[#D4A843] bg-[#D4A843]/10 border-[#D4A843]/25',
+                tag: 'Zero missed deadlines',
               },
               {
-                big: false, icon: '📋', title: 'Gov.uk Checklist Automation',
+                icon: '📋', title: 'Gov.uk Checklist Automation',
                 desc: 'Case-specific document lists built from gov.uk. Sent to your client automatically. Updated monthly.',
               },
               {
-                big: false, icon: '📄', title: 'Instant Quote Generation',
+                icon: '📄', title: 'Instant Quote Generation',
                 desc: 'Template-based quotes generated and emailed in seconds. No more copy-paste from old files.',
               },
               {
-                big: false, icon: '💬', title: 'AI Chatbot Widget',
+                icon: '💬', title: 'AI Chatbot Widget',
                 desc: "Embed on your firm's website. Answers client questions 24/7 and routes new enquiries straight into your intake pipeline.",
               },
               {
-                big: false, icon: '📅', title: 'Daily & Weekly Digests',
+                icon: '📅', title: 'Daily & Weekly Digests',
                 desc: 'Every morning: which cases need attention. Every Monday: what the week looks like. Automated. No admin.',
               },
             ].map((card, i) => (
@@ -459,15 +463,17 @@ export default function Home() {
                 whileInView={reduced ? {} : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.55, ease }}
-                whileHover={reduced ? {} : { borderColor: 'rgba(212,168,67,0.35)', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', y: -3 }}
-                className="rounded-2xl p-7 border transition-all cursor-default"
-                style={{ background: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+                className="cursor-default"
+                style={{ background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.08)', borderRadius: '20px', padding: '36px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', transition: 'all 0.25s ease' }}
+                whileHover={reduced ? {} : { borderColor: 'rgba(212,168,67,0.4)', boxShadow: '0 8px 32px rgba(212,168,67,0.08)', y: -3 }}
               >
-                <div className="text-3xl mb-4">{card.icon}</div>
-                <h3 className="text-[#0F172A] font-semibold mb-3">{card.title}</h3>
-                <p className="text-[#475569] text-sm leading-relaxed">{card.desc}</p>
+                <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(212,168,67,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', marginBottom: '20px' }}>
+                  {card.icon}
+                </div>
+                <h3 style={{ color: '#0F172A', fontWeight: 700, fontSize: '1.05rem', marginBottom: '10px' }}>{card.title}</h3>
+                <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.65 }}>{card.desc}</p>
                 {card.tag && (
-                  <div className={`inline-flex mt-4 text-xs font-semibold px-3 py-1 rounded-full border ${card.tagColor}`}>
+                  <div style={{ display: 'inline-block', marginTop: '20px', background: 'rgba(16,185,129,0.08)', color: '#059669', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 600, padding: '4px 12px' }}>
                     {card.tag}
                   </div>
                 )}
@@ -478,22 +484,25 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          5 · HOW IT WORKS — #FFFFFF
+          6 · HOW IT WORKS — #FFFFFF
       ════════════════════════════════════════════════════════════════ */}
-      <section id="how-it-works" className="py-28 px-6" style={{ background: '#FFFFFF' }}>
+      <section id="how-it-works" style={{ background: '#FFFFFF', padding: '120px 24px' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <h2 className="font-bold text-[#0F172A] mb-4" style={{ fontSize: 'clamp(1.8rem,3vw,2.5rem)' }}>
+            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>THE PROCESS</p>
+            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               A simple process.{' '}
-              <span className="text-[#94A3B8]">We do the heavy lifting.</span>
+              <span style={{ color: '#94A3B8' }}>We do the heavy lifting.</span>
             </h2>
           </motion.div>
 
           <div className="relative grid md:grid-cols-3 gap-8 md:gap-0">
-            <div
-              className="hidden md:block absolute top-10 left-1/6 right-1/6 h-px"
-              style={{ background: 'linear-gradient(90deg,transparent,rgba(212,168,67,0.3),transparent)' }}
-            />
+            {/* Connector lines — desktop only */}
+            <div className="hidden md:flex absolute top-6 left-0 right-0 items-center pointer-events-none" style={{ padding: '0 calc(100%/6)' }}>
+              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #D4A843, rgba(212,168,67,0.2))' }} />
+              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, rgba(212,168,67,0.2), #D4A843)' }} />
+            </div>
+
             {[
               { step: '1', title: 'Free Audit', desc: 'We spend 20 minutes mapping your manual processes. You get a clear picture of what can be automated.', tag: 'Completely free' },
               { step: '2', title: 'We Build & Install', desc: 'You approve the plan. We build everything and install directly into your existing tools. Zero technical effort from you.', tag: 'You do nothing technical' },
@@ -505,22 +514,17 @@ export default function Home() {
                 whileInView={reduced ? {} : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.2, duration: 0.6, ease }}
-                className="text-center px-6"
+                className="text-center px-8"
               >
-                <motion.div
-                  whileHover={reduced ? {} : { scale: 1.08, rotate: 3 }}
-                  transition={{ type: 'spring', stiffness: 400 }}
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 border"
-                  style={{ background: 'rgba(212,168,67,0.08)', borderColor: 'rgba(212,168,67,0.25)' }}
+                <div
+                  className="flex items-center justify-center mx-auto mb-6"
+                  style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#0D1117', color: '#D4A843', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}
                 >
-                  <span className="text-[#D4A843] font-bold text-xl">{item.step}</span>
-                </motion.div>
-                <h3 className="text-[#0F172A] font-semibold text-lg mb-3">{item.title}</h3>
-                <p className="text-[#475569] text-sm leading-relaxed mb-4">{item.desc}</p>
-                <span
-                  className="text-xs text-[#D4A843] font-medium px-3 py-1 rounded-full"
-                  style={{ background: 'rgba(212,168,67,0.08)' }}
-                >
+                  {item.step}
+                </div>
+                <h3 style={{ fontWeight: 700, fontSize: '1.15rem', color: '#0F172A', marginBottom: '12px' }}>{item.title}</h3>
+                <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.65, marginBottom: '16px' }}>{item.desc}</p>
+                <span style={{ background: '#F0FDF4', color: '#15803D', border: '1px solid rgba(21,128,61,0.2)', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 500, padding: '3px 10px', display: 'inline-block' }}>
                   {item.tag}
                 </span>
               </motion.div>
@@ -535,14 +539,15 @@ export default function Home() {
           >
             <a
               href="#contact"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-[#0D1117] text-sm"
-              style={{ background: 'linear-gradient(135deg,#D4A843,#E8BC5A)' }}
+              className="inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-sm"
+              style={{ background: 'linear-gradient(135deg,#D4A843,#E8BC5A)', color: '#0D1117' }}
             >
               Start with a Free Audit
             </a>
             <a
               href="/demo/index.html"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-[#D4A843] text-sm border border-[#D4A843]/40 hover:bg-[#D4A843]/5 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-sm transition-colors"
+              style={{ color: '#D4A843', border: '1px solid rgba(212,168,67,0.4)' }}
             >
               ▶ See it in action
             </a>
@@ -551,71 +556,88 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          6 · COMPARISON TABLE — #F8FAFC, white table
+          7 · COMPARISON TABLE — #F8FAFC
       ════════════════════════════════════════════════════════════════ */}
-      <section className="py-28 px-6" style={{ background: '#F8FAFC' }}>
+      <section style={{ background: '#F8FAFC', padding: '120px 24px' }}>
         <div className="max-w-5xl mx-auto">
-          <motion.div {...fadeUp} className="text-center mb-4">
-            <h2 className="font-bold text-[#0F172A] mb-4" style={{ fontSize: 'clamp(1.8rem,3vw,2.5rem)' }}>
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>WHY LEXFLOW</p>
+            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               Built for firms like yours.{' '}
-              <span className="text-[#94A3B8]">Unlike everything else.</span>
+              <span style={{ color: '#94A3B8' }}>Unlike everything else.</span>
             </h2>
-            <p className="text-[#94A3B8] max-w-xl mx-auto">
+            <p style={{ fontSize: '1.05rem', color: '#475569', maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
               The tools that dominate the market were built for large firms — or not built for the UK at all.
             </p>
           </motion.div>
 
-          <div className="overflow-x-auto mt-12">
-            <table
-              className="w-full min-w-[600px] rounded-2xl overflow-hidden border bg-white"
-              style={{ borderColor: 'rgba(0,0,0,0.08)' }}
-            >
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-                  <th className="text-left py-3 px-4 text-[#94A3B8] text-sm font-medium w-44">Feature</th>
-                  {['LexFlow', 'Clio', 'LEAP', 'Smokeball'].map((col, i) => (
-                    <th key={col} className={`py-3 px-4 text-sm font-semibold text-center ${i === 0 ? 'text-[#D4A843]' : 'text-[#94A3B8]'}`}>
-                      {i === 0 ? (
-                        <span className="inline-flex items-center gap-1.5 bg-[#D4A843]/10 border border-[#D4A843]/30 px-3 py-1 rounded-full">
-                          {col} ✦
-                        </span>
-                      ) : col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {comparisonRows.map((row, i) => (
-                  <motion.tr
-                    key={i}
-                    initial={reduced ? {} : { opacity: 0, x: -10 }}
-                    whileInView={reduced ? {} : { opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.07, duration: 0.4 }}
-                    className="border-t"
-                    style={{ borderColor: 'rgba(0,0,0,0.06)' }}
-                  >
-                    <td className="py-4 px-4 text-[#475569] text-sm">{row.feature}</td>
-                    {[row.lexflow, row.clio, row.leap, row.smokeball].map((cell, j) => (
-                      <td key={j} className={`py-4 px-4 text-sm text-center ${j === 0 ? 'bg-[#D4A843]/5 border-x border-[#D4A843]/15 font-medium' : ''}`}>
-                        <span className={
-                          cell === '✅' ? 'text-[#10B981] text-base' :
-                          cell === '❌' ? 'text-[#94A3B8] text-base' :
-                          cell.startsWith('⚠️') ? 'text-yellow-500 text-sm' :
-                          j === 0 ? 'text-[#D4A843]' : 'text-[#475569]'
-                        }>
-                          {cell}
-                        </span>
-                      </td>
+          <div className="overflow-x-auto">
+            <div style={{ background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.08)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)' }}>
+              <table className="w-full min-w-[600px]">
+                <thead>
+                  <tr style={{ background: '#F8FAFC', borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
+                    <th className="text-left" style={{ padding: '16px 24px', color: '#94A3B8', fontSize: '0.85rem', fontWeight: 500 }}>Feature</th>
+                    {['LexFlow', 'Clio', 'LEAP', 'Smokeball'].map((col, i) => (
+                      <th key={col} style={{
+                        padding: '16px 24px',
+                        fontSize: '0.9rem',
+                        fontWeight: 600,
+                        textAlign: 'center',
+                        color: i === 0 ? '#D4A843' : '#94A3B8',
+                        background: i === 0 ? 'rgba(212,168,67,0.08)' : undefined,
+                        borderLeft: i === 0 ? '2px solid #D4A843' : undefined,
+                        borderRight: i === 0 ? '2px solid #D4A843' : undefined,
+                      }}>
+                        {i === 0 ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full" style={{ background: 'rgba(212,168,67,0.1)', border: '1px solid rgba(212,168,67,0.3)' }}>
+                            {col} ✦
+                          </span>
+                        ) : col}
+                      </th>
                     ))}
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonRows.map((row, i) => (
+                    <motion.tr
+                      key={i}
+                      initial={reduced ? {} : { opacity: 0, x: -10 }}
+                      whileInView={reduced ? {} : { opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.07, duration: 0.4 }}
+                      style={{ borderTop: '1px solid rgba(15,23,42,0.06)', background: i % 2 === 0 ? '#FFFFFF' : '#FAFAFA' }}
+                    >
+                      <td style={{ padding: '16px 24px', color: '#475569', fontSize: '0.9rem' }}>{row.feature}</td>
+                      {[row.lexflow, row.clio, row.leap, row.smokeball].map((cell, j) => (
+                        <td key={j} style={{
+                          padding: '16px 24px',
+                          fontSize: '0.9rem',
+                          textAlign: 'center',
+                          background: j === 0 ? 'rgba(212,168,67,0.04)' : undefined,
+                          borderLeft: j === 0 ? '2px solid rgba(212,168,67,0.3)' : undefined,
+                          borderRight: j === 0 ? '2px solid rgba(212,168,67,0.3)' : undefined,
+                          borderBottom: j === 0 && i === comparisonRows.length - 1 ? '2px solid rgba(212,168,67,0.3)' : undefined,
+                        }}>
+                          <span style={{
+                            color: cell === '✅' ? '#10B981' :
+                                   cell === '❌' ? '#94A3B8' :
+                                   cell.startsWith('⚠️') ? '#EAB308' :
+                                   j === 0 ? '#0F172A' : '#475569',
+                            fontWeight: j === 0 ? 600 : 400,
+                          }}>
+                            {cell}
+                          </span>
+                        </td>
+                      ))}
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <motion.p {...fadeUp} className="text-center mt-6">
-            <Link href="/why-not-harvey" className="text-[#D4A843] text-sm hover:underline">
+            <Link href="/why-not-harvey" style={{ color: '#D4A843', fontSize: '0.9rem' }} className="hover:underline">
               Why not Harvey AI? See the full comparison →
             </Link>
           </motion.p>
@@ -623,32 +645,41 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          7 · PRICING — #FFFFFF
+          8 · PRICING — #0D1117 (dark)
       ════════════════════════════════════════════════════════════════ */}
-      <section id="pricing" className="py-28 px-6" style={{ background: '#FFFFFF' }}>
+      <section id="pricing" style={{ background: '#0D1117', padding: '120px 24px' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
-            <h2 className="font-bold text-[#0F172A] mb-4" style={{ fontSize: 'clamp(1.8rem,3vw,2.5rem)' }}>
+            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(212,168,67,0.7)' }}>SIMPLE PRICING</p>
+            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#FFFFFF', lineHeight: 1.15 }}>
               Simple, transparent pricing
             </h2>
-            <p className="text-[#475569]">No hidden fees. No complicated contracts. No per-user charges.</p>
+            <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.6)', maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
+              No hidden fees. No complicated contracts. No per-user charges.
+            </p>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-6">
             {pricingTiers.map((tier, i) => (
               <PricingCard key={tier.tier} {...tier} delay={i * 0.15} />
             ))}
           </div>
-          <p className="text-center text-[#94A3B8] text-sm mt-6">
+          <p className="text-center mt-6" style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem' }}>
             All prices exclude VAT. No hidden fees. No per-user charges.
           </p>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          8 · TESTIMONIALS — #F8FAFC, white cards
+          9 · TESTIMONIALS — #FFFFFF
       ════════════════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6" style={{ background: '#F8FAFC' }}>
+      <section style={{ background: '#FFFFFF', padding: '120px 24px' }}>
         <div className="max-w-5xl mx-auto">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>CLIENT RESULTS</p>
+            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
+              What firms are saying
+            </h2>
+          </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
               { quote: 'We used to spend 3 hours on every new client. Now it takes 15 minutes and the AI summary is ready for the solicitor.', author: 'Managing Partner', firm: 'UK Immigration Firm' },
@@ -661,14 +692,13 @@ export default function Home() {
                 whileInView={reduced ? {} : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12, duration: 0.6 }}
-                className="rounded-2xl p-7 border"
-                style={{ background: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+                style={{ background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.08)', borderRadius: '20px', padding: '36px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)' }}
               >
-                <div className="text-[#D4A843] text-3xl font-serif leading-none mb-4">&ldquo;</div>
-                <p className="text-[#475569] text-sm leading-relaxed mb-6">{t.quote}</p>
+                <span style={{ fontSize: '5rem', lineHeight: 0.5, color: '#D4A843', fontFamily: 'Georgia, serif', display: 'block', marginBottom: '16px' }}>&ldquo;</span>
+                <p style={{ fontSize: '1rem', color: '#475569', lineHeight: 1.75, fontStyle: 'italic', marginBottom: '24px' }}>{t.quote}</p>
                 <div>
-                  <div className="text-[#0F172A] text-sm font-semibold">{t.author}</div>
-                  <div className="text-[#94A3B8] text-xs mt-0.5">{t.firm}</div>
+                  <div style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.9rem' }}>{t.author}</div>
+                  <div style={{ color: '#94A3B8', fontSize: '0.8rem', marginTop: '2px' }}>{t.firm}</div>
                 </div>
               </motion.div>
             ))}
@@ -677,46 +707,45 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          9 · FAQ — #F8FAFC, separated with border-top
+          10 · FAQ — #F8FAFC
       ════════════════════════════════════════════════════════════════ */}
       <section
         id="faq"
-        className="py-28 px-6"
-        style={{ background: '#F8FAFC', borderTop: '1px solid rgba(0,0,0,0.08)' }}
+        style={{ background: '#F8FAFC', padding: '120px 24px', borderTop: '1px solid rgba(15,23,42,0.08)' }}
       >
-        <div className="max-w-2xl mx-auto">
+        <div style={{ maxWidth: '720px', margin: '0 auto' }}>
           <motion.div {...fadeUp} className="text-center mb-12">
-            <h2 className="font-bold text-[#0F172A] mb-4" style={{ fontSize: 'clamp(1.8rem,3vw,2.5rem)' }}>
+            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>FAQ</p>
+            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
               Common questions
             </h2>
-            <p className="text-[#475569]">Everything you need to know before getting started.</p>
+            <p style={{ fontSize: '1.05rem', color: '#475569', lineHeight: 1.7 }}>Everything you need to know before getting started.</p>
           </motion.div>
           <FaqAccordion faqs={faqs} />
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          10 · CTA + CONTACT — #FFFFFF, separated with border-top
+          11 · CTA + CONTACT — #0D1117 (dark)
       ════════════════════════════════════════════════════════════════ */}
       <section
         id="contact"
-        className="py-28 px-6 relative"
-        style={{ background: '#FFFFFF', borderTop: '1px solid rgba(0,0,0,0.08)', position: 'relative', zIndex: 10 }}
+        style={{ background: '#0D1117', padding: '120px 24px', position: 'relative', zIndex: 10 }}
       >
         <div className="absolute inset-0 pointer-events-none" aria-hidden>
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-64 bg-[#D4A843]/4 rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-64 rounded-full blur-3xl" style={{ background: 'rgba(212,168,67,0.04)' }} />
         </div>
-        <div className="relative max-w-xl mx-auto text-center">
+        <div className="relative" style={{ maxWidth: '560px', margin: '0 auto', textAlign: 'center' }}>
           <motion.div {...fadeUp}>
-            <div className="inline-flex items-center gap-2 text-[#D4A843] text-xs font-semibold uppercase tracking-wider mb-4">
-              <span className="w-6 h-px bg-[#D4A843]/50" />
+            <div className="inline-flex items-center gap-2 mb-4" style={{ color: 'rgba(212,168,67,0.8)', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              <span style={{ width: '24px', height: '1px', background: 'rgba(212,168,67,0.5)', display: 'inline-block' }} />
               Free Audit
-              <span className="w-6 h-px bg-[#D4A843]/50" />
+              <span style={{ width: '24px', height: '1px', background: 'rgba(212,168,67,0.5)', display: 'inline-block' }} />
             </div>
-            <h2 className="font-bold text-[#0F172A] mb-4" style={{ fontSize: 'clamp(1.8rem,3vw,2.5rem)' }}>
+            <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(2rem,4vw,3rem)', color: '#FFFFFF', lineHeight: 1.15 }}>
               Ready to get your time back?
             </h2>
-            <p className="text-[#475569] mb-10 leading-relaxed">
+            <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.6)', marginBottom: '40px', lineHeight: 1.7 }}>
               Book a free 20-minute audit. We map your processes, show you exactly what can be automated, and give you a clear plan — no obligation.
             </p>
           </motion.div>
