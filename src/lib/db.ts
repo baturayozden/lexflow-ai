@@ -214,13 +214,17 @@ export async function updateCaseAction(
 
 // ── Settings ─────────────────────────────────────────────────────────────────
 
-export async function getFirmSettings() {
-  const { data } = await supabaseAdmin.from('firm_settings').select('*').single()
+export async function getFirmSettings(firmId?: string) {
+  const query = supabaseAdmin.from('firm_settings').select('*')
+  if (firmId) query.eq('firm_id', firmId)
+  const { data } = await query.limit(1).single()
   return data || { firm_name: 'LexFlow', primary_color: '#c9a84c' }
 }
 
-export async function updateFirmSettings(settings: Record<string, unknown>) {
-  const existing = await supabaseAdmin.from('firm_settings').select('id').single()
+export async function updateFirmSettings(settings: Record<string, unknown>, firmId?: string) {
+  const query = supabaseAdmin.from('firm_settings').select('id')
+  if (firmId) query.eq('firm_id', firmId)
+  const existing = await query.limit(1).single()
   if (existing.data) {
     const { data } = await supabaseAdmin
       .from('firm_settings')
@@ -230,18 +234,26 @@ export async function updateFirmSettings(settings: Record<string, unknown>) {
       .single()
     return data
   } else {
-    const { data } = await supabaseAdmin.from('firm_settings').insert([settings]).select().single()
+    const { data } = await supabaseAdmin
+      .from('firm_settings')
+      .insert([firmId ? { ...settings, firm_id: firmId } : settings])
+      .select()
+      .single()
     return data
   }
 }
 
-export async function getEmailSettings() {
-  const { data } = await supabaseAdmin.from('email_settings').select('*').single()
+export async function getEmailSettings(firmId?: string) {
+  const query = supabaseAdmin.from('email_settings').select('*')
+  if (firmId) query.eq('firm_id', firmId)
+  const { data } = await query.limit(1).single()
   return data || { from_name: 'LexFlow', from_email: 'notifications@lexflow.co.uk' }
 }
 
-export async function updateEmailSettings(settings: Record<string, unknown>) {
-  const existing = await supabaseAdmin.from('email_settings').select('id').single()
+export async function updateEmailSettings(settings: Record<string, unknown>, firmId?: string) {
+  const query = supabaseAdmin.from('email_settings').select('id')
+  if (firmId) query.eq('firm_id', firmId)
+  const existing = await query.limit(1).single()
   if (existing.data) {
     const { data } = await supabaseAdmin
       .from('email_settings')
@@ -251,7 +263,11 @@ export async function updateEmailSettings(settings: Record<string, unknown>) {
       .single()
     return data
   } else {
-    const { data } = await supabaseAdmin.from('email_settings').insert([settings]).select().single()
+    const { data } = await supabaseAdmin
+      .from('email_settings')
+      .insert([firmId ? { ...settings, firm_id: firmId } : settings])
+      .select()
+      .single()
     return data
   }
 }

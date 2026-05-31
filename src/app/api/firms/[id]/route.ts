@@ -37,16 +37,28 @@ export async function PATCH(
 ) {
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  if (!isPlatformAdmin((session.user as Record<string, unknown>).role as string)) {
+
+  const { id } = await params
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userFirmId = (session.user as any)?.firmId as string | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userRole = (session.user as any)?.role as string | undefined
+  const isAdmin = isPlatformAdmin(userRole || '')
+  const isOwnFirm = userFirmId === id
+
+  // Platform admins can update any firm; firm members can update their own
+  if (!isAdmin && !isOwnFirm) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const { id } = await params
   const body = await req.json()
 
-  // Whitelist updatable fields
-  const allowed = ['name', 'email', 'phone', 'website', 'address', 'plan', 'primary_color', 'active',
-    'onboarding_steps', 'onboarding_completed']
+  // Firm members can only update branding fields (not plan/active/onboarding)
+  // Platform admins can update everything
+  const firmMemberAllowed = ['name', 'email', 'phone', 'website', 'address', 'logo_url', 'primary_color']
+  const adminAllowed = [...firmMemberAllowed, 'plan', 'active', 'onboarding_steps', 'onboarding_completed']
+  const allowed = isAdmin ? adminAllowed : firmMemberAllowed
+
   const update: Record<string, unknown> = {}
   for (const key of allowed) {
     if (key in body) update[key] = body[key]

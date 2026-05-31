@@ -14,12 +14,35 @@ interface CaseAction {
   sort_order: number
 }
 
+// Maps DB action types → modal key
+const TYPE_TO_MODAL: Record<string, string> = {
+  // DB types from case_actions table
+  email:      'documents',   // send checklist by email
+  document:   'documents',   // document request → checklist
+  chase:      'followup',    // chasing client → follow-up
+  check:      'eligibility', // eligibility check
+  followup:   'followup',    // schedule follow-up
+  submission: 'documents',   // submission prep → checklist
+  // Legacy types (kept for backwards compatibility)
+  consultation: 'followup',
+  documents:    'documents',
+  eligibility:  'eligibility',
+  quote:        'quote',
+}
+
 const ACTION_LABELS: Record<string, string> = {
+  // DB types
+  email:      'Send Checklist',
+  document:   'Send Checklist',
+  chase:      'Schedule Follow-up',
+  check:      'Run Eligibility Check',
+  followup:   'Schedule Follow-up',
+  submission: 'Send Checklist',
+  // Legacy types
   consultation: 'Book Consultation',
-  documents: 'Send Checklist',
-  eligibility: 'Run Eligibility Check',
-  quote: 'Generate Quote',
-  followup: 'Schedule Follow-up',
+  documents:    'Send Checklist',
+  eligibility:  'Run Eligibility Check',
+  quote:        'Generate Quote',
 }
 
 const URGENCY_COLORS: Record<string, string> = {
@@ -175,11 +198,7 @@ export function ActionCentre({ caseId, clientName, clientEmail, caseType, refere
                 </div>
               </div>
               <button
-                onClick={() =>
-                  setActiveModal(
-                    action.type === 'consultation' ? 'followup' : action.type
-                  )
-                }
+                onClick={() => setActiveModal(TYPE_TO_MODAL[action.type] || 'followup')}
                 className="bg-[#c9a84c]/10 border border-[#c9a84c]/20 text-[#c9a84c] text-xs px-3 py-1.5 rounded-lg hover:bg-[#c9a84c]/20 transition-colors ml-3 whitespace-nowrap flex-shrink-0"
               >
                 {ACTION_LABELS[action.type] || 'Take Action'}

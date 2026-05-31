@@ -101,13 +101,17 @@ export default function FirmSettingsPage() {
   const [activeTab, setActiveTab] = useState('branding')
 
   useEffect(() => {
-    if (!firmId) return
+    if (!firmId) {
+      // Session might still be loading — wait for firmId before giving up
+      return
+    }
     Promise.all([
-      fetch(`/api/firms/${firmId}`).then(r => r.json()),
-      fetch('/api/settings/email').then(r => r.json()),
+      fetch(`/api/firms/${firmId}`).then(r => r.json()).catch(() => ({})),
+      fetch('/api/settings/email').then(r => r.json()).catch(() => ({})),
     ]).then(([firm, email]) => {
-      setSettings(firm || {})
-      setEmailSettings(email || {})
+      // Guard against error objects returned by the API
+      setSettings(firm?.error ? {} : (firm || {}))
+      setEmailSettings(email?.error ? {} : (email || {}))
       setLoading(false)
     })
   }, [firmId])
@@ -145,6 +149,7 @@ export default function FirmSettingsPage() {
     setTimeout(() => setSaved(false), 2000)
   }
 
+  if (loading && !firmId) return <div className="p-8 text-white/40">Loading session...</div>
   if (loading) return <div className="p-8 text-white/40">Loading...</div>
 
   const tabs = [
