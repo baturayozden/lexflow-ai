@@ -5,15 +5,17 @@ module.exports = {
     extend: {
       colors: {
         navy: {
-          DEFAULT: '#0a1628',
-          light: '#0d1f3c',
+          DEFAULT: '#0D1117',
+          light: '#111827',
           dark: '#060f1a',
         },
         gold: {
-          DEFAULT: '#c9a84c',
-          light: '#f0d080',
+          DEFAULT: '#D4A843',
+          light: '#E8BC5A',
           dark: '#a8872a',
         },
+        card: '#161F2E',
+        success: '#10B981',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
