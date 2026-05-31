@@ -161,10 +161,10 @@ export function ActionCentre({ caseId, clientName, clientEmail, caseType, refere
           {actions.map((action) => (
             <div
               key={action.id}
-              className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+              className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
                 action.completed
-                  ? 'bg-white/2 border-white/5 opacity-60'
-                  : 'bg-white/3 border-white/10'
+                  ? 'bg-white/2 border-white/5 opacity-60 hover:bg-white/5 hover:opacity-75'
+                  : 'bg-white/3 border-white/10 hover:bg-white/10 hover:border-white/20'
               }`}
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
