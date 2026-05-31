@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
@@ -82,208 +83,225 @@ const badFitItems = [
 
 export default function WhyNotHarveyPage() {
   return (
-    <div className="min-h-screen bg-[#0a1628]">
-      {/* Nav */}
-      <nav className="border-b border-white/10 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/">
-            <span className="text-[#c9a84c] font-bold text-xl">Lex</span>
-            <span className="text-white font-bold text-xl">Flow</span>
-          </Link>
-          <div className="flex items-center gap-6">
-            <Link href="/#pricing" className="text-white/60 hover:text-white text-sm transition-colors hidden sm:block">
-              Pricing
-            </Link>
-            <Link href="/demo/index.html" className="text-white/60 hover:text-white text-sm transition-colors hidden sm:block">
-              Demo
-            </Link>
+    <div className="min-h-screen bg-white">
+      {/* Shared Navbar — handles scroll-reactive white/transparent transition */}
+      <Navbar />
+
+      {/* ── HERO + BIG NUMBERS (dark, like main page hero) ─────────────────── */}
+      <div style={{ background: '#0D1117' }}>
+        {/* Hero */}
+        <section className="max-w-5xl mx-auto px-6 pt-32 pb-16 text-center">
+          <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-4 py-2 mb-8">
+            <span className="text-red-400 text-sm font-medium">Harvey AI costs £288,000/year</span>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            Your firm needs AI.<br />
+            <span className="text-[#D4A843]">Not a £288K annual bill.</span>
+          </h1>
+          <p className="text-white/60 text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+            Harvey AI is built for 500-solicitor Magic Circle firms. LexFlow is built for UK immigration
+            and conveyancing firms with 2 to 20 solicitors. Same AI power. 99% less cost.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/#contact"
-              className="bg-[#c9a84c] text-[#0a1628] font-bold text-sm px-4 py-2 rounded-lg hover:bg-[#f0d080] transition-colors"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-[#0D1117] text-lg"
+              style={{ background: 'linear-gradient(135deg,#D4A843,#E8BC5A)' }}
             >
-              Book Free Audit
+              Book a Free 20-Minute Audit →
+            </Link>
+            <Link
+              href="/demo/index.html"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-xl text-lg font-semibold text-white border border-white/20 hover:border-white/40 transition-colors"
+            >
+              Try the Demo
             </Link>
           </div>
-        </div>
-      </nav>
+          <p className="text-white/30 text-sm mt-4">No sales pressure. No contract. Cancel anytime.</p>
+        </section>
 
-      {/* Hero */}
-      <section className="max-w-5xl mx-auto px-6 py-24 text-center">
-        <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-4 py-2 mb-8">
-          <span className="text-red-400 text-sm font-medium">Harvey AI costs £288,000/year</span>
-        </div>
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-          Your firm needs AI.<br />
-          <span className="text-[#c9a84c]">Not a £288K annual bill.</span>
-        </h1>
-        <p className="text-white/60 text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-          Harvey AI is built for 500-solicitor Magic Circle firms. LexFlow is built for UK immigration
-          and conveyancing firms with 2 to 20 solicitors. Same AI power. 99% less cost.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/#contact"
-            className="bg-[#c9a84c] text-[#0a1628] font-bold px-8 py-4 rounded-xl text-lg hover:bg-[#f0d080] transition-colors"
-          >
-            Book a Free 20-Minute Audit →
-          </Link>
-          <Link
-            href="/demo/index.html"
-            className="border border-white/20 text-white px-8 py-4 rounded-xl text-lg hover:border-white/40 transition-colors"
-          >
-            Try the Demo
-          </Link>
-        </div>
-        <p className="text-white/30 text-sm mt-4">No sales pressure. No contract. Cancel anytime.</p>
-      </section>
-
-      {/* Big number comparison */}
-      <section className="max-w-5xl mx-auto px-6 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-8 text-center">
-            <div className="text-red-400 font-bold text-5xl mb-2">£288K</div>
-            <div className="text-white/60 text-sm">Harvey AI per year</div>
-            <div className="text-white/30 text-xs mt-2">20 minimum licences · Enterprise only</div>
-          </div>
-          <div className="bg-white/2 border border-white/10 rounded-2xl p-8 text-center">
-            <div className="text-white/40 font-bold text-5xl mb-2">£199</div>
-            <div className="text-white/60 text-sm">Clio per user/month</div>
-            <div className="text-white/30 text-xs mt-2">£14,328/year for 6 users · US-focused</div>
-          </div>
-          <div className="bg-[#c9a84c]/5 border border-[#c9a84c]/30 rounded-2xl p-8 text-center relative overflow-hidden">
-            <div className="absolute top-3 right-3 bg-[#c9a84c] text-[#0a1628] text-xs font-bold px-2 py-1 rounded-full">
-              Best for you
+        {/* Big number comparison */}
+        <section className="max-w-5xl mx-auto px-6 pb-24">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-8 text-center">
+              <div className="text-red-400 font-bold text-5xl mb-2">£288K</div>
+              <div className="text-white/60 text-sm">Harvey AI per year</div>
+              <div className="text-white/30 text-xs mt-2">20 minimum licences · Enterprise only</div>
             </div>
-            <div className="text-[#c9a84c] font-bold text-5xl mb-2">£997</div>
-            <div className="text-white/60 text-sm">LexFlow one-time setup</div>
-            <div className="text-white/30 text-xs mt-2">No monthly fees · Built for UK firms</div>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
+              <div className="text-white/40 font-bold text-5xl mb-2">£199</div>
+              <div className="text-white/60 text-sm">Clio per user/month</div>
+              <div className="text-white/30 text-xs mt-2">£14,328/year for 6 users · US-focused</div>
+            </div>
+            <div className="bg-[#D4A843]/5 border border-[#D4A843]/30 rounded-2xl p-8 text-center relative overflow-hidden">
+              <div
+                className="absolute top-3 right-3 text-[#0D1117] text-xs font-bold px-2 py-1 rounded-full"
+                style={{ background: 'linear-gradient(135deg,#D4A843,#E8BC5A)' }}
+              >
+                Best for you
+              </div>
+              <div className="text-[#D4A843] font-bold text-5xl mb-2">£997</div>
+              <div className="text-white/60 text-sm">LexFlow one-time setup</div>
+              <div className="text-white/30 text-xs mt-2">No monthly fees · Built for UK firms</div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
-      {/* Harvey is not for you */}
-      <section className="max-w-5xl mx-auto px-6 pb-24">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Harvey AI is brilliant — for the wrong firms
-          </h2>
-          <p className="text-white/50 max-w-2xl mx-auto">
-            Harvey AI&apos;s own evaluation guide lists 7 criteria for choosing legal AI. Here&apos;s what they
-            don&apos;t say out loud.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {comparisons.map((item, i) => (
-            <div key={i} className="bg-white/2 border border-white/10 rounded-xl p-6">
-              <div className="text-2xl mb-3">{item.icon}</div>
-              <h3 className="text-white font-semibold mb-3">{item.title}</h3>
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <span className="text-red-400 text-xs flex-shrink-0 mt-0.5">✗</span>
-                  <p className="text-white/40 text-sm">{item.harvey}</p>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-green-400 text-xs flex-shrink-0 mt-0.5">✓</span>
-                  <p className="text-white/70 text-sm">{item.lexflow}</p>
+      {/* ── WHY HARVEY DOESN'T FIT — #F8FAFC ──────────────────────────────── */}
+      <section className="py-24 px-6" style={{ background: '#F8FAFC' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-[#0F172A] mb-4">
+              Harvey AI is brilliant — for the wrong firms
+            </h2>
+            <p className="text-[#475569] max-w-2xl mx-auto">
+              Harvey AI&apos;s own evaluation guide lists 7 criteria for choosing legal AI. Here&apos;s what they
+              don&apos;t say out loud.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {comparisons.map((item, i) => (
+              <div
+                key={i}
+                className="bg-white border rounded-xl p-6"
+                style={{ borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+              >
+                <div className="text-2xl mb-3">{item.icon}</div>
+                <h3 className="text-[#0F172A] font-semibold mb-3">{item.title}</h3>
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <span className="text-red-500 text-xs flex-shrink-0 mt-0.5">✗</span>
+                    <p className="text-[#94A3B8] text-sm">{item.harvey}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="text-[#10B981] text-xs flex-shrink-0 mt-0.5">✓</span>
+                    <p className="text-[#475569] text-sm">{item.lexflow}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Comparison table */}
-      <section className="max-w-5xl mx-auto px-6 pb-24">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-white mb-4">Feature comparison</h2>
-          <p className="text-white/50">What actually matters for a 5-person UK immigration firm</p>
-        </div>
-        <div className="bg-white/2 border border-white/10 rounded-2xl overflow-hidden overflow-x-auto">
-          <table className="w-full min-w-[540px]">
-            <thead>
-              <tr className="border-b border-white/10">
-                <th className="text-left px-6 py-4 text-white/40 text-sm font-medium">Feature</th>
-                <th className="text-center px-6 py-4 text-white/40 text-sm font-medium">Harvey AI</th>
-                <th className="text-center px-6 py-4 text-white/40 text-sm font-medium">Clio</th>
-                <th className="text-center px-6 py-4 text-[#c9a84c] text-sm font-semibold">LexFlow</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tableRows.map(([feature, harvey, clio, lexflow], i) => (
-                <tr key={i} className={`border-b border-white/5 ${i % 2 === 0 ? '' : 'bg-white/[0.01]'}`}>
-                  <td className="px-6 py-3 text-white/70 text-sm">{feature}</td>
-                  <td className="px-6 py-3 text-center text-sm">{harvey}</td>
-                  <td className="px-6 py-3 text-center text-sm">{clio}</td>
-                  <td className="px-6 py-3 text-center text-sm font-medium">{lexflow}</td>
+      {/* ── FEATURE COMPARISON TABLE — #FFFFFF ─────────────────────────────── */}
+      <section className="py-24 px-6" style={{ background: '#FFFFFF' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-[#0F172A] mb-4">Feature comparison</h2>
+            <p className="text-[#475569]">What actually matters for a 5-person UK immigration firm</p>
+          </div>
+          <div
+            className="border rounded-2xl overflow-hidden overflow-x-auto bg-white"
+            style={{ borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}
+          >
+            <table className="w-full min-w-[540px]">
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+                  <th className="text-left px-6 py-4 text-[#94A3B8] text-sm font-medium">Feature</th>
+                  <th className="text-center px-6 py-4 text-[#94A3B8] text-sm font-medium">Harvey AI</th>
+                  <th className="text-center px-6 py-4 text-[#94A3B8] text-sm font-medium">Clio</th>
+                  <th className="text-center px-6 py-4 text-[#D4A843] text-sm font-semibold">LexFlow</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {tableRows.map(([feature, harvey, clio, lexflow], i) => (
+                  <tr
+                    key={i}
+                    className="border-t"
+                    style={{ borderColor: 'rgba(0,0,0,0.06)', background: i % 2 !== 0 ? '#F8FAFC' : '#FFFFFF' }}
+                  >
+                    <td className="px-6 py-3 text-[#475569] text-sm">{feature}</td>
+                    <td className="px-6 py-3 text-center text-sm text-[#94A3B8]">{harvey}</td>
+                    <td className="px-6 py-3 text-center text-sm text-[#94A3B8]">{clio}</td>
+                    <td className="px-6 py-3 text-center text-sm font-medium text-[#10B981]">{lexflow}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
-      {/* Who is LexFlow for */}
-      <section className="max-w-5xl mx-auto px-6 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-white mb-6">LexFlow is built for firms like yours</h2>
-            <div className="space-y-4">
-              {goodFitItems.map((item, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-[#c9a84c]/20 border border-[#c9a84c]/40 flex items-center justify-center flex-shrink-0">
-                    <span className="text-[#c9a84c] text-xs">✓</span>
+      {/* ── WHO IT'S FOR — #F8FAFC ─────────────────────────────────────────── */}
+      <section className="py-24 px-6" style={{ background: '#F8FAFC' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h2 className="text-3xl font-bold text-[#0F172A] mb-6">LexFlow is built for firms like yours</h2>
+              <div className="space-y-4">
+                {goodFitItems.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ background: 'rgba(212,168,67,0.15)', border: '1px solid rgba(212,168,67,0.35)' }}
+                    >
+                      <span className="text-[#D4A843] text-xs">✓</span>
+                    </div>
+                    <span className="text-[#475569] text-sm">{item}</span>
                   </div>
-                  <span className="text-white/70 text-sm">{item}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="bg-white/2 border border-white/10 rounded-2xl p-8">
-            <h3 className="text-white font-bold text-xl mb-4">Not for you if:</h3>
-            <div className="space-y-3">
-              {badFitItems.map((item, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <span className="text-red-400 text-sm flex-shrink-0">✗</span>
-                  <span className="text-white/50 text-sm">{item}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 pt-6 border-t border-white/10">
-              <p className="text-white/40 text-sm">We&apos;d rather be honest than sell to the wrong firm.</p>
+            <div
+              className="bg-white border rounded-2xl p-8"
+              style={{ borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}
+            >
+              <h3 className="text-[#0F172A] font-bold text-xl mb-4">Not for you if:</h3>
+              <div className="space-y-3">
+                {badFitItems.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <span className="text-red-400 text-sm flex-shrink-0">✗</span>
+                    <span className="text-[#94A3B8] text-sm">{item}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 pt-6" style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+                <p className="text-[#94A3B8] text-sm">We&apos;d rather be honest than sell to the wrong firm.</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonial */}
-      <section className="max-w-5xl mx-auto px-6 pb-24">
-        <div className="bg-[#c9a84c]/5 border border-[#c9a84c]/20 rounded-2xl p-10 text-center">
-          <div className="text-4xl mb-4">⚡</div>
-          <blockquote className="text-white text-xl font-medium mb-4 leading-relaxed">
-            &quot;We went from spending 3 hours on each new client intake to under 15 minutes. The AI
-            case summary alone saves us an hour per client.&quot;
-          </blockquote>
-          <p className="text-white/40 text-sm">Managing Partner, UK Immigration Law Firm</p>
-          <p className="text-white/20 text-xs mt-1">(Early access client)</p>
+      {/* ── TESTIMONIAL — #FFFFFF ──────────────────────────────────────────── */}
+      <section className="py-24 px-6" style={{ background: '#FFFFFF' }}>
+        <div className="max-w-5xl mx-auto">
+          <div
+            className="border rounded-2xl p-10 text-center"
+            style={{ background: 'rgba(212,168,67,0.04)', borderColor: 'rgba(212,168,67,0.2)' }}
+          >
+            <div className="text-4xl mb-4">⚡</div>
+            <blockquote className="text-[#0F172A] text-xl font-medium mb-4 leading-relaxed">
+              &quot;We went from spending 3 hours on each new client intake to under 15 minutes. The AI
+              case summary alone saves us an hour per client.&quot;
+            </blockquote>
+            <p className="text-[#94A3B8] text-sm">Managing Partner, UK Immigration Law Firm</p>
+            <p className="text-[#CBD5E1] text-xs mt-1">(Early access client)</p>
+          </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="max-w-5xl mx-auto px-6 pb-24 text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">
-          Ready to see if LexFlow is right for your firm?
-        </h2>
-        <p className="text-white/50 mb-8 max-w-xl mx-auto">
-          Book a free 20-minute audit. We will map your current intake process and show you exactly
-          what can be automated — no sales pressure.
-        </p>
-        <Link
-          href="/#contact"
-          className="inline-block bg-[#c9a84c] text-[#0a1628] font-bold px-10 py-5 rounded-xl text-lg hover:bg-[#f0d080] transition-colors"
-        >
-          Book My Free Audit →
-        </Link>
-        <p className="text-white/30 text-sm mt-3">Free · 20 minutes · No obligation</p>
+      {/* ── CTA — #F8FAFC ──────────────────────────────────────────────────── */}
+      <section className="py-24 px-6 text-center" style={{ background: '#F8FAFC', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl font-bold text-[#0F172A] mb-4">
+            Ready to see if LexFlow is right for your firm?
+          </h2>
+          <p className="text-[#475569] mb-8 max-w-xl mx-auto">
+            Book a free 20-minute audit. We will map your current intake process and show you exactly
+            what can be automated — no sales pressure.
+          </p>
+          <Link
+            href="/#contact"
+            className="inline-block font-bold px-10 py-5 rounded-xl text-lg text-[#0D1117] transition-opacity hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg,#D4A843,#E8BC5A)' }}
+          >
+            Book My Free Audit →
+          </Link>
+          <p className="text-[#94A3B8] text-sm mt-3">Free · 20 minutes · No obligation</p>
+        </div>
       </section>
 
       <Footer />

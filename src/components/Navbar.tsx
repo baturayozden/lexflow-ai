@@ -25,15 +25,18 @@ export default function Navbar() {
       style={{ backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)' }}
       className="fixed top-0 left-0 right-0 z-50"
     >
-      {/* Scroll-reactive background */}
+      {/* Scroll-reactive background:
+          Not scrolled → transparent (dark hero behind → white text readable)
+          Scrolled      → white bg + dark text + subtle shadow               */}
       <motion.div
         className="absolute inset-0 border-b"
         animate={
           reduced
             ? {}
             : {
-                backgroundColor: scrolled ? 'rgba(10,22,40,0.95)' : 'rgba(10,22,40,0)',
-                borderBottomColor: scrolled ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0)',
+                backgroundColor: scrolled ? 'rgba(255,255,255,0.97)' : 'rgba(0,0,0,0)',
+                borderBottomColor: scrolled ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0)',
+                boxShadow: scrolled ? '0 1px 12px rgba(0,0,0,0.06)' : '0 0 0 rgba(0,0,0,0)',
               }
         }
         transition={{ duration: 0.3 }}
@@ -44,7 +47,13 @@ export default function Navbar() {
         <motion.div whileHover={reduced ? {} : { scale: 1.05 }} transition={spring}>
           <Link href="/" className="text-2xl font-bold tracking-tight">
             <span className="text-gold">Lex</span>
-            <span className="text-white">Flow</span>
+            <motion.span
+              animate={{ color: scrolled ? '#0F172A' : '#FFFFFF' }}
+              transition={{ duration: 0.3 }}
+              style={{ color: '#FFFFFF' }}
+            >
+              Flow
+            </motion.span>
           </Link>
         </motion.div>
 
@@ -57,10 +66,10 @@ export default function Navbar() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * i + 0.3, ease }}
-              className="relative group text-white/60 hover:text-white text-sm font-medium transition-colors duration-200"
+              className="relative group text-sm font-medium transition-colors duration-300"
+              style={{ color: scrolled ? '#475569' : 'rgba(255,255,255,0.7)' }}
             >
               {item}
-              {/* Underline reveal on hover */}
               <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-gold group-hover:w-full transition-all duration-300" />
             </motion.a>
           ))}
@@ -72,7 +81,8 @@ export default function Navbar() {
           >
             <Link
               href="/blog"
-              className="relative group text-white/60 hover:text-white text-sm font-medium transition-colors duration-200"
+              className="relative group text-sm font-medium transition-colors duration-300"
+              style={{ color: scrolled ? '#475569' : 'rgba(255,255,255,0.7)' }}
             >
               Blog
               <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-gold group-hover:w-full transition-all duration-300" />
@@ -86,7 +96,8 @@ export default function Navbar() {
           >
             <Link
               href="/why-not-harvey"
-              className="relative group text-white/60 hover:text-white text-sm font-medium transition-colors duration-200"
+              className="relative group text-sm font-medium transition-colors duration-300"
+              style={{ color: scrolled ? '#475569' : 'rgba(255,255,255,0.7)' }}
             >
               Why not Harvey?
               <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-gold group-hover:w-full transition-all duration-300" />
@@ -100,7 +111,7 @@ export default function Navbar() {
             transition={{ delay: 0.6, ease }}
             whileHover={reduced ? {} : { scale: 1.045 }}
             whileTap={reduced ? {} : { scale: 0.96 }}
-            className="bg-gold text-navy font-semibold text-sm px-5 py-2.5 rounded-lg"
+            className="text-navy font-semibold text-sm px-5 py-2.5 rounded-lg"
             style={{
               background: 'linear-gradient(135deg,#c9a84c 0%,#d9bc72 50%,#c9a84c 100%)',
             }}
@@ -118,7 +129,8 @@ export default function Navbar() {
           {[0, 1, 2].map((i) => (
             <motion.span
               key={i}
-              className="block h-0.5 w-6 bg-white/80 rounded-full origin-center"
+              className="block h-0.5 w-6 rounded-full origin-center"
+              style={{ backgroundColor: scrolled ? '#334155' : 'rgba(255,255,255,0.8)' }}
               animate={
                 reduced
                   ? {}
@@ -136,7 +148,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer — stays dark for contrast */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -146,7 +158,7 @@ export default function Navbar() {
             transition={{ duration: 0.28, ease }}
             className="md:hidden absolute top-full left-0 right-0 border-b border-white/10 px-6 py-6 flex flex-col gap-5"
             style={{
-              backgroundColor: 'rgba(10,22,40,0.97)',
+              backgroundColor: 'rgba(13,17,23,0.97)',
               backdropFilter: 'blur(18px)',
             }}
           >
@@ -177,7 +189,8 @@ export default function Navbar() {
             <a
               href="#contact"
               onClick={() => setMenuOpen(false)}
-              className="bg-gold text-navy font-semibold text-sm px-5 py-3 rounded-lg text-center"
+              className="text-navy font-semibold text-sm px-5 py-3 rounded-lg text-center"
+              style={{ background: 'linear-gradient(135deg,#c9a84c,#d9bc72)' }}
             >
               Book a Free Call
             </a>

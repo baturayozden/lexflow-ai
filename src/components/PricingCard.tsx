@@ -27,29 +27,31 @@ export default function PricingCard({
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
-      whileHover={{ y: -8, boxShadow: '0 20px 60px rgba(201,168,76,0.2)' }}
-      className={`relative rounded-2xl p-8 border transition-colors ${
+      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+      whileHover={{ y: -6, boxShadow: popular ? '0 20px 60px rgba(212,168,67,0.18)' : '0 12px 40px rgba(0,0,0,0.1)' }}
+      className={`relative rounded-2xl p-8 border transition-all ${
         popular
-          ? 'bg-gold/5 border-gold/50'
-          : 'bg-white/[0.02] border-white/10 hover:border-gold/30'
+          ? 'border-[#D4A843]/40 bg-[#D4A843]/5'
+          : 'border-black/8 bg-white hover:border-[#D4A843]/30'
       }`}
+      style={!popular ? { boxShadow: '0 1px 4px rgba(0,0,0,0.05)' } : {}}
     >
       {popular && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-navy text-xs font-bold px-4 py-1 rounded-full">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-[#0D1117] text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap"
+          style={{ background: 'linear-gradient(135deg,#D4A843,#E8BC5A)' }}>
           Most Popular
         </div>
       )}
-      <div className="text-gold text-sm font-semibold uppercase tracking-wider mb-2">{tier}</div>
+      <div className="text-[#D4A843] text-sm font-semibold uppercase tracking-wider mb-2">{tier}</div>
       <div className="flex items-end gap-1 mb-1">
-        <span className="text-4xl font-bold text-white">{price}</span>
-        <span className="text-white/50 mb-1">{period}</span>
+        <span className="text-4xl font-bold text-[#0F172A]">{price}</span>
+        <span className="text-[#94A3B8] mb-1">{period}</span>
       </div>
-      <p className="text-white/50 text-sm mb-6">{description}</p>
+      <p className="text-[#475569] text-sm mb-6">{description}</p>
       <ul className="space-y-3 mb-8">
         {features.map((f) => (
-          <li key={f} className="flex items-center gap-3 text-sm text-white/70">
-            <span className="text-gold">✓</span> {f}
+          <li key={f} className="flex items-center gap-3 text-sm text-[#475569]">
+            <span className="text-[#D4A843]">✓</span> {f}
           </li>
         ))}
       </ul>
@@ -60,9 +62,10 @@ export default function PricingCard({
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         className={`block text-center font-semibold py-3 rounded-xl text-sm transition-colors ${
           popular
-            ? 'bg-gold text-navy hover:bg-gold-light'
-            : 'border border-gold/40 text-gold hover:bg-gold/10'
+            ? 'text-[#0D1117] hover:opacity-90'
+            : 'border border-[#D4A843]/50 text-[#D4A843] hover:bg-[#D4A843]/8'
         }`}
+        style={popular ? { background: 'linear-gradient(135deg,#D4A843,#E8BC5A)' } : {}}
       >
         {cta}
       </motion.a>

@@ -25,14 +25,17 @@ export default function FaqAccordion({ faqs }: Props) {
           viewport={{ once: true }}
           transition={{ delay: i * 0.07, duration: 0.5 }}
           className={`border rounded-xl overflow-hidden transition-colors duration-200 ${
-            open === i ? 'border-[#D4A843]/40 bg-[#D4A843]/5' : 'border-white/8 bg-[#161F2E]'
+            open === i
+              ? 'border-[#D4A843]/40 bg-[#D4A843]/5'
+              : 'border-black/8 bg-white'
           }`}
+          style={{ boxShadow: open === i ? '0 2px 12px rgba(212,168,67,0.08)' : '0 1px 3px rgba(0,0,0,0.05)' }}
         >
           <button
             className="w-full flex items-center justify-between px-6 py-5 text-left"
             onClick={() => setOpen(open === i ? null : i)}
           >
-            <span className="text-white font-semibold text-sm pr-4">{faq.q}</span>
+            <span className="text-[#0F172A] font-semibold text-sm pr-4">{faq.q}</span>
             <motion.span
               animate={reduced ? {} : { rotate: open === i ? 45 : 0 }}
               transition={{ duration: 0.2 }}
@@ -51,7 +54,7 @@ export default function FaqAccordion({ faqs }: Props) {
                 transition={{ duration: 0.25, ease: 'easeInOut' }}
                 className="overflow-hidden"
               >
-                <p className="px-6 pb-5 text-[#94A3B8] text-sm leading-relaxed">{faq.a}</p>
+                <p className="px-6 pb-5 text-[#475569] text-sm leading-relaxed">{faq.a}</p>
               </motion.div>
             )}
           </AnimatePresence>
