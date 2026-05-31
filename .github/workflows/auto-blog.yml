@@ -2,10 +2,7 @@ name: Auto Blog Post Generator
 
 on:
   schedule:
-    - cron: '0 7 * * 1'
-    - cron: '0 7 * * 3'
-    - cron: '0 7 * * 5'
-    - cron: '0 7 * * 0'
+    - cron: '0 7 * * *'
   workflow_dispatch:
 
 jobs:

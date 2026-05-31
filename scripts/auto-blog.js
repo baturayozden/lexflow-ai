@@ -109,35 +109,15 @@ INTERNAL LINKS — include 2-3 links to these pages naturally within the content
 - <a href="/blog">more insights on our blog</a>
 
 EXTERNAL AUTHORITY LINKS — include 2-3 links to UK government/regulatory sources.
-CRITICAL: Only use these VERIFIED working URLs, do not invent or modify URLs:
+CRITICAL: Only use URLs from this verified list, never invent or modify URLs:
 
-For immigration topics:
-- https://www.gov.uk/browse/visas-immigration
-- https://www.gov.uk/government/organisations/uk-visas-and-immigration
-- https://www.gov.uk/immigration-operational-guidance
-- https://www.gov.uk/guidance/immigration-rules
+Immigration: https://www.gov.uk/browse/visas-immigration | https://www.gov.uk/government/organisations/uk-visas-and-immigration | https://www.gov.uk/immigration-operational-guidance | https://www.gov.uk/guidance/immigration-rules
+SRA/Legal regulation: https://www.sra.org.uk/solicitors/standards-regulations/ | https://www.sra.org.uk/solicitors/guidance/ | https://www.sra.org.uk/consumers/using-solicitor/
+Conveyancing: https://www.gov.uk/buy-sell-your-home | https://www.gov.uk/stamp-duty-land-tax | https://landregistry.data.gov.uk | https://www.gov.uk/guidance/hm-land-registry-services-and-fees
+Data protection: https://ico.org.uk/for-organisations/ | https://ico.org.uk/for-organisations/guide-to-data-protection/
+General legal: https://www.legislation.gov.uk | https://www.judiciary.gov.uk | https://www.lawsociety.org.uk/topics/
 
-For SRA/legal regulation:
-- https://www.sra.org.uk/solicitors/standards-regulations/
-- https://www.sra.org.uk/solicitors/guidance/
-- https://www.sra.org.uk/consumers/using-solicitor/
-
-For conveyancing:
-- https://www.gov.uk/buy-sell-your-home
-- https://www.gov.uk/stamp-duty-land-tax
-- https://landregistry.data.gov.uk
-- https://www.gov.uk/guidance/hm-land-registry-services-and-fees
-
-For data protection:
-- https://ico.org.uk/for-organisations/
-- https://ico.org.uk/for-organisations/guide-to-data-protection/
-
-For general legal:
-- https://www.legislation.gov.uk
-- https://www.judiciary.gov.uk
-- https://www.lawsociety.org.uk/topics/
-
-Use only URLs from this list. Link anchor text should be descriptive and natural.
+Use only URLs from this list. Anchor text must be descriptive and natural.
 
 FAQ SECTION — end the article with:
 <h2>Frequently Asked Questions</h2>
