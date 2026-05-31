@@ -71,30 +71,57 @@ const pricingTiers = [
   },
 ]
 
-const faqs = [
+const faqsLeft = [
   {
-    q: 'Is my client data safe?',
-    a: 'Absolutely. We never store your client data. All automations run within your existing tools. We operate in full compliance with UK GDPR and can provide a Data Processing Agreement on request.',
+    q: 'Will this help us respond to enquiries faster?',
+    a: 'Yes — and this is where most firms lose business. 79% of legal clients expect a response within 24 hours, but the average small firm takes three days or more. LexFlow captures every enquiry the moment it arrives, drafts a response, and has a case summary ready before a competitor has even opened their inbox.',
   },
   {
-    q: 'Do I need any technical knowledge?',
-    a: 'None at all. If you can send an email, you can use our systems. We handle every technical element — building, testing, and integrating.',
+    q: 'We lose clients to firms that reply first. Can LexFlow fix that?',
+    a: '42% of potential clients contact more than one firm at the same time, and the first to respond helpfully wins the instruction roughly 8 times out of 10. LexFlow\'s AI intake and chatbot work 24/7, so an enquiry at 9pm on a Sunday is handled before Monday morning.',
   },
   {
-    q: 'How long does setup take?',
-    a: 'The Quick Win package goes live in 5 business days. The Full Setup takes 2–3 weeks. From your first call to your first automation running, the process is designed to be low-disruption.',
+    q: 'Our clients complain we don\'t keep them updated. Does this help?',
+    a: 'This is the single biggest source of complaints against UK firms — poor communication, not poor outcomes. LexFlow automates client updates, checklist requests, and follow-ups, so clients are never left in the dark and your fee-earners are never the bottleneck.',
   },
   {
-    q: 'What if it does not deliver results?',
-    a: 'We stand behind our work. If after 30 days you have not saved meaningful time, we will continue working at no extra charge until you do.',
+    q: 'Is my client data safe and SRA-compliant?',
+    a: 'Yes. Data is stored in UK-compliant infrastructure, encrypted in transit and at rest. The AI does not send client data to external training systems. We can provide a Data Processing Agreement, and our gov.uk checklists are reviewed monthly to stay current.',
   },
   {
-    q: 'Does LexFlow work alongside my existing case management software?',
-    a: 'Yes — LexFlow adds an AI layer on top of what you already use. It does not replace Clio, LEAP, or Osprey. It makes them better.',
+    q: 'We tried an AI tool before and it didn\'t fit our work. Why is this different?',
+    a: 'Most firms adopt a general AI tool and have to work out how to make it fit. LexFlow is built specifically for UK immigration and conveyancing — the case types, the gov.uk requirements, the workflows. It arrives configured, not as a blank box you have to assemble.',
+  },
+  {
+    q: 'Do I need technical knowledge or an IT team?',
+    a: 'None. This is done-for-you. We build, test, and install everything. If you can send an email, you can use the system. There is nothing for you to configure and no IT resource required.',
+  },
+]
+
+const faqsRight = [
+  {
+    q: 'Does LexFlow replace Clio, LEAP, or Osprey?',
+    a: 'No — it works alongside them. LexFlow adds the AI intake and case-summary layer those platforms don\'t provide natively. You keep the system you already know; we remove the admin overhead sitting on top of it.',
+  },
+  {
+    q: 'How is the pricing different from the per-user monthly model?',
+    a: 'Clio, LEAP, and Smokeball charge per user, every month, indefinitely. A five-person firm can pay £3,000+ a year before add-ons. LexFlow is a one-time fee from £997, with no per-user charges and no long-term contract.',
+  },
+  {
+    q: 'How long until we actually see results?',
+    a: 'The Quick Win package goes live in five to seven business days. Measurable time savings typically show within 30 days. There is no months-long onboarding like the larger platforms.',
   },
   {
     q: 'Is this only for immigration firms?',
-    a: 'No. LexFlow is built specifically for UK immigration and conveyancing practices. Both practice areas are fully supported from day one.',
+    a: 'No. LexFlow is built for both UK immigration and conveyancing practices, and both are fully supported from day one. Many firms that do both use a single setup across the whole practice.',
+  },
+  {
+    q: 'What if it doesn\'t deliver results?',
+    a: 'We stand behind the work. If after 30 days you haven\'t saved meaningful time, we keep working at no extra charge until you do. Our model depends on firms succeeding and staying — not on locking you into a contract.',
+  },
+  {
+    q: 'How do you handle quotes and document checklists?',
+    a: 'Both are automated. LexFlow generates template-based quotes and emails them in seconds, and builds case-specific document checklists from gov.uk that are sent to clients automatically. No copy-pasting from old files, no missed documents.',
   },
 ]
 
@@ -108,67 +135,178 @@ const comparisonRows = [
   { feature: 'Setup time', lexflow: '5–7 days', clio: 'Weeks', leap: 'Months', smokeball: 'Weeks' },
 ]
 
+// ─── Animated Product Mockup ─────────────────────────────────────────────────
+const SUMMARY_TEXT = 'EU Settlement Scheme · Spanish national · Upgrading pre-settled → settled status. Eligible to apply now — 60-day window recommended.'
+const STEP_DURATIONS = [1000, 1000, 2500, 1200, 1200, 1500]
+
 function ProductMockup() {
+  const reduced = useReducedMotion()
+  const [step, setStep] = useState(reduced ? 4 : 0)
+  const [typed, setTyped] = useState(reduced ? SUMMARY_TEXT : '')
+
+  // Step progression
+  useEffect(() => {
+    if (reduced) return
+    const timer = setTimeout(() => {
+      setStep((s) => {
+        const next = (s + 1) % 6
+        if (next === 0) setTyped('')
+        return next
+      })
+    }, STEP_DURATIONS[step])
+    return () => clearTimeout(timer)
+  }, [step, reduced])
+
+  // Typewriter when step === 2
+  useEffect(() => {
+    if (reduced || step !== 2) return
+    setTyped('')
+    let i = 0
+    const id = setInterval(() => {
+      i++
+      setTyped(SUMMARY_TEXT.slice(0, i))
+      if (i >= SUMMARY_TEXT.length) clearInterval(id)
+    }, 18)
+    return () => clearInterval(id)
+  }, [step, reduced])
+
   return (
     <div className="relative">
-      <motion.div
-        animate={{ y: [0, -6, 0] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        className="relative"
-      >
-        <div className="bg-[#161F2E] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
-          <div className="bg-[#0D1117] px-4 py-3 flex items-center gap-2 border-b border-white/8">
-            <div className="flex gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
-            </div>
-            <div className="flex-1 mx-3 bg-white/5 rounded-md h-5 flex items-center px-2">
-              <span className="text-white/30 text-[10px]">app.lexflow.co.uk/cases/LXF-2847</span>
-            </div>
+      <div className="bg-[#161F2E] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
+        {/* Chrome bar */}
+        <div className="bg-[#0D1117] px-4 py-3 flex items-center gap-2 border-b border-white/8">
+          <div className="flex gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+            <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
           </div>
-          <div className="p-4 space-y-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="text-white font-semibold text-sm">Mohammed Al-Rashidi</div>
-                <div className="text-[#64748B] text-xs mt-0.5">Skilled Worker Visa · Afghan · London, UK</div>
+          <div className="flex-1 mx-3 bg-white/5 rounded-md h-5 flex items-center px-2">
+            <span className="text-white/30 text-[10px]">app.lexflow.co.uk/intake/LXF-2847</span>
+          </div>
+        </div>
+
+        {/* Animated content */}
+        <div className="p-4" style={{ minHeight: '240px' }}>
+
+          {/* Step 0 — intake form filling */}
+          {step === 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 mb-3">
+                <motion.div
+                  animate={{ opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 0.9, repeat: Infinity }}
+                  className="w-2 h-2 rounded-full bg-blue-400"
+                />
+                <span className="text-blue-400 text-xs font-medium">Client submitting form...</span>
               </div>
-              <span className="text-[10px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-0.5 rounded-full font-medium">In Review</span>
-            </div>
-            <div className="bg-[#D4A843]/5 border border-[#D4A843]/20 rounded-xl p-3">
-              <div className="flex items-center gap-1.5 mb-2.5">
-                <span className="text-[#D4A843] text-xs">⚡</span>
-                <span className="text-[#D4A843] text-[10px] font-bold uppercase tracking-wider">AI Case Summary</span>
-              </div>
-              <div className="space-y-1.5">
-                <div className="h-1.5 bg-white/10 rounded-full w-full" />
-                <div className="h-1.5 bg-white/8 rounded-full w-11/12" />
-                <div className="h-1.5 bg-white/10 rounded-full w-4/5" />
-                <div className="h-1.5 bg-white/6 rounded-full w-3/4" />
-                <div className="h-1.5 bg-white/8 rounded-full w-5/6" />
-              </div>
-            </div>
-            <div className="bg-[#0D1117]/60 border border-white/8 rounded-xl p-3">
-              <div className="text-[#64748B] text-[10px] font-semibold uppercase tracking-wider mb-2">Action Steps (2/3)</div>
-              {[
-                { text: 'Request updated CoS from employer', done: true },
-                { text: 'Submit online visa application', done: false, urgent: true },
-                { text: 'Book biometric appointment', done: false },
-              ].map((step, i) => (
-                <div key={i} className={`flex items-center gap-2 py-1.5 ${i < 2 ? 'border-b border-white/5' : ''}`}>
-                  <div className={`w-3.5 h-3.5 rounded-full flex-shrink-0 flex items-center justify-center text-[8px] ${
-                    step.done ? 'bg-[#10B981]' : step.urgent ? 'border border-red-400/60 bg-red-400/10' : 'border border-white/20'
-                  }`}>
-                    {step.done && <span className="text-white font-bold">✓</span>}
-                  </div>
-                  <span className={`text-[11px] flex-1 ${step.done ? 'text-[#64748B] line-through' : 'text-[#94A3B8]'}`}>{step.text}</span>
-                  {step.urgent && !step.done && <span className="text-[9px] text-red-400 font-bold uppercase">High</span>}
+              {['Carlos Mendoza', 'Spanish national', 'EU Settlement Scheme', ''].map((val, i) => (
+                <div key={i} className="h-7 bg-white/5 border border-white/10 rounded-lg px-3 flex items-center">
+                  {val && <span className="text-white/30 text-xs">{val}</span>}
                 </div>
               ))}
             </div>
-          </div>
+          )}
+
+          {/* Step 1 — AI analysing */}
+          {step === 1 && (
+            <div className="flex flex-col items-center justify-center gap-5" style={{ minHeight: '200px' }}>
+              <div className="flex items-center gap-3">
+                {[0, 0.2, 0.4].map((delay) => (
+                  <motion.div
+                    key={delay}
+                    animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 0.7, repeat: Infinity, delay }}
+                    className="w-2.5 h-2.5 rounded-full bg-[#D4A843]"
+                  />
+                ))}
+                <span className="text-[#D4A843] font-semibold text-sm ml-1">⚡ AI analysing...</span>
+              </div>
+              <div className="w-full space-y-2">
+                {[1, 0.8, 0.65].map((w, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ opacity: [0.15, 0.4, 0.15] }}
+                    transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.18 }}
+                    className="h-2 rounded-full bg-[#D4A843]/30"
+                    style={{ width: `${w * 100}%` }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step 2 — typewriter summary */}
+          {step === 2 && (
+            <div>
+              <div className="flex items-center gap-1.5 mb-3">
+                <span className="text-[#D4A843] text-xs">⚡</span>
+                <span className="text-[#D4A843] text-[10px] font-bold uppercase tracking-wider">AI Case Summary</span>
+              </div>
+              <div className="bg-[#D4A843]/5 border border-[#D4A843]/20 rounded-xl p-3" style={{ minHeight: '80px' }}>
+                <p className="text-white/70 text-xs leading-relaxed">
+                  {typed}
+                  <motion.span
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                    className="inline-block bg-[#D4A843] ml-0.5 align-middle"
+                    style={{ width: '2px', height: '12px' }}
+                  />
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Steps 3-5 — full case view */}
+          {step >= 3 && (
+            <div className="space-y-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="text-white font-semibold text-sm">Carlos Mendoza</div>
+                  <div className="text-[#64748B] text-xs mt-0.5">EU Settlement Scheme · Spanish · London, UK</div>
+                </div>
+                <span className="text-[10px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-0.5 rounded-full font-medium">In Review</span>
+              </div>
+              <div className="bg-[#D4A843]/5 border border-[#D4A843]/20 rounded-xl p-3">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <span className="text-[#D4A843] text-xs">⚡</span>
+                  <span className="text-[#D4A843] text-[10px] font-bold uppercase tracking-wider">AI Case Summary</span>
+                </div>
+                <p className="text-white/60 text-[11px] leading-relaxed">{SUMMARY_TEXT}</p>
+              </div>
+              <div className="bg-[#0D1117]/60 border border-white/8 rounded-xl p-3">
+                <div className="text-[#64748B] text-[10px] font-semibold uppercase tracking-wider mb-2">Action Steps</div>
+                {[
+                  'Schedule eligibility consultation',
+                  'Request 5-year residence evidence',
+                ].map((text, i) => (
+                  <motion.div
+                    key={i}
+                    initial={step === 3 ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.25, duration: 0.35 }}
+                    className={`flex items-center gap-2 py-1.5 ${i < 1 ? 'border-b border-white/5' : ''}`}
+                  >
+                    <div className="w-3.5 h-3.5 rounded-full border border-white/20 flex-shrink-0" />
+                    <span className="text-[11px] text-[#94A3B8]">{text}</span>
+                  </motion.div>
+                ))}
+              </div>
+              {step >= 4 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-[#10B981]/10 border border-[#10B981]/25 rounded-xl p-3 flex items-center gap-2"
+                >
+                  <span className="text-[#10B981] font-bold">✓</span>
+                  <span className="text-[#10B981] text-xs font-semibold">Case saved to system</span>
+                </motion.div>
+              )}
+            </div>
+          )}
         </div>
-      </motion.div>
+      </div>
+
       <div className="absolute -top-3 -right-3 bg-[#10B981] text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-lg shadow-[#10B981]/30 whitespace-nowrap">
         ⚡ Parsed in 0.8s
       </div>
@@ -282,22 +420,32 @@ export default function Home() {
               initial={reduced ? {} : { opacity: 0 }}
               animate={reduced ? {} : { opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5, ease }}
-              className="inline-flex items-center gap-0 rounded-xl"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', padding: '20px 32px' }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '12px',
+                padding: '20px 32px',
+                maxWidth: '520px',
+              }}
             >
               {[
                 { number: '10+', label: 'Hours saved/week' },
                 { number: '7 days', label: 'To go live' },
                 { number: '30-day', label: 'ROI guarantee' },
-              ].map((s, i) => (
-                <div key={i} className="flex items-center gap-0">
-                  {i > 0 && <div className="mx-6 self-stretch" style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />}
-                  <div className="text-center">
-                    <div style={{ color: '#D4A843', fontWeight: 700, fontSize: '1.5rem', lineHeight: 1 }}>{s.number}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '4px' }}>{s.label}</div>
-                  </div>
-                </div>
-              ))}
+              ].flatMap((s, i) => [
+                i > 0 ? (
+                  <div
+                    key={`div-${i}`}
+                    style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.12)', flexShrink: 0, margin: '0 28px' }}
+                  />
+                ) : null,
+                <div key={`stat-${i}`} style={{ flex: 1, textAlign: 'center' }}>
+                  <div style={{ color: '#D4A843', fontWeight: 800, fontSize: '1.75rem', lineHeight: 1.1 }}>{s.number}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginTop: '4px' }}>{s.label}</div>
+                </div>,
+              ])}
             </motion.div>
           </div>
 
@@ -418,7 +566,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════════
           5 · FEATURES — #F8FAFC
       ════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#F8FAFC', padding: '120px 24px' }}>
+      <section id="features" style={{ background: '#F8FAFC', padding: '120px 24px' }}>
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
             <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>WHAT YOU GET</p>
@@ -713,15 +861,17 @@ export default function Home() {
         id="faq"
         style={{ background: '#F8FAFC', padding: '120px 24px', borderTop: '1px solid rgba(15,23,42,0.08)' }}
       >
-        <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <motion.div {...fadeUp} className="text-center mb-12">
-            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>FAQ</p>
+            <p className="mb-3" style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4A843' }}>COMMON QUESTIONS</p>
             <h2 className="font-extrabold mb-4" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: '#0F172A', lineHeight: 1.15 }}>
-              Common questions
+              Straight answers to what firms actually ask
             </h2>
-            <p style={{ fontSize: '1.05rem', color: '#475569', lineHeight: 1.7 }}>Everything you need to know before getting started.</p>
           </motion.div>
-          <FaqAccordion faqs={faqs} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FaqAccordion faqs={faqsLeft} />
+            <FaqAccordion faqs={faqsRight} />
+          </div>
         </div>
       </section>
 

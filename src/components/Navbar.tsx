@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ease, spring } from './variants'
 
-const NAV_LINKS = ['How It Works', 'Pricing', 'FAQ']
+const NAV_LINKS = [
+  { label: 'How It Works', href: '/#how-it-works' },
+  { label: 'Features', href: '/#features' },
+  { label: 'Pricing', href: '/#pricing' },
+  { label: 'FAQ', href: '/#faq' },
+]
 
 export default function Navbar() {
   const reduced = useReducedMotion()
@@ -25,9 +30,6 @@ export default function Navbar() {
       style={{ backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)' }}
       className="fixed top-0 left-0 right-0 z-50"
     >
-      {/* Scroll-reactive background:
-          Not scrolled → transparent (dark hero behind → white text readable)
-          Scrolled      → white bg + dark text + subtle shadow               */}
       <motion.div
         className="absolute inset-0 border-b"
         animate={
@@ -57,21 +59,24 @@ export default function Navbar() {
           </Link>
         </motion.div>
 
-        {/* Desktop nav links */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Desktop nav */}
+        <div className="hidden md:flex items-center gap-6">
           {NAV_LINKS.map((item, i) => (
-            <motion.a
-              key={item}
-              href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+            <motion.div
+              key={item.label}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * i + 0.3, ease }}
-              className="relative group text-sm font-medium transition-colors duration-300"
-              style={{ color: scrolled ? '#475569' : 'rgba(255,255,255,0.7)' }}
             >
-              {item}
-              <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-gold group-hover:w-full transition-all duration-300" />
-            </motion.a>
+              <Link
+                href={item.href}
+                className="relative group text-sm font-medium transition-colors duration-300"
+                style={{ color: scrolled ? '#475569' : 'rgba(255,255,255,0.7)' }}
+              >
+                {item.label}
+                <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-gold group-hover:w-full transition-all duration-300" />
+              </Link>
+            </motion.div>
           ))}
 
           <motion.div
@@ -104,20 +109,19 @@ export default function Navbar() {
             </Link>
           </motion.div>
 
-          <motion.a
-            href="#contact"
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6, ease }}
-            whileHover={reduced ? {} : { scale: 1.045 }}
-            whileTap={reduced ? {} : { scale: 0.96 }}
-            className="text-navy font-semibold text-sm px-5 py-2.5 rounded-lg"
-            style={{
-              background: 'linear-gradient(135deg,#c9a84c 0%,#d9bc72 50%,#c9a84c 100%)',
-            }}
           >
-            Book a Free Call
-          </motion.a>
+            <Link
+              href="/#contact"
+              className="text-navy font-semibold text-sm px-5 py-2.5 rounded-lg inline-block"
+              style={{ background: 'linear-gradient(135deg,#c9a84c 0%,#d9bc72 50%,#c9a84c 100%)' }}
+            >
+              Book a Free Audit
+            </Link>
+          </motion.div>
         </div>
 
         {/* Mobile hamburger */}
@@ -148,7 +152,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile drawer — stays dark for contrast */}
+      {/* Mobile drawer */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -157,43 +161,28 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.28, ease }}
             className="md:hidden absolute top-full left-0 right-0 border-b border-white/10 px-6 py-6 flex flex-col gap-5"
-            style={{
-              backgroundColor: 'rgba(13,17,23,0.97)',
-              backdropFilter: 'blur(18px)',
-            }}
+            style={{ backgroundColor: 'rgba(13,17,23,0.97)', backdropFilter: 'blur(18px)' }}
           >
             {NAV_LINKS.map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+              <Link
+                key={item.label}
+                href={item.href}
                 onClick={() => setMenuOpen(false)}
                 className="text-white/70 hover:text-white font-medium transition-colors"
               >
-                {item}
-              </a>
+                {item.label}
+              </Link>
             ))}
+            <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-white/70 hover:text-white font-medium transition-colors">Blog</Link>
+            <Link href="/why-not-harvey" onClick={() => setMenuOpen(false)} className="text-white/70 hover:text-white font-medium transition-colors">Why not Harvey?</Link>
             <Link
-              href="/blog"
-              onClick={() => setMenuOpen(false)}
-              className="text-white/70 hover:text-white font-medium transition-colors"
-            >
-              Blog
-            </Link>
-            <Link
-              href="/why-not-harvey"
-              onClick={() => setMenuOpen(false)}
-              className="text-white/70 hover:text-white font-medium transition-colors"
-            >
-              Why not Harvey?
-            </Link>
-            <a
-              href="#contact"
+              href="/#contact"
               onClick={() => setMenuOpen(false)}
               className="text-navy font-semibold text-sm px-5 py-3 rounded-lg text-center"
               style={{ background: 'linear-gradient(135deg,#c9a84c,#d9bc72)' }}
             >
-              Book a Free Call
-            </a>
+              Book a Free Audit
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
