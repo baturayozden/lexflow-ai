@@ -66,3 +66,31 @@ section, .section {
 html {
   scroll-behavior: smooth;
 }
+
+/* ── LfIcon tile system ──────────────────────────────────────── */
+.lf-tile {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: #F5F7FB;
+  border: 1px solid #E6E9F0;
+  color: #19223A;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.lf-tile--featured {
+  background: #FBF3DD;
+  border-color: #EAD9A6;
+}
+.lf-tile::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #C2A04A, transparent);
+}

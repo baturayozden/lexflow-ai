@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { LfIcon } from '@/components/LfIcon'
 
 export const metadata: Metadata = {
   title: 'Why Not Harvey AI? | LexFlow — AI for Small UK Law Firms',
@@ -23,37 +24,37 @@ const comparisons = [
     title: '20 minimum licences required',
     harvey: 'Harvey requires enterprise contracts with a minimum of 20 seats',
     lexflow: 'LexFlow works for firms of 1 to 20 people — no minimum',
-    icon: '👥',
+    icon: 'features',
   },
   {
     title: '6-12 month implementation',
     harvey: 'Enterprise AI deployments typically take 6-12 months of IT work',
     lexflow: 'LexFlow is live in 5 working days — we do the setup for you',
-    icon: '📅',
+    icon: 'clock',
   },
   {
     title: 'US-centric legal knowledge',
     harvey: 'Harvey is trained primarily on US law and US legal workflows',
     lexflow: 'LexFlow is built exclusively for UK immigration and conveyancing law',
-    icon: '🇬🇧',
+    icon: 'flag',
   },
   {
     title: 'Legal research, not intake',
     harvey: 'Harvey excels at document review and legal research for complex matters',
     lexflow: 'LexFlow focuses on what small firms actually need: client intake, case workflow, and follow-up automation',
-    icon: '🎯',
+    icon: 'action-centre',
   },
   {
     title: 'Requires dedicated IT team',
     harvey: 'Enterprise implementations require IT procurement, security review, and ongoing maintenance',
     lexflow: 'No IT knowledge needed. If you can use email, you can use LexFlow',
-    icon: '💻',
+    icon: 'step-build',
   },
   {
     title: '£288,000 per year minimum',
     harvey: 'At 20 licences × £12,000 per licence per year — before implementation costs',
     lexflow: 'LexFlow starts from £199/month with a one-time setup — everything included, first month free',
-    icon: '💷',
+    icon: 'pricing',
   },
 ]
 
@@ -172,7 +173,7 @@ export default function WhyNotHarveyPage() {
                 className="bg-white border rounded-xl p-6"
                 style={{ borderColor: 'rgba(0,0,0,0.08)', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
               >
-                <div className="text-2xl mb-3">{item.icon}</div>
+                <div className="lf-tile mb-3"><LfIcon name={item.icon} size={24} /></div>
                 <h3 className="text-[#0F172A] font-semibold mb-3">{item.title}</h3>
                 <div className="space-y-2">
                   <div className="flex gap-2">
@@ -277,7 +278,7 @@ export default function WhyNotHarveyPage() {
             className="border rounded-2xl p-10 text-center"
             style={{ background: 'rgba(212,168,67,0.04)', borderColor: 'rgba(212,168,67,0.2)' }}
           >
-            <div className="text-4xl mb-4">⚡</div>
+            <div className="flex justify-center mb-4"><div className="lf-tile lf-tile--featured"><LfIcon name="ai-spark" size={28} /></div></div>
             <blockquote className="text-[#0F172A] text-xl font-medium mb-4 leading-relaxed">
               &quot;We went from spending 3 hours on each new client intake to under 15 minutes. The AI
               case summary alone saves us an hour per client.&quot;

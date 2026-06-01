@@ -8,6 +8,7 @@ import ContactForm from '@/components/ContactForm'
 import PricingCard from '@/components/PricingCard'
 import ScrollProgressBar from '@/components/landing/ScrollProgressBar'
 import FaqAccordion from '@/components/landing/FaqAccordion'
+import { LfIcon } from '@/components/LfIcon'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -435,7 +436,7 @@ export default function Home() {
                 className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl font-semibold text-sm transition-colors"
                 style={{ color: '#D4A843', border: '1px solid rgba(212,168,67,0.4)' }}
               >
-                ▶ See it in action
+                <LfIcon name="arrow-right" size={16} className="inline-block" /> See it in action
               </motion.a>
             </motion.div>
 
@@ -499,11 +500,11 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap items-center justify-center" style={{ gap: '8px' }}>
             {[
-              { icon: '🇬🇧', label: 'UK-Only Focus' },
-              { icon: '🔒', label: 'GDPR Compliant' },
-              { icon: '⚖️', label: 'Gov.uk Verified' },
-              { icon: '✓', label: 'SRA Aware', mono: true },
-              { icon: '🤝', label: 'Done For You' },
+              { icon: 'flag', label: 'UK-Only Focus' },
+              { icon: 'shield-check', label: 'GDPR Compliant' },
+              { icon: 'govuk-checklist', label: 'Gov.uk Verified' },
+              { icon: 'check', label: 'SRA Aware' },
+              { icon: 'handshake', label: 'Done For You' },
             ].map((badge, i) => (
               <motion.div
                 key={i}
@@ -514,7 +515,7 @@ export default function Home() {
                 className="flex items-center"
                 style={{ background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.14)', borderRadius: '100px', padding: '8px 16px', gap: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)' }}
               >
-                <span style={{ fontSize: badge.mono ? '0.9rem' : '1rem', color: badge.mono ? '#10B981' : undefined, fontWeight: badge.mono ? 700 : undefined }}>{badge.icon}</span>
+                <LfIcon name={badge.icon} size={18} style={{ color: '#475569' }} />
                 <span style={{ color: '#475569', fontSize: '0.85rem', fontWeight: 500 }}>{badge.label}</span>
               </motion.div>
             ))}
@@ -603,29 +604,29 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               {
-                icon: '🤖', title: 'AI Client Intake',
+                icon: 'ai-intake', title: 'AI Client Intake',
                 desc: "A potential client fills in a form. AI reads it, summarises the case, flags urgency, and has it ready for your solicitor — before they've had their morning coffee.",
                 tag: '~3 hrs saved per client',
               },
               {
-                icon: '⚡', title: 'Action Centre',
+                icon: 'action-centre', title: 'Action Centre',
                 desc: 'For every case, AI generates the next steps automatically. Schedule, send, check eligibility — one click. No more staring at a file wondering what to do next.',
                 tag: 'Zero missed deadlines',
               },
               {
-                icon: '📋', title: 'Gov.uk Checklist Automation',
+                icon: 'govuk-checklist', title: 'Gov.uk Checklist Automation',
                 desc: 'Case-specific document lists built from gov.uk. Sent to your client automatically. Updated monthly.',
               },
               {
-                icon: '📄', title: 'Instant Quote Generation',
+                icon: 'instant-quote', title: 'Instant Quote Generation',
                 desc: 'Template-based quotes generated and emailed in seconds. No more copy-paste from old files.',
               },
               {
-                icon: '💬', title: 'AI Chatbot Widget',
+                icon: 'ai-chatbot', title: 'AI Chatbot Widget',
                 desc: "Embed on your firm's website. Answers client questions 24/7 and routes new enquiries straight into your intake pipeline.",
               },
               {
-                icon: '📅', title: 'Daily & Weekly Digests',
+                icon: 'daily-digest', title: 'Daily & Weekly Digests',
                 desc: 'Every morning: which cases need attention. Every Monday: what the week looks like. Automated. No admin.',
               },
             ].map((card, i) => (
@@ -639,8 +640,8 @@ export default function Home() {
                 style={{ background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.08)', borderRadius: '20px', padding: '36px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)', transition: 'all 0.25s ease' }}
                 whileHover={reduced ? {} : { borderColor: 'rgba(212,168,67,0.4)', boxShadow: '0 8px 32px rgba(212,168,67,0.08)', y: -3 }}
               >
-                <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(212,168,67,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', marginBottom: '20px' }}>
-                  {card.icon}
+                <div className="lf-tile" style={{ marginBottom: '20px' }}>
+                  <LfIcon name={card.icon} size={26} />
                 </div>
                 <h3 style={{ color: '#0F172A', fontWeight: 700, fontSize: '1.05rem', marginBottom: '10px' }}>{card.title}</h3>
                 <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.65 }}>{card.desc}</p>
@@ -670,15 +671,15 @@ export default function Home() {
 
           <div className="relative grid md:grid-cols-3 gap-8 md:gap-0">
             {/* Connector lines — desktop only */}
-            <div className="hidden md:flex absolute top-6 left-0 right-0 items-center pointer-events-none" style={{ padding: '0 calc(100%/6)' }}>
+            <div className="hidden md:flex absolute left-0 right-0 items-center pointer-events-none" style={{ top: '27px', padding: '0 calc(100%/6)' }}>
               <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #D4A843, rgba(212,168,67,0.2))' }} />
               <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, rgba(212,168,67,0.2), #D4A843)' }} />
             </div>
 
             {[
-              { step: '1', title: 'Free Audit', desc: 'We spend 20 minutes mapping your manual processes. You get a clear picture of what can be automated.', tag: 'Completely free' },
-              { step: '2', title: 'We Build & Install', desc: 'You approve the plan. We build everything and install directly into your existing tools. Zero technical effort from you.', tag: 'You do nothing technical' },
-              { step: '3', title: 'You Save Time', desc: 'Go live in 7 days, measurable results in 30. Your team works on billable matters while AI handles the rest.', tag: 'Live in 7 days' },
+              { icon: 'step-audit', title: 'Free Audit', desc: 'We spend 20 minutes mapping your manual processes. You get a clear picture of what can be automated.', tag: 'Completely free' },
+              { icon: 'step-build', title: 'We Build & Install', desc: 'You approve the plan. We build everything and install directly into your existing tools. Zero technical effort from you.', tag: 'You do nothing technical' },
+              { icon: 'step-golive', title: 'You Save Time', desc: 'Go live in 7 days, measurable results in 30. Your team works on billable matters while AI handles the rest.', tag: 'Live in 7 days' },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -688,11 +689,8 @@ export default function Home() {
                 transition={{ delay: i * 0.2, duration: 0.6, ease }}
                 className="text-center px-8"
               >
-                <div
-                  className="flex items-center justify-center mx-auto mb-6"
-                  style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#0D1117', color: '#D4A843', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}
-                >
-                  {item.step}
+                <div className="lf-tile mx-auto mb-6">
+                  <LfIcon name={item.icon} size={26} />
                 </div>
                 <h3 style={{ fontWeight: 700, fontSize: '1.15rem', color: '#0F172A', marginBottom: '12px' }}>{item.title}</h3>
                 <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.65, marginBottom: '16px' }}>{item.desc}</p>
@@ -721,7 +719,7 @@ export default function Home() {
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-sm transition-colors"
               style={{ color: '#D4A843', border: '1px solid rgba(212,168,67,0.4)' }}
             >
-              ▶ See it in action
+              <LfIcon name="arrow-right" size={16} className="inline-block" /> See it in action
             </a>
           </motion.div>
         </div>
