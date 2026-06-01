@@ -59,6 +59,25 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) notFound()
 
+  const [{ data: nextPost }, { data: prevPost }] = await Promise.all([
+    supabaseAdmin
+      .from('blog_posts')
+      .select('title, slug')
+      .eq('is_published', true)
+      .gt('published_at', post.published_at)
+      .order('published_at', { ascending: true })
+      .limit(1)
+      .single(),
+    supabaseAdmin
+      .from('blog_posts')
+      .select('title, slug')
+      .eq('is_published', true)
+      .lt('published_at', post.published_at)
+      .order('published_at', { ascending: false })
+      .limit(1)
+      .single(),
+  ])
+
   return (
     <div className="min-h-screen bg-[#0a1628] text-white">
       <Navbar />
@@ -127,6 +146,32 @@ export default async function BlogPostPage({ params }: Props) {
           <Link href="/blog" className="text-white/40 text-sm hover:text-white transition-colors">← Back to Blog</Link>
         </div>
       </article>
+
+      {/* Prev / Next navigation */}
+      {(prevPost || nextPost) && (
+        <div className="max-w-3xl mx-auto px-6 pb-12">
+          <div className="border-t border-white/10 pt-8 grid grid-cols-2 gap-4">
+            {prevPost ? (
+              <Link
+                href={`/blog/${prevPost.slug}`}
+                className="group flex flex-col border border-white/10 rounded-xl p-5 hover:border-yellow-400/40 hover:bg-white/5 transition-all duration-200"
+              >
+                <span className="text-xs text-slate-500 mb-2">← Previous</span>
+                <span className="text-sm font-semibold text-white group-hover:text-yellow-400 transition-colors line-clamp-2">{prevPost.title}</span>
+              </Link>
+            ) : <div />}
+            {nextPost && (
+              <Link
+                href={`/blog/${nextPost.slug}`}
+                className="group flex flex-col border border-white/10 rounded-xl p-5 hover:border-yellow-400/40 hover:bg-white/5 transition-all duration-200 text-right"
+              >
+                <span className="text-xs text-slate-500 mb-2">Next →</span>
+                <span className="text-sm font-semibold text-white group-hover:text-yellow-400 transition-colors line-clamp-2">{nextPost.title}</span>
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
