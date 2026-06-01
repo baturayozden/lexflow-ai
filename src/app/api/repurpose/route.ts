@@ -24,6 +24,9 @@ FORBIDDEN CONSTRUCTIONS:
 
 OUTPUT: Return ONLY valid JSON. No markdown fences, no explanations, no preamble. The response must parse with JSON.parse() with zero modifications.`
 
+// Founding rate deadline — update this single constant when the period changes
+const FOUNDING_RATE_DEADLINE = '31 July 2026'
+
 const buildUserPrompt = (title: string, content: string) => `Blog post title: ${title}
 
 Blog post content (first 3,000 characters):
@@ -31,16 +34,20 @@ ${content.slice(0, 3000)}
 
 Produce exactly 5 pieces of social content based on this blog post. Return a single JSON object with this exact structure:
 
+CTA RULES — non-negotiable:
+LinkedIn CTAs: NEVER use "link in bio" — that is an Instagram phrase and does not exist on LinkedIn. Use instead: "link in the comments", "drop me a message", "comment below", or "Book a free audit at lexflow.co.uk". Where it feels natural (not forced), add urgency: "founding rate ends ${FOUNDING_RATE_DEADLINE}".
+Instagram CTAs: "link in bio", "comment AUDIT", "DM us" and similar phrases are appropriate and encouraged.
+
 {
   "linkedin_problem": {
     "hook": "Opening line — a specific, relatable moment from a solicitor's week (1 sentence)",
     "body": "Full post body — 150–200 words. Short paragraphs for LinkedIn readability. Start with the hook. Deepen the problem. End with a faint implication that a better way exists, but NO product pitch. This is pure empathy and insight.",
-    "cta": "Soft closing call-to-action (1 sentence, e.g. 'What does your intake process look like?' or 'Worth a conversation — link in bio.')"
+    "cta": "Soft closing call-to-action (1 sentence). LinkedIn only — never use 'link in bio'. Use 'comment below', 'drop me a message', or similar. Example: 'What does your intake process look like?' or 'Worth a conversation — drop me a message.'"
   },
   "linkedin_evidence": {
     "stat_used": "The exact statistic chosen from the approved list",
     "body": "Full post — 120–180 words. Open with the statistic, frame why it matters for UK firms, connect to the blog topic, close with a gentle observation. Use ONLY these approved statistics — do not invent data: '86% of leads are lost by the average law firm', '79% of clients expect a response within 24 hours whilst the average firm takes 3+ days', '42% of clients contact more than one firm simultaneously', 'the first firm to respond helpfully wins the instruction roughly 79% of the time'. Pick the one that fits most naturally.",
-    "cta": "Soft CTA (1 sentence)"
+    "cta": "Soft LinkedIn CTA (1 sentence). Never 'link in bio'. If it fits naturally, include founding rate urgency: 'founding rate ends ${FOUNDING_RATE_DEADLINE}'."
   },
   "linkedin_carousel": {
     "slides": [
@@ -51,7 +58,7 @@ Produce exactly 5 pieces of social content based on this blog post. Return a sin
       { "n": 5, "heading": "Insight or step 2 (max 8 words)", "body": "Concrete takeaway (max 20 words)" },
       { "n": 6, "heading": "Insight or step 3 (max 8 words)", "body": "Concrete takeaway (max 20 words)" },
       { "n": 7, "heading": "The Result — specific benefit (max 8 words)", "body": "What changes when this is fixed (max 20 words)" },
-      { "n": 8, "heading": "Book a free audit", "body": "Find out what can be automated in your firm. lexflow.co.uk" }
+      { "n": 8, "heading": "Book a free audit — before ${FOUNDING_RATE_DEADLINE}", "body": "Find out what can be automated in your firm. lexflow.co.uk" }
     ]
   },
   "linkedin_quote": {
