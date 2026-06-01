@@ -28,7 +28,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link href="/admin/reviews" className="text-white/60 hover:text-white text-sm transition-colors">Reviews</Link>
             <Link href="/admin/settings" className="text-white/60 hover:text-white text-sm transition-colors">Settings</Link>
             {(session?.user as Record<string, unknown>)?.role === 'platform_admin' && (
-              <Link href="/admin/firms" className="text-[#c9a84c] hover:text-[#f0d080] text-sm transition-colors font-medium">Firms</Link>
+              <>
+                <Link href="/admin/firms" className="text-[#c9a84c] hover:text-[#f0d080] text-sm transition-colors font-medium">Firms</Link>
+                <Link href="/admin/blogs" className="text-[#c9a84c] hover:text-[#f0d080] text-sm transition-colors font-medium">Blog</Link>
+                <Link href="/admin/content" className="text-[#c9a84c] hover:text-[#f0d080] text-sm transition-colors font-medium">Content</Link>
+              </>
             )}
           </div>
         </div>
