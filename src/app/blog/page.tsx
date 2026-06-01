@@ -1,10 +1,8 @@
-export const revalidate = 0
-
+import { Metadata } from 'next'
 import Link from 'next/link'
-import type { Metadata } from 'next'
-import { supabaseAdmin } from '@/lib/supabase'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import { createClient } from '@supabase/supabase-js'
+
+export const revalidate = 0
 
 export const metadata: Metadata = {
   title: 'Blog | LexFlow — AI Insights for UK Law Firms',
@@ -17,110 +15,106 @@ const CATEGORY_LABELS: Record<string, string> = {
   'legal-tech': 'Legal Tech',
 }
 
-export default async function BlogPage() {
-  const { data: posts } = await supabaseAdmin
-    .from('blog_posts')
-    .select('id, title, slug, excerpt, category, published_at, reading_time_minutes')
-    .eq('is_published', true)
-    .order('published_at', { ascending: false })
-    .limit(50)
+const CATEGORY_COLORS: Record<string, string> = {
+  immigration: 'bg-blue-50/10 text-blue-400 border-blue-400/30',
+  conveyancing: 'bg-emerald-50/10 text-emerald-400 border-emerald-400/30',
+  'legal-tech': 'bg-violet-50/10 text-violet-400 border-violet-400/30',
+}
 
-  const allPosts = posts || []
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function BlogPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let posts: any[] = []
+
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('id, title, slug, excerpt, category, published_at, reading_time_minutes')
+      .eq('is_published', true)
+      .order('published_at', { ascending: false })
+      .limit(50)
+
+    if (!error && data) posts = data
+  } catch (e) {
+    console.error('Blog fetch error:', e)
+  }
+
+  const featured = posts[0]
+  const rest = posts.slice(1)
 
   return (
-    <div className="min-h-screen" style={{ background: '#FFFFFF' }}>
-      <Navbar />
-
-      {/* Hero */}
-      <div style={{ background: 'linear-gradient(135deg, #0D1117 0%, #111827 50%, #0D1117 100%)', padding: '100px 24px 60px' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(212,168,67,0.8)', marginBottom: '12px' }}>INSIGHTS</p>
-          <h1 style={{ fontSize: 'clamp(2.5rem,5vw,4rem)', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.15, marginBottom: '16px' }}>Blog</h1>
-          <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>Expert insights on immigration law, conveyancing, and legal AI.</p>
+    <main className="min-h-screen bg-[#0a1628]">
+      <div className="bg-[#0d1f3c] border-b border-white/10 px-4 py-16">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-yellow-400 text-sm font-medium uppercase tracking-widest mb-3">LexFlow Blog</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Insights for UK Law Firms
+          </h1>
+          <p className="text-slate-300 text-lg max-w-2xl">
+            Practical guidance on immigration law, conveyancing, and how AI is reshaping small legal practices in the UK.
+          </p>
         </div>
       </div>
 
-      {/* Posts grid */}
-      <section style={{ background: '#F8FAFC', padding: '80px 24px' }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          {allPosts.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '96px 0' }}>
-              <p style={{ color: '#94A3B8', fontSize: '1.1rem' }}>No posts yet — check back soon.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: '24px' }}>
-              {allPosts.map((post, i) => (
-                <Link
-                  key={post.id}
-                  href={`/blog/${post.slug}`}
-                  className="group block"
-                  style={{
-                    background: '#FFFFFF',
-                    border: '1px solid rgba(15,23,42,0.08)',
-                    borderRadius: '16px',
-                    padding: '28px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
-                    textDecoration: 'none',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                    animationDelay: `${i * 0.08}s`,
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)'
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)'
-                  }}
-                >
-                  {/* Category + read time */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-                    <span style={{
-                      background: 'rgba(212,168,67,0.12)',
-                      color: '#854F0B',
-                      border: '1px solid rgba(212,168,67,0.25)',
-                      borderRadius: '100px',
-                      padding: '4px 12px',
-                      fontSize: '0.7rem',
-                      fontWeight: 600,
-                      textTransform: 'uppercase' as const,
-                      letterSpacing: '0.05em',
-                    }}>
-                      {CATEGORY_LABELS[post.category] || post.category}
-                    </span>
-                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>{post.reading_time_minutes} min read</span>
-                  </div>
+      <div className="max-w-5xl mx-auto px-4 py-12">
+        {featured && (
+          <div className="mb-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4">Latest</p>
+            <Link href={`/blog/${featured.slug}`} className="group block border border-white/10 rounded-2xl p-8 hover:border-yellow-400/40 hover:bg-white/5 transition-all duration-200">
+              <div className="flex items-center gap-2 mb-4">
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${CATEGORY_COLORS[featured.category] || 'bg-white/5 text-slate-400 border-white/10'}`}>
+                  {CATEGORY_LABELS[featured.category] || featured.category}
+                </span>
+                <span className="text-sm text-slate-400">{featured.reading_time_minutes} min read</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 group-hover:text-yellow-400 transition-colors">
+                {featured.title}
+              </h2>
+              <p className="text-slate-400 text-lg leading-relaxed mb-4">{featured.excerpt}</p>
+              <div className="flex items-center gap-2 text-yellow-400 font-medium text-sm">
+                Read article →
+              </div>
+            </Link>
+          </div>
+        )}
 
-                  {/* Title */}
-                  <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', margin: '0 0 10px', lineHeight: 1.35 }}
-                    className="group-hover:text-[#D4A843] transition-colors">
-                    {post.title}
-                  </h2>
+        {rest.length > 0 && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rest.map(post => (
+              <Link
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="group flex flex-col border border-white/10 rounded-xl p-6 hover:border-yellow-400/40 hover:bg-white/5 transition-all duration-200"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[post.category] || 'bg-white/5 text-slate-400 border-white/10'}`}>
+                    {CATEGORY_LABELS[post.category] || post.category}
+                  </span>
+                  <span className="text-xs text-slate-400">{post.reading_time_minutes} min</span>
+                </div>
+                <h3 className="font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors leading-snug">
+                  {post.title}
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed flex-1 line-clamp-3">{post.excerpt}</p>
+                <p className="text-xs text-slate-500 mt-4">
+                  {new Date(post.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </p>
+              </Link>
+            ))}
+          </div>
+        )}
 
-                  {/* Excerpt */}
-                  {post.excerpt && (
-                    <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '20px', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
-                      {post.excerpt}
-                    </p>
-                  )}
-
-                  {/* Footer */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
-                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>
-                      {new Date(post.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </span>
-                    <span style={{ color: '#D4A843', fontSize: '0.9rem', fontWeight: 600 }} className="group-hover:translate-x-1 transition-transform inline-block">
-                      Read →
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <Footer />
-    </div>
+        {posts.length === 0 && (
+          <div className="text-center py-20 text-slate-400">
+            <p className="text-lg">No posts yet — check back soon.</p>
+          </div>
+        )}
+      </div>
+    </main>
   )
 }
