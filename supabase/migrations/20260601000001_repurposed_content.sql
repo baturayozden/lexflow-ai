@@ -23,3 +23,9 @@ CREATE INDEX IF NOT EXISTS repurposed_content_created_idx ON repurposed_content(
 ALTER TABLE repurposed_content ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "repurposed_content_service" ON repurposed_content
   FOR ALL USING (auth.role() = 'service_role');
+
+-- Grant access to Supabase roles (required when creating tables via SQL)
+GRANT ALL ON TABLE repurposed_content TO postgres;
+GRANT ALL ON TABLE repurposed_content TO service_role;
+GRANT ALL ON TABLE repurposed_content TO authenticated;
+GRANT ALL ON TABLE repurposed_content TO anon;
