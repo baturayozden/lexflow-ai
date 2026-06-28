@@ -3,6 +3,8 @@ import './globals.css'
 import { Providers } from '@/components/Providers'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.lexflow.co.uk'),
+  alternates: { canonical: '/' },
   title: 'LexFlow — AI Systems for UK Law Firms',
   description:
     'We install AI systems that give UK immigration and conveyancing law firms 10+ hours back per week.',
