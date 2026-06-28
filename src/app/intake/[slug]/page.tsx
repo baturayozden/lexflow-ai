@@ -1,6 +1,13 @@
+import type { Metadata } from 'next'
 import { getFirmBySlug } from '@/lib/auth-db'
 import { notFound } from 'next/navigation'
 import { PublicIntakeForm } from '@/components/PublicIntakeForm'
+
+// Public per-firm intake form — self-canonical (dedupes the ?embed=true variant).
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  return { alternates: { canonical: `/intake/${slug}` } }
+}
 
 export default async function PublicIntakePage({
   params,
