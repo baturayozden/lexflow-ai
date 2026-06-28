@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar'
 export const revalidate = 0
 
 export const metadata: Metadata = {
+  alternates: { canonical: 'https://www.lexflow.co.uk/blog' },
   title: 'Blog | LexFlow — AI Insights for UK Law Firms',
   description: 'Expert insights on UK immigration law, conveyancing, and how AI is transforming small law firms.',
 }

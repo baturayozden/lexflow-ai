@@ -35,6 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: 'Post Not Found | LexFlow' }
 
   return {
+    alternates: { canonical: `https://www.lexflow.co.uk/blog/${slug}` },
     title: `${post.title} | LexFlow Blog`,
     description: post.meta_description || post.excerpt || '',
     keywords: post.focus_keyword || '',

@@ -5,6 +5,7 @@ import Footer from '@/components/Footer'
 import { LfIcon } from '@/components/LfIcon'
 
 export const metadata: Metadata = {
+  alternates: { canonical: 'https://www.lexflow.co.uk/why-not-harvey' },
   title: 'Why Not Harvey AI? | LexFlow — AI for Small UK Law Firms',
   description: 'Harvey AI costs £288,000/year and requires 20+ licences. LexFlow is built for small UK immigration and conveyancing firms. From £199/month, fully set up.',
   keywords: 'Harvey AI alternative, legal AI small law firm UK, affordable legal AI, immigration law software UK',
