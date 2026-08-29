@@ -1,0 +1,52 @@
+name: Keepalive
+
+# Zamanlanmis (scheduled) workflow'larin, repoda 60 gun hareketsizlik olsa bile
+# GitHub tarafindan otomatik kapatilmasini engeller. Iki katmanli calisir:
+#   1) Haftalik kucuk bir "heartbeat" commit'i atarak repo aktivitesini canli tutar.
+#   2) GitHub API ile workflow'lari yeniden "enable" ederek hareketsizlik
+#      sayacini sifirlar. ELLE kapatilan workflow'lara dokunmaz.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Heartbeat commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p .github
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/last-keepalive
+          git add .github/last-keepalive
+          if git diff --staged --quiet; then
+            echo "Degisiklik yok, commit atlaniyor."
+          else
+            git commit -m "chore(keepalive): heartbeat [skip ci]"
+            git push
+          fi
+
+      - name: Re-enable scheduled workflows
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows" --paginate \
+            --jq '.workflows[] | select(.state == "active" or .state == "disabled_inactivity") | "\(.id) \(.name)"' \
+          | while read -r id name; do
+              echo "Enabling: $name ($id)"
+              gh api --method PUT "repos/$GITHUB_REPOSITORY/actions/workflows/$id/enable" --silent
+            done
